@@ -1460,8 +1460,8 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 
 			mailService.addUser(
 				user.getCompanyId(), user.getUserId(), mailPassword,
-				user.getFirstName(), user.getMiddleName(),
-				user.getLastName(), user.getEmailAddress());
+				user.getFirstName(), user.getMiddleName(), user.getLastName(),
+				user.getEmailAddress());
 		}
 
 		boolean sendEmail = GetterUtil.getBoolean(
@@ -2931,7 +2931,9 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 			andOperator = true;
 		}
 
-		params.put("keywords", keywords);
+		if (params != null) {
+			params.put("keywords", keywords);
+		}
 
 		return search(
 			companyId, firstName, middleName, lastName, fullName, screenName,
@@ -2981,9 +2983,9 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 	 */
 	public List<User> search(
 			long companyId, String firstName, String middleName,
-			String lastName, String screenName, String emailAddress,
-			int status, LinkedHashMap<String, Object> params,
-			boolean andSearch, int start, int end, OrderByComparator obc)
+			String lastName, String screenName, String emailAddress, int status,
+			LinkedHashMap<String, Object> params, boolean andSearch, int start,
+			int end, OrderByComparator obc)
 		throws SystemException {
 
 		return userFinder.findByC_FN_MN_LN_SN_EA_S(
@@ -3032,9 +3034,9 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 	 */
 	public Hits search(
 			long companyId, String firstName, String middleName,
-			String lastName, String screenName, String emailAddress,
-			int status, LinkedHashMap<String, Object> params,
-			boolean andSearch, int start, int end, Sort sort)
+			String lastName, String screenName, String emailAddress, int status,
+			LinkedHashMap<String, Object> params, boolean andSearch, int start,
+			int end, Sort sort)
 		throws SystemException {
 
 		return search(
@@ -3089,9 +3091,8 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 	 */
 	public int searchCount(
 			long companyId, String firstName, String middleName,
-			String lastName, String screenName, String emailAddress,
-			int status, LinkedHashMap<String, Object> params,
-			boolean andSearch)
+			String lastName, String screenName, String emailAddress, int status,
+			LinkedHashMap<String, Object> params, boolean andSearch)
 		throws SystemException {
 
 		return userFinder.countByC_FN_MN_LN_SN_EA_S(
@@ -5141,10 +5142,12 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 			searchContext.setCompanyId(companyId);
 			searchContext.setEnd(end);
 
-			String keywords = (String)params.remove("keywords");
+			if (params != null) {
+				String keywords = (String)params.remove("keywords");
 
-			if (Validator.isNotNull(keywords)) {
-				searchContext.setKeywords(keywords);
+				if (Validator.isNotNull(keywords)) {
+					searchContext.setKeywords(keywords);
+				}
 			}
 
 			QueryConfig queryConfig = new QueryConfig();

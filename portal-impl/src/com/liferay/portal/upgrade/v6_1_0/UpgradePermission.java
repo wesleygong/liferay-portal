@@ -223,8 +223,8 @@ public class UpgradePermission extends UpgradeProcess {
 			String name, boolean community, boolean guest)
 		throws Exception {
 
-		List<String> modelActions =
-			ResourceActionsUtil.getModelResourceActions(name);
+		List<String> modelActions = ResourceActionsUtil.getModelResourceActions(
+			name);
 
 		ResourceActionLocalServiceUtil.checkResourceActions(name, modelActions);
 
@@ -248,8 +248,7 @@ public class UpgradePermission extends UpgradeProcess {
 	}
 
 	private static final int[] _SCOPES = {
-		ResourceConstants.SCOPE_COMPANY,
-		ResourceConstants.SCOPE_GROUP,
+		ResourceConstants.SCOPE_COMPANY, ResourceConstants.SCOPE_GROUP,
 		ResourceConstants.SCOPE_GROUP_TEMPLATE
 	};
 

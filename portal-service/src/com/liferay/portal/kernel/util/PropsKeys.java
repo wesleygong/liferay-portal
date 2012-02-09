@@ -325,6 +325,8 @@ public interface PropsKeys {
 
 	public static final String CAS_SERVICE_URL = "cas.service.url";
 
+	public static final String CDN_DYNAMIC_RESOURCES_ENABLED = "cdn.dynamic.resources.enabled";
+
 	public static final String CDN_HOST_HTTP = "cdn.host.http";
 
 	public static final String CDN_HOST_HTTPS = "cdn.host.https";
@@ -876,6 +878,8 @@ public interface PropsKeys {
 	public static final String JDBC_DEFAULT_URL = "jdbc.default.url";
 
 	public static final String JDBC_DEFAULT_USERNAME = "jdbc.default.username";
+
+	public static final String JNDI_ENVIRONMENT = "jndi.environment.";
 
 	public static final String JOURNAL_ARTICLE_CHECK_INTERVAL = "journal.article.check.interval";
 

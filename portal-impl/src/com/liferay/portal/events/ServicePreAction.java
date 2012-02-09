@@ -151,6 +151,15 @@ public class ServicePreAction extends Action {
 
 		String cdnHost = PortalUtil.getCDNHost(request);
 
+		String dynamicResourcesCDNHost = StringPool.BLANK;
+
+		boolean cdnDynamicResourceEnabled =
+			PortalUtil.isCDNDynamicResourcesEnabled(request);
+
+		if (cdnDynamicResourceEnabled) {
+			dynamicResourcesCDNHost = cdnHost;
+		}
+
 		// Portal URL
 
 		String portalURL = PortalUtil.getPortalURL(request);
@@ -163,7 +172,8 @@ public class ServicePreAction extends Action {
 		String friendlyURLPrivateUserPath =
 			PortalUtil.getPathFriendlyURLPrivateUser();
 		String friendlyURLPublicPath = PortalUtil.getPathFriendlyURLPublic();
-		String imagePath = cdnHost.concat(PortalUtil.getPathImage());
+		String imagePath = dynamicResourcesCDNHost.concat(
+			PortalUtil.getPathImage());
 		String mainPath = PortalUtil.getPathMain();
 
 		String i18nPath = (String)request.getAttribute(WebKeys.I18N_PATH);
@@ -429,8 +439,7 @@ public class ServicePreAction extends Action {
 				permissionChecker, layout, controlPanelCategory, true,
 				ActionKeys.VIEW);
 			boolean isViewableStaging = GroupPermissionUtil.contains(
-				permissionChecker, group.getGroupId(),
-				ActionKeys.VIEW_STAGING);
+				permissionChecker, group.getGroupId(), ActionKeys.VIEW_STAGING);
 
 			if (isViewableStaging) {
 				layouts = LayoutLocalServiceUtil.getLayouts(
@@ -467,6 +476,9 @@ public class ServicePreAction extends Action {
 				}
 
 				throw new NoSuchLayoutException(sb.toString());
+			}
+			else if (isLoginRequest(request) && !isViewableGroup) {
+				layout = null;
 			}
 			else if (group.isLayoutPrototype()) {
 				layouts = new ArrayList<Layout>();
@@ -734,6 +746,7 @@ public class ServicePreAction extends Action {
 		// because other methods (setLookAndFeel) depend on them being set
 
 		themeDisplay.setCDNHost(cdnHost);
+		themeDisplay.setCDNDynamicResourcesHost(dynamicResourcesCDNHost);
 		themeDisplay.setPortalURL(portalURL);
 		themeDisplay.setFacebookCanvasPageURL(facebookCanvasPageURL);
 		themeDisplay.setWidget(widget);
@@ -793,8 +806,7 @@ public class ServicePreAction extends Action {
 		themeDisplay.setPathFriendlyURLPrivateUser(friendlyURLPrivateUserPath);
 		themeDisplay.setPathFriendlyURLPublic(friendlyURLPublicPath);
 		themeDisplay.setPathImage(imagePath);
-		themeDisplay.setPathJavaScript(
-			cdnHost.concat(contextPath).concat("/html/js"));
+		themeDisplay.setPathJavaScript(contextPath.concat("/html/js"));
 		themeDisplay.setPathMain(mainPath);
 		themeDisplay.setPathSound(contextPath.concat("/html/sound"));
 
@@ -957,6 +969,7 @@ public class ServicePreAction extends Action {
 				pageSettingsURL.setControlPanelCategory(
 					_CONTROL_PANEL_CATEGORY_PORTLET_PREFIX +
 						PortletKeys.LAYOUTS_ADMIN);
+				pageSettingsURL.setDoAsGroupId(scopeGroupId);
 				pageSettingsURL.setParameter(
 					"struts_action", "/layouts_admin/edit_layouts");
 
@@ -999,6 +1012,7 @@ public class ServicePreAction extends Action {
 					manageSiteMembershipsURL.setControlPanelCategory(
 						_CONTROL_PANEL_CATEGORY_PORTLET_PREFIX +
 							PortletKeys.SITE_MEMBERSHIPS_ADMIN);
+					manageSiteMembershipsURL.setDoAsGroupId(scopeGroupId);
 					manageSiteMembershipsURL.setParameter(
 						"struts_action", "/sites_admin/edit_site_assignments");
 					manageSiteMembershipsURL.setParameter(
@@ -1017,9 +1031,8 @@ public class ServicePreAction extends Action {
 				}
 			}
 
-			boolean hasAddLayoutGroupPermission =
-				GroupPermissionUtil.contains(
-					permissionChecker, scopeGroupId, ActionKeys.ADD_LAYOUT);
+			boolean hasAddLayoutGroupPermission = GroupPermissionUtil.contains(
+				permissionChecker, scopeGroupId, ActionKeys.ADD_LAYOUT);
 			boolean hasAddLayoutLayoutPermission =
 				LayoutPermissionUtil.contains(
 					permissionChecker, layout, ActionKeys.ADD_LAYOUT);
@@ -1047,6 +1060,7 @@ public class ServicePreAction extends Action {
 				siteSettingsURL.setControlPanelCategory(
 					_CONTROL_PANEL_CATEGORY_PORTLET_PREFIX +
 						PortletKeys.SITE_SETTINGS);
+				siteSettingsURL.setDoAsGroupId(scopeGroupId);
 				siteSettingsURL.setParameter(
 					"struts_action", "/sites_admin/edit_site");
 				siteSettingsURL.setParameter("closeRedirect", currentURL);
@@ -1071,6 +1085,7 @@ public class ServicePreAction extends Action {
 				siteMapSettingsURL.setControlPanelCategory(
 					_CONTROL_PANEL_CATEGORY_PORTLET_PREFIX +
 						PortletKeys.LAYOUTS_ADMIN);
+				siteMapSettingsURL.setDoAsGroupId(scopeGroupId);
 				siteMapSettingsURL.setParameter(
 					"struts_action", "/layouts_admin/edit_layouts");
 
@@ -1084,8 +1099,6 @@ public class ServicePreAction extends Action {
 				siteMapSettingsURL.setParameter("closeRedirect", currentURL);
 				siteMapSettingsURL.setParameter(
 					"groupId", String.valueOf(scopeGroupId));
-				siteMapSettingsURL.setParameter(
-					"selPlid", String.valueOf(plid));
 				siteMapSettingsURL.setPortletMode(PortletMode.VIEW);
 				siteMapSettingsURL.setWindowState(LiferayWindowState.POP_UP);
 

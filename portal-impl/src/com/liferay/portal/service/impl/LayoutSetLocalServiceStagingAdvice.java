@@ -80,9 +80,9 @@ public class LayoutSetLocalServiceStagingAdvice
 				(arguments.length == 6)) {
 
 			returnValue = updateLookAndFeel(
-				(Long)arguments[0], (Boolean)arguments[1],
-				(String)arguments[2], (String)arguments[3],
-				(String)arguments[4], (Boolean)arguments[5]);
+				(Long)arguments[0], (Boolean)arguments[1], (String)arguments[2],
+				(String)arguments[3], (String)arguments[4],
+				(Boolean)arguments[5]);
 		}
 		else if (methodName.equals("updateSettings")) {
 			returnValue = updateSettings(
@@ -315,8 +315,8 @@ public class LayoutSetLocalServiceStagingAdvice
 			return layoutSets;
 		}
 
-		List<LayoutSet> wrappedLayoutSets =
-			new ArrayList<LayoutSet>(layoutSets.size());
+		List<LayoutSet> wrappedLayoutSets = new ArrayList<LayoutSet>(
+			layoutSets.size());
 
 		for (int i = 0; i < layoutSets.size(); i++) {
 			LayoutSet wrappedLayoutSet = wrapLayoutSet(layoutSets.get(i));

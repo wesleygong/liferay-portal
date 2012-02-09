@@ -415,8 +415,7 @@ public class AssetEntryFinderImpl
 		qPos.add(entryQuery.getNotAnyTagIds());
 
 		setDates(
-			qPos, entryQuery.getPublishDate(),
-			entryQuery.getExpirationDate());
+			qPos, entryQuery.getPublishDate(), entryQuery.getExpirationDate());
 
 		qPos.add(entryQuery.getGroupIds());
 		qPos.add(entryQuery.getClassNameIds());
@@ -612,8 +611,8 @@ public class AssetEntryFinderImpl
 		}
 
 		if (expirationDate != null) {
-			Timestamp expirationDate_TS =
-				CalendarUtil.getTimestamp(expirationDate);
+			Timestamp expirationDate_TS = CalendarUtil.getTimestamp(
+				expirationDate);
 
 			qPos.add(expirationDate_TS);
 		}

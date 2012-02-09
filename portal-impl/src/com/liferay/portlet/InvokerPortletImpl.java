@@ -281,7 +281,7 @@ public class InvokerPortletImpl implements InvokerPortlet {
 			boolean strutsBridgePortlet)
 		throws PortletException {
 
- 		// From prepare
+		// From prepare
 
 		_portletModel = portletModel;
 		_portlet = portlet;
@@ -438,8 +438,8 @@ public class InvokerPortletImpl implements InvokerPortlet {
 
 			Layout layout = (Layout)renderRequest.getAttribute(WebKeys.LAYOUT);
 
-			Map<String, InvokerPortletResponse> sessionResponses =
-				getResponses(portletSession);
+			Map<String, InvokerPortletResponse> sessionResponses = getResponses(
+				portletSession);
 
 			String sessionResponseId = encodeResponseKey(
 				layout.getPlid(), _portletId,

@@ -616,8 +616,8 @@ public class OrganizationLocalServiceImpl
 			return new ArrayList<Organization>();
 		}
 
-		Organization organization =
-			organizationPersistence.findByPrimaryKey(organizationId);
+		Organization organization = organizationPersistence.findByPrimaryKey(
+			organizationId);
 
 		return getParentOrganizations(organization, true);
 	}
@@ -850,8 +850,8 @@ public class OrganizationLocalServiceImpl
 
 		List<Organization> organizationsTree = new ArrayList<Organization>();
 
-		Organization organization =
-			organizationPersistence.findByPrimaryKey(organizationId);
+		Organization organization = organizationPersistence.findByPrimaryKey(
+			organizationId);
 
 		if (!includeSpecifiedOrganization) {
 			organizationsTree.add(organization);
@@ -993,7 +993,9 @@ public class OrganizationLocalServiceImpl
 			andOperator = true;
 		}
 
-		params.put("keywords", keywords);
+		if (params != null) {
+			params.put("keywords", keywords);
+		}
 
 		return search(
 			companyId, parentOrganizationId, name, type, street, city, zip,
@@ -1040,8 +1042,7 @@ public class OrganizationLocalServiceImpl
 	public List<Organization> search(
 			long companyId, long parentOrganizationId, String keywords,
 			String type, Long regionId, Long countryId,
-			LinkedHashMap<String, Object> params,
-			int start, int end)
+			LinkedHashMap<String, Object> params, int start, int end)
 		throws SystemException {
 
 		return search(
@@ -1093,8 +1094,8 @@ public class OrganizationLocalServiceImpl
 	public List<Organization> search(
 			long companyId, long parentOrganizationId, String keywords,
 			String type, Long regionId, Long countryId,
-			LinkedHashMap<String, Object> params,
-			int start, int end, OrderByComparator obc)
+			LinkedHashMap<String, Object> params, int start, int end,
+			OrderByComparator obc)
 		throws SystemException {
 
 		String parentOrganizationIdComparator = StringPool.EQUAL;
@@ -1107,8 +1108,7 @@ public class OrganizationLocalServiceImpl
 
 		return organizationFinder.findByKeywords(
 			companyId, parentOrganizationId, parentOrganizationIdComparator,
-			keywords, type, regionId, countryId, params, start, end,
-			obc);
+			keywords, type, regionId, countryId, params, start, end, obc);
 	}
 
 	/**
@@ -1157,8 +1157,8 @@ public class OrganizationLocalServiceImpl
 	 */
 	public List<Organization> search(
 			long companyId, long parentOrganizationId, String name, String type,
-			String street, String city, String zip,
-			Long regionId, Long countryId,
+			String street, String city, String zip, Long regionId,
+			Long countryId,
 			LinkedHashMap<String, Object> params, boolean andOperator,
 			int start, int end)
 		throws SystemException {
@@ -1218,8 +1218,8 @@ public class OrganizationLocalServiceImpl
 	 */
 	public List<Organization> search(
 			long companyId, long parentOrganizationId, String name, String type,
-			String street, String city, String zip,
-			Long regionId, Long countryId, LinkedHashMap<String, Object> params,
+			String street, String city, String zip, Long regionId,
+			Long countryId, LinkedHashMap<String, Object> params,
 			boolean andOperator, int start, int end, OrderByComparator obc)
 		throws SystemException {
 
@@ -1316,10 +1316,12 @@ public class OrganizationLocalServiceImpl
 			searchContext.setCompanyId(companyId);
 			searchContext.setEnd(end);
 
-			String keywords = (String)params.remove("keywords");
+			if (params != null) {
+				String keywords = (String)params.remove("keywords");
 
-			if (Validator.isNotNull(keywords)) {
-				searchContext.setKeywords(keywords);
+				if (Validator.isNotNull(keywords)) {
+					searchContext.setKeywords(keywords);
+				}
 			}
 
 			QueryConfig queryConfig = new QueryConfig();
@@ -1414,8 +1416,8 @@ public class OrganizationLocalServiceImpl
 	 */
 	public int searchCount(
 			long companyId, long parentOrganizationId, String name, String type,
-			String street, String city, String zip,
-			Long regionId, Long countryId, LinkedHashMap<String, Object> params,
+			String street, String city, String zip, Long regionId,
+			Long countryId, LinkedHashMap<String, Object> params,
 			boolean andOperator)
 		throws SystemException {
 

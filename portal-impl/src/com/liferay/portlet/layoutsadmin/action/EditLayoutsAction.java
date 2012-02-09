@@ -597,9 +597,8 @@ public class EditLayoutsAction extends PortletAction {
 		}
 
 		if (Validator.isNull(colorSchemeId)) {
-			ColorScheme colorScheme =
-				ThemeLocalServiceUtil.getColorScheme(
-					companyId, themeId, colorSchemeId, wapTheme);
+			ColorScheme colorScheme = ThemeLocalServiceUtil.getColorScheme(
+				companyId, themeId, colorSchemeId, wapTheme);
 
 			colorSchemeId = colorScheme.getColorSchemeId();
 		}
@@ -667,8 +666,7 @@ public class EditLayoutsAction extends PortletAction {
 
 			if (!value.equals(themeSetting.getValue())) {
 				typeSettingsProperties.setProperty(
-					ThemeSettingImpl.namespaceProperty(device, key),
-					value);
+					ThemeSettingImpl.namespaceProperty(device, key), value);
 			}
 		}
 
@@ -696,8 +694,7 @@ public class EditLayoutsAction extends PortletAction {
 			actionRequest, "layoutBranchId");
 
 		StagingUtil.setRecentLayoutBranchId(
-			request, layoutSetBranchId, themeDisplay.getPlid(),
-			layoutBranchId);
+			request, layoutSetBranchId, themeDisplay.getPlid(), layoutBranchId);
 	}
 
 	protected void selectLayoutSetBranch(ActionRequest actionRequest)
@@ -792,16 +789,16 @@ public class EditLayoutsAction extends PortletAction {
 		long layoutId = ParamUtil.getLong(actionRequest, "layoutId");
 		long parentLayoutId = ParamUtil.getLong(
 			uploadPortletRequest, "parentLayoutId");
-		Map<Locale, String> nameMap =
-			LocalizationUtil.getLocalizationMap(actionRequest, "name");
-		Map<Locale, String> titleMap =
-			LocalizationUtil.getLocalizationMap(actionRequest, "title");
+		Map<Locale, String> nameMap = LocalizationUtil.getLocalizationMap(
+			actionRequest, "name");
+		Map<Locale, String> titleMap = LocalizationUtil.getLocalizationMap(
+			actionRequest, "title");
 		Map<Locale, String> descriptionMap =
 			LocalizationUtil.getLocalizationMap(actionRequest, "description");
-		Map<Locale, String> keywordsMap =
-			LocalizationUtil.getLocalizationMap(actionRequest, "keywords");
-		Map<Locale, String> robotsMap =
-			LocalizationUtil.getLocalizationMap(actionRequest, "robots");
+		Map<Locale, String> keywordsMap = LocalizationUtil.getLocalizationMap(
+			actionRequest, "keywords");
+		Map<Locale, String> robotsMap = LocalizationUtil.getLocalizationMap(
+			actionRequest, "robots");
 		String type = ParamUtil.getString(uploadPortletRequest, "type");
 		boolean hidden = ParamUtil.getBoolean(uploadPortletRequest, "hidden");
 		String friendlyURL = ParamUtil.getString(
@@ -838,8 +835,8 @@ public class EditLayoutsAction extends PortletAction {
 					groupId, privateLayout, parentLayoutId);
 
 				layout = LayoutServiceUtil.addLayout(
-					groupId, privateLayout, parentLayoutId, nameMap,
-					titleMap, descriptionMap, keywordsMap, robotsMap,
+					groupId, privateLayout, parentLayoutId, nameMap, titleMap,
+					descriptionMap, keywordsMap, robotsMap,
 					parentLayout.getType(), hidden, friendlyURL,
 					serviceContext);
 
@@ -864,16 +861,16 @@ public class EditLayoutsAction extends PortletAction {
 					"layoutPrototypeUuid", layoutPrototype.getUuid());
 
 				layout = LayoutServiceUtil.addLayout(
-					groupId, privateLayout, parentLayoutId, nameMap,
-					titleMap, descriptionMap, keywordsMap, robotsMap,
+					groupId, privateLayout, parentLayoutId, nameMap, titleMap,
+					descriptionMap, keywordsMap, robotsMap,
 					LayoutConstants.TYPE_PORTLET, hidden, friendlyURL,
 					serviceContext);
 			}
 			else {
 				layout = LayoutServiceUtil.addLayout(
-					groupId, privateLayout, parentLayoutId, nameMap,
-					titleMap, descriptionMap, keywordsMap, robotsMap, type,
-					hidden, friendlyURL, serviceContext);
+					groupId, privateLayout, parentLayoutId, nameMap, titleMap,
+					descriptionMap, keywordsMap, robotsMap, type, hidden,
+					friendlyURL, serviceContext);
 			}
 
 			layoutTypeSettingsProperties = layout.getTypeSettingsProperties();
@@ -889,9 +886,9 @@ public class EditLayoutsAction extends PortletAction {
 
 			layout = LayoutServiceUtil.updateLayout(
 				groupId, privateLayout, layoutId, layout.getParentLayoutId(),
-				nameMap, titleMap, descriptionMap, keywordsMap, robotsMap,
-				type, hidden, friendlyURL, Boolean.valueOf(iconImage),
-				iconBytes, serviceContext);
+				nameMap, titleMap, descriptionMap, keywordsMap, robotsMap, type,
+				hidden, friendlyURL, Boolean.valueOf(iconImage), iconBytes,
+				serviceContext);
 
 			layoutTypeSettingsProperties = layout.getTypeSettingsProperties();
 
@@ -1004,8 +1001,8 @@ public class EditLayoutsAction extends PortletAction {
 						serviceContext.getUserId(),
 						layoutRevision.getLayoutSetBranchId(),
 						layoutRevision.getLayoutBranchId(),
-						enableLayoutRevision.getLayoutRevisionId(),
-						false, layoutRevision.getPlid(),
+						enableLayoutRevision.getLayoutRevisionId(), false,
+						layoutRevision.getPlid(),
 						lastLayoutRevision.getLayoutRevisionId(),
 						lastLayoutRevision.getPrivateLayout(),
 						lastLayoutRevision.getName(),

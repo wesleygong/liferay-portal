@@ -94,8 +94,7 @@ public class DLUtil {
 		portletURL.setParameter(
 			"struts_action", "/document_library/view_file_entry");
 		portletURL.setParameter(
-			"fileEntryId",
-			String.valueOf(dlFileShortcut.getToFileEntryId()));
+			"fileEntryId", String.valueOf(dlFileShortcut.getToFileEntryId()));
 
 		PortalUtil.addPortletBreadcrumbEntry(
 			request, dlFileShortcut.getToTitle(), portletURL.toString());
@@ -560,6 +559,21 @@ public class DLUtil {
 		sb.append("px;");
 
 		return sb.toString();
+	}
+
+	public static String getTitleWithExtension(FileEntry fileEntry) {
+		String title = fileEntry.getTitle();
+		String extension = fileEntry.getExtension();
+
+		if (Validator.isNotNull(extension)) {
+			String periodAndExtension = StringPool.PERIOD + extension;
+
+			if (!title.endsWith(periodAndExtension)) {
+				title += periodAndExtension;
+			}
+		}
+
+		return title;
 	}
 
 	public static String getWebDavURL(

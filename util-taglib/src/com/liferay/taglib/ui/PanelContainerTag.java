@@ -165,7 +165,7 @@ public class PanelContainerTag extends BaseBodyTagSupport implements BodyTag {
 		"/html/taglib/ui/panel_container/start.jsp";
 
 	private boolean _accordion;
- 	private String _cssClass = StringPool.BLANK;
+	private String _cssClass = StringPool.BLANK;
 	private String _endPage;
 	private Boolean _extended;
 	private String _id;

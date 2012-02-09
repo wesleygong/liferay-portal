@@ -86,18 +86,21 @@ public abstract class CMISRepositoryHandler extends BaseRepositoryImpl {
 		_baseCmisRepository.checkInFileEntry(fileEntryId, lockUuid);
 	}
 
-	public FileEntry checkOutFileEntry(long fileEntryId)
-		throws PortalException, SystemException {
-
-		return _baseCmisRepository.checkOutFileEntry(fileEntryId);
-	}
-
 	public FileEntry checkOutFileEntry(
-			long fileEntryId, String owner, long expirationTime)
+			long fileEntryId, ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		return _baseCmisRepository.checkOutFileEntry(
-			fileEntryId, owner, expirationTime);
+			fileEntryId, serviceContext);
+	}
+
+	public FileEntry checkOutFileEntry(
+			long fileEntryId, String owner, long expirationTime,
+			ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		return _baseCmisRepository.checkOutFileEntry(
+			fileEntryId, owner, expirationTime, serviceContext);
 	}
 
 	public FileEntry copyFileEntry(
@@ -272,8 +275,8 @@ public abstract class CMISRepositoryHandler extends BaseRepositoryImpl {
 		}
 
 		try {
-			String authType =
-				companyLocalService.getCompany(getCompanyId()).getAuthType();
+			String authType = companyLocalService.getCompany(
+				getCompanyId()).getAuthType();
 
 			if (!authType.equals(CompanyConstants.AUTH_TYPE_ID)) {
 				User user = userLocalService.getUser(GetterUtil.getLong(login));

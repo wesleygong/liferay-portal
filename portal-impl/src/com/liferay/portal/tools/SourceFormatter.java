@@ -233,7 +233,7 @@ public class SourceFormatter {
 
 			if ((includeFileName.endsWith("jsp") ||
 				 includeFileName.endsWith("jspf")) &&
-				!includeFileNames.contains(includeFileName) && 
+				!includeFileNames.contains(includeFileName) &&
 				!includeFileName.contains("html/portlet/init.jsp")) {
 
 				includeFileNames.add(includeFileName);
@@ -1280,7 +1280,7 @@ public class SourceFormatter {
 
 			String trimmedLine = StringUtil.trimLeading(line);
 
-			String excluded = 
+			String excluded =
 				_javaTermAlphabetizeExclusionsProperties.getProperty(
 					StringUtil.replace(
 						fileName, "\\", "/") + StringPool.AT + lineCount);
@@ -1435,7 +1435,7 @@ public class SourceFormatter {
 						if (line.length() > (x + 1)) {
 							char nextChar = line.charAt(x + 1);
 
-							if ((nextChar != CharPool.SPACE) && 
+							if ((nextChar != CharPool.SPACE) &&
 								(nextChar != CharPool.APOSTROPHE)) {
 
 								line = StringUtil.insert(

@@ -272,7 +272,8 @@ public class CMISRepository extends BaseCmisRepository {
 			fileEntryId, false, StringPool.BLANK, new ServiceContext());
 	}
 
-	public FileEntry checkOutFileEntry(long fileEntryId)
+	public FileEntry checkOutFileEntry(
+			long fileEntryId, ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		try {
@@ -301,7 +302,8 @@ public class CMISRepository extends BaseCmisRepository {
 	}
 
 	public FileEntry checkOutFileEntry(
-		long fileEntryId, String owner, long expirationTime) {
+		long fileEntryId, String owner, long expirationTime,
+		ServiceContext serviceContext) {
 
 		throw new UnsupportedOperationException();
 	}
@@ -707,8 +709,8 @@ public class CMISRepository extends BaseCmisRepository {
 			return folders.size() + documentIds.size();
 		}
 		else {
-			List<Object> foldersAndFileEntries =
-				getFoldersAndFileEntries(folderId);
+			List<Object> foldersAndFileEntries = getFoldersAndFileEntries(
+				folderId);
 
 			return foldersAndFileEntries.size();
 		}
@@ -1191,8 +1193,9 @@ public class CMISRepository extends BaseCmisRepository {
 		Object[] ids = getRepositoryEntryIds(version.getId());
 
 		long fileVersionId = (Long)ids[0];
+		String uuid = (String)ids[1];
 
-		return new CMISFileVersion(this, fileVersionId, version);
+		return new CMISFileVersion(this, uuid, fileVersionId, version);
 	}
 
 	public Folder toFolder(
@@ -2128,8 +2131,8 @@ public class CMISRepository extends BaseCmisRepository {
 	protected String toFolderId(Session session, long folderId)
 		throws PortalException, SystemException {
 
-		RepositoryEntry repositoryEntry =
-			RepositoryEntryUtil.fetchByPrimaryKey(folderId);
+		RepositoryEntry repositoryEntry = RepositoryEntryUtil.fetchByPrimaryKey(
+			folderId);
 
 		if (repositoryEntry != null) {
 			return repositoryEntry.getMappedId();
