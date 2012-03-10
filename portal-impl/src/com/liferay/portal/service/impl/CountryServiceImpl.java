@@ -82,6 +82,12 @@ public class CountryServiceImpl extends CountryServiceBaseImpl {
 		return countryPersistence.fetchByPrimaryKey(countryId);
 	}
 
+	public Country fetchCountryByA3(String a3)
+		throws PortalException, SystemException {
+
+		return countryPersistence.fetchByA3(a3);
+	}
+
 	public List<Country> getCountries() throws SystemException {
 		return countryPersistence.findAll();
 	}
