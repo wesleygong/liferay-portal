@@ -18,10 +18,10 @@ import com.liferay.counter.service.CounterLocalServiceUtil;
 import com.liferay.portal.LARFileException;
 import com.liferay.portal.LARTypeException;
 import com.liferay.portal.LayoutImportException;
+import com.liferay.portal.LayoutPrototypeException;
 import com.liferay.portal.NoSuchLayoutException;
 import com.liferay.portal.NoSuchLayoutPrototypeException;
 import com.liferay.portal.NoSuchLayoutSetPrototypeException;
-import com.liferay.portal.LayoutPrototypeException;
 import com.liferay.portal.kernel.cluster.ClusterExecutorUtil;
 import com.liferay.portal.kernel.cluster.ClusterRequest;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -1473,12 +1473,12 @@ public class LayoutImporter {
 	protected void validateLayoutPrototypes(
 			Element layoutsElement, List<Element> layoutElements)
 		throws Exception {
-	
+
 		List<Tuple> missingLayoutPrototypes = new ArrayList<Tuple>();
-	
+
 		String layoutSetPrototypeUuid = layoutsElement.attributeValue(
 			"layout-set-prototype-uuid");
-	
+
 		if (Validator.isNotNull(layoutSetPrototypeUuid)) {
 			try {
 				LayoutSetPrototypeLocalServiceUtil.getLayoutSetPrototypeByUuid(
@@ -1487,18 +1487,18 @@ public class LayoutImporter {
 			catch (NoSuchLayoutSetPrototypeException nlspe) {
 				String layoutSetPrototypeName = layoutsElement.attributeValue(
 					"layout-set-prototype-name");
-	
+
 				missingLayoutPrototypes.add(
 					new Tuple(
 						LayoutSetPrototype.class.getName(),
 						layoutSetPrototypeUuid, layoutSetPrototypeName));
 			}
 		}
-	
+
 		for (Element layoutElement : layoutElements) {
 			String layoutPrototypeUuid = GetterUtil.getString(
 				layoutElement.attributeValue("layout-prototype-uuid"));
-	
+
 			if (Validator.isNotNull(layoutPrototypeUuid)) {
 				try {
 					LayoutPrototypeLocalServiceUtil.getLayoutPrototypeByUuid(
@@ -1507,7 +1507,7 @@ public class LayoutImporter {
 				catch (NoSuchLayoutPrototypeException nslpe) {
 					String layoutPrototypeName = GetterUtil.getString(
 						layoutElement.attributeValue("layout-prototype-name"));
-	
+
 					missingLayoutPrototypes.add(
 						new Tuple(
 							LayoutPrototype.class.getName(),
@@ -1515,7 +1515,7 @@ public class LayoutImporter {
 				}
 			}
 		}
-	
+
 		if (!missingLayoutPrototypes.isEmpty()) {
 			throw new LayoutPrototypeException(missingLayoutPrototypes);
 		}

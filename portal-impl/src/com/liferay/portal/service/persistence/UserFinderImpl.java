@@ -238,7 +238,7 @@ public class UserFinderImpl
 				emailAddresses);
 
 			if (status == WorkflowConstants.STATUS_ANY) {
-				sql = StringUtil.replace(sql, STATUS_SQL, StringPool.BLANK);
+				sql = StringUtil.replace(sql, _STATUS_SQL, StringPool.BLANK);
 			}
 
 			sql = StringUtil.replace(sql, "[$JOIN$]", getJoin(params));
@@ -441,7 +441,7 @@ public class UserFinderImpl
 				emailAddresses);
 
 			if (status == WorkflowConstants.STATUS_ANY) {
-				sql = StringUtil.replace(sql, STATUS_SQL, StringPool.BLANK);
+				sql = StringUtil.replace(sql, _STATUS_SQL, StringPool.BLANK);
 			}
 
 			sql = StringUtil.replace(sql, "[$JOIN$]", getJoin(params));
@@ -806,6 +806,6 @@ public class UserFinderImpl
 		}
 	}
 
-	protected static final String STATUS_SQL = "AND (User_.status = ?)";
+	private static final String _STATUS_SQL = "AND (User_.status = ?)";
 
 }

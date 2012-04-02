@@ -370,6 +370,7 @@ portletDisplay.setModeEditGuest(modeEditGuest);
 portletDisplay.setModeHelp(modeHelp);
 portletDisplay.setModePreview(modePreview);
 portletDisplay.setModePrint(modePrint);
+portletDisplay.setModeView(portletMode.equals(PortletMode.VIEW));
 
 portletDisplay.setShowCloseIcon(showCloseIcon);
 portletDisplay.setShowConfigurationIcon(showConfigurationIcon);
