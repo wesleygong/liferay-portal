@@ -89,19 +89,15 @@ public class RSSTag extends IncludeTag {
 		if (_resourceURL != null) {
 			_resourceURL.setCacheability(ResourceURL.FULL);
 
-			if ((_delta > 0) && (_delta != SearchContainer.DEFAULT_DELTA)) {
+			if ((_delta > 0)) {
 				_resourceURL.setParameter("max", String.valueOf(_delta));
 			}
 
-			if (Validator.isNotNull(_displayStyle) &&
-				!_displayStyle.equals(RSSUtil.DISPLAY_STYLE_ABSTRACT)) {
-
+			if (Validator.isNotNull(_displayStyle)) {
 				_resourceURL.setParameter("displayStyle", _displayStyle);
 			}
 
-			if (Validator.isNotNull(_feedType) &&
-				!_feedType.equals(RSSUtil.FEED_TYPE_DEFAULT)) {
-
+			if (Validator.isNotNull(_feedType)) {
 				_resourceURL.setParameter(
 					"type", RSSUtil.getFeedTypeFormat(_feedType));
 				_resourceURL.setParameter(
@@ -116,20 +112,16 @@ public class RSSTag extends IncludeTag {
 			return _resourceURL.toString();
 		}
 		else if (Validator.isNotNull(_url)) {
-			if ((_delta > 0) && (_delta != SearchContainer.DEFAULT_DELTA)) {
+			if ((_delta > 0)) {
 				_url = HttpUtil.addParameter(_url, "max", _delta);
 			}
 
-			if (Validator.isNotNull(_displayStyle) &&
-				!_displayStyle.equals(RSSUtil.DISPLAY_STYLE_ABSTRACT)) {
-
+			if (Validator.isNotNull(_displayStyle)) {
 				_url = HttpUtil.addParameter(
 					_url, "displayStyle", _displayStyle);
 			}
 
-			if (Validator.isNotNull(_feedType) &&
-				!_feedType.equals(RSSUtil.FEED_TYPE_DEFAULT)) {
-
+			if (Validator.isNotNull(_feedType)) {
 				_url = HttpUtil.addParameter(
 					_url, "type", RSSUtil.getFeedTypeFormat(_feedType));
 				_url = HttpUtil.addParameter(
