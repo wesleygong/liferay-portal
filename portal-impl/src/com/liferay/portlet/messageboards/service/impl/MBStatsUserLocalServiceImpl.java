@@ -106,7 +106,7 @@ public class MBStatsUserLocalServiceImpl
 		}
 	}
 
-	public Date getLasPostDateByUserId(long groupId, long userId)
+	public Date getLastPostDateByUserId(long groupId, long userId)
 		throws SystemException {
 
 		DynamicQuery dynamicQuery = DynamicQueryFactoryUtil.forClass(
@@ -135,7 +135,7 @@ public class MBStatsUserLocalServiceImpl
 
 		List<Date> results = mbStatsUserLocalService.dynamicQuery(dynamicQuery);
 
-		if (results.isEmpty()) {
+		if (results.contains(null)) {
 			return null;
 		}
 
@@ -157,7 +157,7 @@ public class MBStatsUserLocalServiceImpl
 
 		List<Long> results = mbStatsUserLocalService.dynamicQuery(dynamicQuery);
 
-		if (results.isEmpty()) {
+		if (results.contains(null)) {
 			return 0;
 		}
 
@@ -179,7 +179,7 @@ public class MBStatsUserLocalServiceImpl
 
 		List<Long> results = mbStatsUserLocalService.dynamicQuery(dynamicQuery);
 
-		if (results.isEmpty()) {
+		if (results.contains(null)) {
 			return 0;
 		}
 
@@ -234,7 +234,7 @@ public class MBStatsUserLocalServiceImpl
 		throws SystemException {
 
 		return updateStatsUser(
-			groupId, userId, getLasPostDateByUserId(groupId, userId));
+			groupId, userId, getLastPostDateByUserId(groupId, userId));
 	}
 
 	public MBStatsUser updateStatsUser(
