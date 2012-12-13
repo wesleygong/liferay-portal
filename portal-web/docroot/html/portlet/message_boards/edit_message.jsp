@@ -95,6 +95,7 @@ if (Validator.isNull(redirect)) {
 		message = new MBMessageImpl();
 
 		message.setMessageId(temp.getMessageId());
+		message.setGroupId(temp.getGroupId());
 		message.setCompanyId(temp.getCompanyId());
 		message.setUserId(temp.getUserId());
 		message.setUserName(temp.getUserName());
@@ -111,6 +112,7 @@ if (Validator.isNull(redirect)) {
 		message = new MBMessageImpl();
 
 		message.setMessageId(messageId);
+		message.setGroupId(user.getGroupId());
 		message.setCompanyId(user.getCompanyId());
 		message.setUserId(user.getUserId());
 		message.setUserName(user.getFullName());
