@@ -87,42 +87,14 @@ if (Validator.isNull(redirect)) {
 	<liferay-ui:message key="preview" />:
 
 	<%
-	MBMessage temp = null;
-
-	if (message != null) {
-		temp = message;
-
+	if (message == null) {
 		message = new MBMessageImpl();
-
-		message.setMessageId(temp.getMessageId());
-		message.setCompanyId(temp.getCompanyId());
-		message.setUserId(temp.getUserId());
-		message.setUserName(temp.getUserName());
-		message.setCreateDate(temp.getCreateDate());
-		message.setModifiedDate(temp.getModifiedDate());
-		message.setThreadId(temp.getThreadId());
-		message.setSubject(subject);
-		message.setBody(body);
-		message.setFormat(messageFormat);
-		message.setAttachments(temp.isAttachments());
-		message.setAnonymous(temp.isAnonymous());
 	}
-	else {
-		message = new MBMessageImpl();
 
-		message.setMessageId(messageId);
-		message.setCompanyId(user.getCompanyId());
-		message.setUserId(user.getUserId());
-		message.setUserName(user.getFullName());
-		message.setCreateDate(new Date());
-		message.setModifiedDate(new Date());
-		message.setThreadId(threadId);
-		message.setSubject(subject);
-		message.setBody(body);
-		message.setFormat(messageFormat);
-		message.setAttachments(attachments);
-		message.setAnonymous(BeanParamUtil.getBoolean(message, request, "anonymous"));
-	}
+	message.setModifiedDate(new Date());
+	message.setSubject(subject);
+	message.setBody(body);
+	message.setFormat(messageFormat);
 
 	boolean editable = false;
 
@@ -146,8 +118,6 @@ if (Validator.isNull(redirect)) {
 
 	<%
 	request.removeAttribute("edit_message.jsp-assetTagNames");
-
-	message = temp;
 	%>
 
 	<br />
