@@ -182,7 +182,7 @@ MBThreadFlag threadFlag = MBThreadFlagLocalServiceUtil.getThreadFlag(themeDispla
 				/>
 			</c:if>
 
-			<c:if test="<%= MBMessagePermission.contains(permissionChecker, message, ActionKeys.SUBSCRIBE) %>">
+			<c:if test="<%= MBThreadPermission.contains(permissionChecker, thread, ActionKeys.SUBSCRIBE) %>">
 				<c:choose>
 					<c:when test="<%= SubscriptionLocalServiceUtil.isSubscribed(user.getCompanyId(), user.getUserId(), MBThread.class.getName(), message.getThreadId()) %>">
 						<portlet:actionURL var="unsubscribeURL">
@@ -261,7 +261,7 @@ MBThreadFlag threadFlag = MBThreadFlagLocalServiceUtil.getThreadFlag(themeDispla
 				/>
 			</c:if>
 
-			<c:if test="<%= MBMessagePermission.contains(permissionChecker, message, ActionKeys.DELETE) && !thread.isLocked() %>">
+			<c:if test="<%= MBThreadPermission.contains(permissionChecker, thread, ActionKeys.DELETE) && !thread.isLocked() %>">
 				<portlet:renderURL var="parentCategoryURL">
 					<portlet:param name="struts_action" value="/message_boards/view" />
 					<portlet:param name="mbCategoryId" value="<%= (category != null) ? String.valueOf(category.getCategoryId()) : String.valueOf(MBCategoryConstants.DEFAULT_PARENT_CATEGORY_ID) %>" />

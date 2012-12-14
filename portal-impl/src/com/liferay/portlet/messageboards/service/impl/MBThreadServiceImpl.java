@@ -29,7 +29,7 @@ import com.liferay.portlet.messageboards.model.MBThread;
 import com.liferay.portlet.messageboards.model.impl.MBThreadModelImpl;
 import com.liferay.portlet.messageboards.service.base.MBThreadServiceBaseImpl;
 import com.liferay.portlet.messageboards.service.permission.MBCategoryPermission;
-import com.liferay.portlet.messageboards.service.permission.MBMessagePermission;
+import com.liferay.portlet.messageboards.service.permission.MBThreadPermission;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,14 +51,8 @@ public class MBThreadServiceImpl extends MBThreadServiceBaseImpl {
 			throw new LockedThreadException();
 		}
 
-		List<MBMessage> messages = mbMessagePersistence.findByThreadId(
-			threadId);
-
-		for (MBMessage message : messages) {
-			MBMessagePermission.check(
-				getPermissionChecker(), message.getMessageId(),
-				ActionKeys.DELETE);
-		}
+		MBThreadPermission.check(
+			getPermissionChecker(), threadId, ActionKeys.DELETE);
 
 		mbThreadLocalService.deleteThread(threadId);
 	}
@@ -328,14 +322,8 @@ public class MBThreadServiceImpl extends MBThreadServiceBaseImpl {
 			throw new LockedThreadException();
 		}
 
-		List<MBMessage> messages = mbMessagePersistence.findByThreadId(
-			threadId);
-
-		for (MBMessage message : messages) {
-			MBMessagePermission.check(
-				getPermissionChecker(), message.getMessageId(),
-				ActionKeys.DELETE);
-		}
+		MBThreadPermission.check(
+			getPermissionChecker(), threadId, ActionKeys.DELETE);
 
 		return mbThreadLocalService.moveThreadToTrash(getUserId(), threadId);
 	}
@@ -343,14 +331,8 @@ public class MBThreadServiceImpl extends MBThreadServiceBaseImpl {
 	public void restoreThreadFromTrash(long threadId)
 		throws PortalException, SystemException {
 
-		List<MBMessage> messages = mbMessagePersistence.findByThreadId(
-			threadId);
-
-		for (MBMessage message : messages) {
-			MBMessagePermission.check(
-				getPermissionChecker(), message.getMessageId(),
-				ActionKeys.DELETE);
-		}
+		MBThreadPermission.check(
+			getPermissionChecker(), threadId, ActionKeys.DELETE);
 
 		mbThreadLocalService.restoreThreadFromTrash(getUserId(), threadId);
 	}
