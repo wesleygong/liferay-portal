@@ -41,10 +41,12 @@ import com.liferay.portlet.messageboards.model.MBMessageConstants;
 import com.liferay.portlet.messageboards.model.MBMessageDisplay;
 import com.liferay.portlet.messageboards.model.MBThread;
 import com.liferay.portlet.messageboards.model.MBThreadConstants;
+import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.base.MBMessageServiceBaseImpl;
 import com.liferay.portlet.messageboards.service.permission.MBCategoryPermission;
 import com.liferay.portlet.messageboards.service.permission.MBDiscussionPermission;
 import com.liferay.portlet.messageboards.service.permission.MBMessagePermission;
+import com.liferay.portlet.messageboards.service.permission.MBThreadPermission;
 import com.liferay.portlet.messageboards.util.MBUtil;
 import com.liferay.portlet.messageboards.util.comparator.MessageCreateDateComparator;
 import com.liferay.util.RSSUtil;
@@ -232,6 +234,14 @@ public class MBMessageServiceImpl extends MBMessageServiceBaseImpl {
 		MBMessagePermission.check(
 			getPermissionChecker(), messageId, ActionKeys.DELETE);
 
+		MBMessage message = MBMessageLocalServiceUtil.fetchMBMessage(messageId);
+
+		if (messageId == message.getRootMessageId()) {
+			MBThreadPermission.check(
+				getPermissionChecker(), message.getThreadId(),
+				ActionKeys.DELETE);
+		}
+
 		mbMessageLocalService.deleteMessage(messageId);
 	}
 
@@ -240,6 +250,14 @@ public class MBMessageServiceImpl extends MBMessageServiceBaseImpl {
 
 		MBMessagePermission.check(
 			getPermissionChecker(), messageId, ActionKeys.DELETE);
+
+		MBMessage message = MBMessageLocalServiceUtil.fetchMBMessage(messageId);
+
+		if (messageId == message.getRootMessageId()) {
+			MBThreadPermission.check(
+				getPermissionChecker(), message.getThreadId(),
+				ActionKeys.DELETE);
+		}
 
 		mbMessageLocalService.deleteMessageAttachments(messageId);
 	}

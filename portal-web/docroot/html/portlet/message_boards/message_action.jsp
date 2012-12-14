@@ -47,11 +47,11 @@ MBThread thread = message.getThread();
 		/>
 	</c:if>
 
-	<c:if test="<%= MBMessagePermission.contains(permissionChecker, message, ActionKeys.PERMISSIONS) && !thread.isLocked() %>">
+	<c:if test="<%= MBThreadPermission.contains(permissionChecker, thread, ActionKeys.PERMISSIONS) && !thread.isLocked() %>">
 		<liferay-security:permissionsURL
-			modelResource="<%= MBMessage.class.getName() %>"
+			modelResource="<%= MBThread.class.getName() %>"
 			modelResourceDescription="<%= message.getSubject() %>"
-			resourcePrimKey="<%= String.valueOf(message.getMessageId()) %>"
+			resourcePrimKey="<%= String.valueOf(thread.getThreadId()) %>"
 			var="permissionsURL"
 		/>
 
@@ -77,7 +77,7 @@ MBThread thread = message.getThread();
 			/>
 		</c:if>
 
-		<c:if test="<%= MBMessagePermission.contains(permissionChecker, message, ActionKeys.SUBSCRIBE) %>">
+		<c:if test="<%= MBThreadPermission.contains(permissionChecker, thread, ActionKeys.SUBSCRIBE) %>">
 			<c:choose>
 				<c:when test="<%= (threadSubscriptionClassPKs != null) && threadSubscriptionClassPKs.contains(message.getThreadId()) %>">
 					<portlet:actionURL var="unsubscribeURL">
@@ -158,7 +158,7 @@ MBThread thread = message.getThread();
 		/>
 	</c:if>
 
-	<c:if test="<%= MBMessagePermission.contains(permissionChecker, message, ActionKeys.DELETE) && !thread.isLocked() %>">
+	<c:if test="<%= MBThreadPermission.contains(permissionChecker, thread, ActionKeys.DELETE) && !thread.isLocked() %>">
 		<portlet:actionURL var="deleteURL">
 			<portlet:param name="struts_action" value="/message_boards/delete_thread" />
 			<portlet:param name="<%= Constants.CMD %>" value="<%= TrashUtil.isTrashEnabled(themeDisplay.getScopeGroupId()) ? Constants.MOVE_TO_TRASH : Constants.DELETE %>" />

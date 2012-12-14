@@ -27,7 +27,6 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.security.permission.InlineSQLHelperUtil;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.util.PortalUtil;
-import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBThread;
 import com.liferay.portlet.messageboards.model.impl.MBThreadImpl;
 import com.liferay.util.dao.orm.CustomSQLUtil;
@@ -402,8 +401,7 @@ public class MBThreadFinderImpl
 			String sql = CustomSQLUtil.get(COUNT_BY_G_C);
 
 			sql = InlineSQLHelperUtil.replacePermissionCheck(
-				sql, MBMessage.class.getName(), "MBThread.rootMessageId",
-				groupId);
+				sql, MBThread.class.getName(), "MBThread.threadId", groupId);
 
 			SQLQuery q = session.createSQLQuery(sql);
 
@@ -466,8 +464,7 @@ public class MBThreadFinderImpl
 			String sql = CustomSQLUtil.get(FIND_BY_G_C);
 
 			sql = InlineSQLHelperUtil.replacePermissionCheck(
-				sql, MBMessage.class.getName(), "MBThread.rootMessageId",
-				groupId);
+				sql, MBThread.class.getName(), "MBThread.threadId", groupId);
 
 			SQLQuery q = session.createSQLQuery(sql);
 
@@ -844,8 +841,7 @@ public class MBThreadFinderImpl
 			sql = updateSQL(sql, queryDefinition);
 
 			sql = InlineSQLHelperUtil.replacePermissionCheck(
-				sql, MBMessage.class.getName(), "MBThread.rootMessageId",
-				groupId);
+				sql, MBThread.class.getName(), "MBThread.threadId", groupId);
 
 			SQLQuery q = session.createSQLQuery(sql);
 
@@ -955,7 +951,7 @@ public class MBThreadFinderImpl
 
 			if (inlineSQLHelper) {
 				sql = InlineSQLHelperUtil.replacePermissionCheck(
-					sql, MBMessage.class.getName(), "MBThread.rootMessageId",
+					sql, MBThread.class.getName(), "MBThread.threadId",
 					groupId);
 			}
 
@@ -1030,8 +1026,7 @@ public class MBThreadFinderImpl
 			sql = updateSQL(sql, queryDefinition);
 
 			sql = InlineSQLHelperUtil.replacePermissionCheck(
-				sql, MBMessage.class.getName(), "MBThread.rootMessageId",
-				groupId);
+				sql, MBThread.class.getName(), "MBThread.threadId", groupId);
 
 			SQLQuery q = session.createSQLQuery(sql);
 
@@ -1086,7 +1081,7 @@ public class MBThreadFinderImpl
 
 			if (inlineSQLHelper) {
 				sql = InlineSQLHelperUtil.replacePermissionCheck(
-					sql, MBMessage.class.getName(), "MBThread.rootMessageId",
+					sql, MBThread.class.getName(), "MBThread.threadId",
 					groupId);
 			}
 
