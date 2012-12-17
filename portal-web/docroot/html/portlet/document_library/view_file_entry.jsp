@@ -107,12 +107,12 @@ request.setAttribute("view_file_entry.jsp-fileEntry", fileEntry);
 
 <portlet:actionURL var="editFileEntry">
 	<portlet:param name="struts_action" value="/document_library/edit_file_entry" />
-	<portlet:param name="fileEntryId" value="<%= String.valueOf(fileEntry.getFileEntryId()) %>" />
 </portlet:actionURL>
 
 <aui:form action="<%= editFileEntry %>" method="post" name="fm">
 	<aui:input name="<%= Constants.CMD %>" type="hidden" />
 	<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
+	<aui:input name="fileEntryId" type="hidden" value="<%= String.valueOf(fileEntry.getFileEntryId()) %>" />
 </aui:form>
 
 <c:if test="<%= showHeader && (folder != null) %>">
@@ -459,9 +459,11 @@ request.setAttribute("view_file_entry.jsp-fileEntry", fileEntry);
 							<%= dateFormatDateTime.format(fileVersion.getModifiedDate()) %>
 						</div>
 
-						<div class="lfr-asset-summary">
-							<aui:workflow-status model="<%= DLFileEntry.class %>" status="<%= fileVersion.getStatus() %>" />
-						</div>
+						<c:if test="<%= !portletId.equals(PortletKeys.TRASH) %>">
+							<div class="lfr-asset-summary">
+								<aui:workflow-status model="<%= DLFileEntry.class %>" status="<%= fileVersion.getStatus() %>" />
+							</div>
+						</c:if>
 
 						<c:if test="<%= Validator.isNotNull(fileVersion.getDescription()) %>">
 							<blockquote class="lfr-asset-description">
