@@ -325,6 +325,9 @@ create table JournalFolder (
 	description STRING null
 );
 
+drop index IX_228562AD on Lock_;
+drop index IX_DD635956 on Lock_;
+
 alter table MBCategory add status INTEGER;
 alter table MBCategory add statusByUserId LONG;
 alter table MBCategory add statusByUserName VARCHAR(75) null;
