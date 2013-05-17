@@ -99,6 +99,23 @@ AUI.add(
 						}
 					);
 
+					var height = config.height;
+
+					var width = config.width;
+
+					if (!modal.attrAdded('autoHeight') && !modal.attrAdded('autoWidth')) {
+						modal.addAttrs(
+							{
+								autoHeight: {
+									value: (height === 'auto' || height === '' || height === undefined)
+								},
+								autoWidth: {
+									value: (width === 'auto' || width === '' || width === undefined)
+								}
+							}
+						);
+					}
+
 					var liferayHandles = modal._liferayHandles;
 
 					liferayHandles.push(
@@ -198,7 +215,7 @@ AUI.add(
 				_getWindowConfig: function(config) {
 					var instance = this;
 
-					var modalConfig = A.merge(config.dialog, instance.DEFAULTS);
+					var modalConfig = A.merge(instance.DEFAULTS, config.dialog);
 
 					modalConfig.id = config.id;
 
@@ -298,15 +315,12 @@ AUI.add(
 				_setWindowDefaultSizeIfNeeded: function(modal) {
 					var instance = this;
 
-					var width = modal.get('width');
-					var height = modal.get('height');
-
-					if (width === 'auto' || width === '') {
-						modal.set('width', instance._getWinDefaultWidth());
+					if (modal.get('autoHeight')) {
+						modal.set('height', instance._getWinDefaultHeight());
 					}
 
-					if (height === 'auto' || height === '') {
-						modal.set('height', instance._getWinDefaultHeight());
+					if (modal.get('autoWidth')) {
+						modal.set('width', instance._getWinDefaultWidth());
 					}
 				},
 
