@@ -337,8 +337,8 @@ boolean hasUnlinkLayoutSetPrototypePermission = PortalPermissionUtil.contains(pe
 						<%
 						String customJspServletContextName = StringPool.BLANK;
 
-						if (group != null) {
-							UnicodeProperties typeSettingsProperties = group.getTypeSettingsProperties();
+						if (liveGroup != null) {
+							UnicodeProperties typeSettingsProperties = liveGroup.getTypeSettingsProperties();
 
 							customJspServletContextName = GetterUtil.getString(typeSettingsProperties.get("customJspServletContextName"));
 						}
@@ -513,10 +513,9 @@ boolean hasUnlinkLayoutSetPrototypePermission = PortalPermissionUtil.contains(pe
 				Liferay.Util.selectEntity(
 					{
 						dialog: {
-							align: Liferay.Util.Window.ALIGN_CENTER,
 							constrain: true,
 							modal: true,
-							stack: true,
+							zIndex: Liferay.zIndex.WINDOW + 2,
 							width: 600
 						},
 						id: '<portlet:namespace />selectGroup',

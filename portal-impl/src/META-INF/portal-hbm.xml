@@ -84,6 +84,7 @@
 	<import class="com.liferay.portlet.asset.model.AssetTagPropertyKey" />
 	<import class="com.liferay.portlet.asset.model.AssetTagStats" />
 	<import class="com.liferay.portlet.asset.model.AssetVocabulary" />
+	<import class="com.liferay.portlet.backgroundtask.model.BTEntry" />
 	<import class="com.liferay.portlet.blogs.model.BlogsEntry" />
 	<import class="com.liferay.portlet.blogs.model.BlogsStatsUser" />
 	<import class="com.liferay.portlet.bookmarks.model.BookmarksEntry" />
@@ -1317,6 +1318,25 @@
 		<property name="title" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="description" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="settings" type="com.liferay.portal.dao.orm.hibernate.StringType" column="settings_" />
+	</class>
+	<class name="com.liferay.portlet.backgroundtask.model.impl.BTEntryImpl" table="BTEntry">
+		<cache usage="read-write" />
+		<id name="btEntryId" type="long">
+			<generator class="assigned" />
+		</id>
+		<property name="groupId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="companyId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="userId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="userName" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="createDate" type="org.hibernate.type.TimestampType" />
+		<property name="modifiedDate" type="org.hibernate.type.TimestampType" />
+		<property name="name" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="servletContextNames" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="taskExecutorClassName" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="taskContext" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="completed" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
+		<property name="completionDate" type="org.hibernate.type.TimestampType" />
+		<property name="status" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
 	</class>
 	<class name="com.liferay.portlet.blogs.model.impl.BlogsEntryImpl" table="BlogsEntry">
 		<cache usage="read-write" />

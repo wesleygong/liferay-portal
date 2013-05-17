@@ -26,6 +26,23 @@ update BookmarksFolder set statusByUserId = userId;
 update BookmarksFolder set statusByUserName = userName;
 update BookmarksFolder set statusDate = modifiedDate;
 
+create table BTEntry (
+	btEntryId LONG not null primary key,
+	groupId LONG,
+	companyId LONG,
+	userId LONG,
+	userName VARCHAR(75) null,
+	createDate DATE null,
+	modifiedDate DATE null,
+	name VARCHAR(75) null,
+	servletContextNames VARCHAR(255) null,
+	taskExecutorClassName VARCHAR(200) null,
+	taskContext TEXT null,
+	completed BOOLEAN,
+	completionDate DATE null,
+	status INTEGER
+);
+
 alter table Contact_ add classNameId LONG;
 alter table Contact_ add classPK LONG;
 alter table Contact_ add emailAddress VARCHAR(75) null;

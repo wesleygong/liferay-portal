@@ -80,6 +80,9 @@ create index IX_55F58818 on AssetVocabulary (uuid_);
 create index IX_C4E6FD10 on AssetVocabulary (uuid_, companyId);
 create unique index IX_1B2B8792 on AssetVocabulary (uuid_, groupId);
 
+create index IX_79874497 on BTEntry (groupId, taskExecutorClassName);
+create index IX_2C9EFC7D on BTEntry (groupId, taskExecutorClassName, status);
+
 create index IX_72EF6041 on BlogsEntry (companyId);
 create index IX_430D791F on BlogsEntry (companyId, displayDate);
 create index IX_BB0C2905 on BlogsEntry (companyId, displayDate, status);
@@ -450,6 +453,7 @@ create unique index IX_FD57097D on LayoutBranch (layoutSetBranchId, plid, name);
 
 create index IX_EAB317C8 on LayoutFriendlyURL (companyId);
 create index IX_742EF04A on LayoutFriendlyURL (groupId);
+create index IX_CA713461 on LayoutFriendlyURL (groupId, privateLayout, friendlyURL);
 create unique index IX_A6FC2B28 on LayoutFriendlyURL (groupId, privateLayout, friendlyURL, languageId);
 create index IX_83AE56AB on LayoutFriendlyURL (plid);
 create unique index IX_C5762E72 on LayoutFriendlyURL (plid, languageId);
