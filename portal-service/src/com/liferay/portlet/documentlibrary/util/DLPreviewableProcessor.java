@@ -35,6 +35,7 @@ import com.liferay.portal.kernel.util.StreamUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.SystemProperties;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.model.CompanyConstants;
 import com.liferay.portal.util.PortalUtil;
@@ -367,23 +368,35 @@ public abstract class DLPreviewableProcessor implements DLProcessor {
 		}
 	}
 
-	protected void deleteThumbnails(
+	protected void deleteThumbnail(
 		long companyId, long groupId, long fileEntryId, long fileVersionId,
-		String thumbnailType) {
+		String thumbnailType, int index) {
 
 		try {
-			String dirName = getPathSegment(
-				groupId, fileEntryId, fileVersionId, false);
-
-			if (fileVersionId > 0) {
-				dirName = dirName.concat(StringPool.PERIOD);
-				dirName = dirName.concat(thumbnailType);
-			}
+			String dirName = getThumbnailFilePath(
+				groupId, fileEntryId, fileVersionId, thumbnailType, index);
 
 			DLStoreUtil.deleteFile(companyId, REPOSITORY_ID, dirName);
 		}
 		catch (Exception e) {
 		}
+	}
+
+	protected void deleteThumbnails(
+		long companyId, long groupId, long fileEntryId, long fileVersionId,
+		String thumbnailType) {
+
+		deleteThumbnail(
+			companyId, groupId, fileEntryId, fileVersionId, thumbnailType,
+			THUMBNAIL_INDEX_DEFAULT);
+
+		deleteThumbnail(
+			companyId, groupId, fileEntryId, fileVersionId, thumbnailType,
+			THUMBNAIL_INDEX_CUSTOM_1);
+
+		deleteThumbnail(
+			companyId, groupId, fileEntryId, fileVersionId, thumbnailType,
+			THUMBNAIL_INDEX_CUSTOM_2);
 	}
 
 	protected void destroyProcess(String processIdentity) {
@@ -729,8 +742,10 @@ public abstract class DLPreviewableProcessor implements DLProcessor {
 			sb.append(index - 1);
 		}
 
-		sb.append(StringPool.PERIOD);
-		sb.append(type);
+		if (Validator.isNotNull(type)) {
+			sb.append(StringPool.PERIOD);
+			sb.append(type);
+		}
 
 		return sb.toString();
 	}
@@ -774,8 +789,11 @@ public abstract class DLPreviewableProcessor implements DLProcessor {
 		sb.append(tempFileId);
 		sb.append(StringPool.DASH);
 		sb.append("(.*)");
-		sb.append(StringPool.PERIOD);
-		sb.append(type);
+
+		if (Validator.isNotNull(type)) {
+			sb.append(StringPool.PERIOD);
+			sb.append(type);
+		}
 
 		File dir = new File(PREVIEW_TMP_PATH);
 
@@ -819,8 +837,10 @@ public abstract class DLPreviewableProcessor implements DLProcessor {
 			sb.append("-%d");
 		}
 
-		sb.append(StringPool.PERIOD);
-		sb.append(type);
+		if (Validator.isNotNull(type)) {
+			sb.append(StringPool.PERIOD);
+			sb.append(type);
+		}
 
 		return sb.toString();
 	}
@@ -857,17 +877,28 @@ public abstract class DLPreviewableProcessor implements DLProcessor {
 	protected String getThumbnailFilePath(
 		FileVersion fileVersion, String type, int index) {
 
+		return getThumbnailFilePath(
+			fileVersion.getGroupId(), fileVersion.getFileEntryId(),
+			fileVersion.getFileVersionId(), type, index);
+	}
+
+	protected String getThumbnailFilePath(
+		long groupId, long fileEntryId, long fileVersionId,
+		String thumbnailType, int index) {
+
 		StringBundler sb = new StringBundler(5);
 
-		sb.append(getPathSegment(fileVersion, false));
+		sb.append(getPathSegment(groupId, fileEntryId, fileVersionId, false));
 
 		if (index != THUMBNAIL_INDEX_DEFAULT) {
 			sb.append(StringPool.DASH);
 			sb.append(index);
 		}
 
-		sb.append(StringPool.PERIOD);
-		sb.append(type);
+		if ((fileVersionId > 0) && Validator.isNotNull(thumbnailType)) {
+			sb.append(StringPool.PERIOD);
+			sb.append(thumbnailType);
+		}
 
 		return sb.toString();
 	}
@@ -891,8 +922,11 @@ public abstract class DLPreviewableProcessor implements DLProcessor {
 
 		sb.append(THUMBNAIL_TMP_PATH);
 		sb.append(id);
-		sb.append(StringPool.PERIOD);
-		sb.append(type);
+
+		if (Validator.isNotNull(type)) {
+			sb.append(StringPool.PERIOD);
+			sb.append(type);
+		}
 
 		return sb.toString();
 	}

@@ -3,6 +3,67 @@
 <project name="portal" basedir="." default="compile" xmlns:antelope="antlib:ise.antelope.tasks">
 	<import file="build-common.xml" />
 
+	<macrodef name="setup-jrebel">
+		<sequential>
+			<echo file="${app.server.lib.global.dir}/rebel.xml"><![CDATA[<?xml version="1.0"?>
+
+<application
+	xmlns="http://www.zeroturnaround.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd"
+>
+	<classpath>
+		<dir name="${basedir}/portal-service/classes" />
+	</classpath>
+</application>]]></echo>
+
+		<echo file="${app.server.classes.portal.dir}/rebel.xml"><![CDATA[<?xml version="1.0"?>
+
+<application
+	xmlns="http://www.zeroturnaround.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd"
+>
+	<classpath>
+		<dir name="${basedir}/osgi/bootstrap/classes" />
+		<dir name="${basedir}/portal-impl/classes" />
+		<dir name="${basedir}/portal-pacl/classes" />
+		<dir name="${basedir}/util-java/classes" />
+		<dir name="${basedir}/util-bridges/classes" />
+		<dir name="${basedir}/util-taglib/classes" />
+		<dir name="${basedir}/util-slf4j/classes" />
+	</classpath>
+	<web>
+		<link target="/">
+			<dir name="${basedir}/portal-web/docroot/" />
+		</link>
+	</web>
+</application>]]></echo>
+
+			<loadfile failonerror="false" property="system-ext.properties.content" srcfile="portal-impl/src/system-ext.properties" />
+
+			<if>
+				<not>
+					<contains string="${system-ext.properties.content}"  substring="liferay.lib.portal.dir" />
+				</not>
+				<then>
+					<echo
+						append="true"
+						file="portal-impl/src/system-ext.properties"
+					>
+						liferay.lib.portal.dir=${app.server.lib.portal.dir}
+					</echo>
+
+					<copy
+						file="portal-impl/src/system-ext.properties"
+						overwrite="true"
+						tofile="portal-impl/classes/system-ext.properties"
+					/>
+				</then>
+			</if>
+		</sequential>
+	</macrodef>
+
 	<target name="all">
 		<antcall target="clean" />
 		<antcall target="start" />
@@ -816,89 +877,8 @@ print AdminControl.invoke(appManager, 'startApplication', 'liferay-portal')
 		<echo file="git-commit-portal">${git.commit.portal.rev.parse}</echo>
 	</target>
 
-	<target name="record-svn-revision">
-		<exec dir="${project.dir}" executable="cmd.exe" os="${os.windows}" outputproperty="svn.info.output">
-			<arg line="/c svn info" />
-		</exec>
-
-		<script classpathref="project.classpath" language="beanshell">
-			String svnInfoOutput = project.getProperty("svn.info.output");
-
-			int x = svnInfoOutput.indexOf("Revision: ");
-
-			x = svnInfoOutput.indexOf(" ", x);
-
-			int y = svnInfoOutput.indexOf("Node ", x);
-
-			String revision = svnInfoOutput.substring(x, y).trim();
-
-			project.setProperty("svn.info.revision", revision);
-		</script>
-
-		<echo file="svn-revision">Revision: ${svn.info.revision}
-Username: ${svn.username}
-Password: ${svn.password}
-Portal: ${lp.source.dir}
-Plugins: ${lp.plugins.dir}</echo>
-	</target>
-
 	<target name="setup-jrebel">
-		<echo file="${app.server.lib.global.dir}/rebel.xml"><![CDATA[<?xml version="1.0"?>
-
-<application
-	xmlns="http://www.zeroturnaround.com"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd"
->
-	<classpath>
-		<dir name="${basedir}/portal-service/classes" />
-	</classpath>
-</application>]]></echo>
-
-		<echo file="${app.server.classes.portal.dir}/rebel.xml"><![CDATA[<?xml version="1.0"?>
-
-<application
-	xmlns="http://www.zeroturnaround.com"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd"
->
-	<classpath>
-		<dir name="${basedir}/osgi/bootstrap/classes" />
-		<dir name="${basedir}/portal-impl/classes" />
-		<dir name="${basedir}/portal-pacl/classes" />
-		<dir name="${basedir}/util-java/classes" />
-		<dir name="${basedir}/util-bridges/classes" />
-		<dir name="${basedir}/util-taglib/classes" />
-		<dir name="${basedir}/util-slf4j/classes" />
-	</classpath>
-	<web>
-		<link target="/">
-			<dir name="${basedir}/portal-web/docroot/" />
-		</link>
-	</web>
-</application>]]></echo>
-
-		<loadfile failonerror="false" property="system-ext.properties.content" srcfile="portal-impl/src/system-ext.properties" />
-
-		<if>
-			<not>
-				<contains string="${system-ext.properties.content}"  substring="liferay.lib.portal.dir" />
-			</not>
-			<then>
-				<echo
-					append="true"
-					file="portal-impl/src/system-ext.properties"
-				>
-					liferay.lib.portal.dir=${app.server.lib.portal.dir}
-				</echo>
-
-				<copy
-					file="portal-impl/src/system-ext.properties"
-					overwrite="true"
-					tofile="portal-impl/classes/system-ext.properties"
-				/>
-			</then>
-		</if>
+		<setup-jrebel />
 	</target>
 
 	<target name="sort-xml-attributes">
@@ -925,6 +905,8 @@ Plugins: ${lp.plugins.dir}</echo>
 		<ant dir="portal-impl" target="build-themes" inheritAll="false" />
 
 		<antcall target="jar" />
+
+		<setup-jrebel />
 
 		<antcall target="print-current-time" />
 	</target>

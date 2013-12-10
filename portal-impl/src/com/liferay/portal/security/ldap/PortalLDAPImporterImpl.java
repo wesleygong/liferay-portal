@@ -796,9 +796,12 @@ public class PortalLDAPImporterImpl implements PortalLDAPImporter {
 			Properties groupMappings)
 		throws Exception {
 
+		String groupMappingsUser = groupMappings.getProperty("user");
+
 		Set<Long> newUserGroupIds = new LinkedHashSet<Long>();
 
-		if (PrefsPropsUtil.getBoolean(
+		if (Validator.isNotNull(groupMappingsUser) &&
+			PrefsPropsUtil.getBoolean(
 				companyId, PropsKeys.LDAP_IMPORT_GROUP_SEARCH_FILTER_ENABLED)) {
 
 			String postfix = LDAPSettingsUtil.getPropertyPostfix(ldapServerId);
@@ -822,7 +825,7 @@ public class PortalLDAPImporterImpl implements PortalLDAPImporter {
 					companyId,
 					PropsKeys.LDAP_IMPORT_GROUP_SEARCH_FILTER + postfix));
 			sb.append(StringPool.OPEN_PARENTHESIS);
-			sb.append(groupMappings.getProperty("user"));
+			sb.append(groupMappingsUser);
 			sb.append(StringPool.EQUAL);
 			sb.append(escapeValue(fullUserDN));
 			sb.append(StringPool.CLOSE_PARENTHESIS);
@@ -1282,7 +1285,8 @@ public class PortalLDAPImporterImpl implements PortalLDAPImporter {
 			passwordReset, ldapUser.getReminderQueryQuestion(),
 			ldapUser.getReminderQueryAnswer(), ldapUser.getScreenName(),
 			ldapUser.getEmailAddress(), ldapUser.getFacebookId(),
-			ldapUser.getOpenId(), ldapUser.getLanguageId(),
+			ldapUser.getOpenId(), (ldapUser.getPortraitId() > 0),
+			ldapUser.getPortraitBytes(), ldapUser.getLanguageId(),
 			ldapUser.getTimeZoneId(), ldapUser.getGreeting(),
 			ldapUser.getComments(), ldapUser.getFirstName(),
 			ldapUser.getMiddleName(), ldapUser.getLastName(),
@@ -1299,18 +1303,6 @@ public class PortalLDAPImporterImpl implements PortalLDAPImporter {
 		if (ldapUserModifiedDate != null) {
 			user = UserLocalServiceUtil.updateModifiedDate(
 				user.getUserId(), ldapUserModifiedDate);
-		}
-
-		if (ldapUser.isUpdatePortrait()) {
-			byte[] portraitBytes = ldapUser.getPortraitBytes();
-
-			if (ArrayUtil.isNotEmpty(portraitBytes)) {
-				UserLocalServiceUtil.updatePortrait(
-					user.getUserId(), portraitBytes);
-			}
-			else {
-				UserLocalServiceUtil.deletePortrait(user.getUserId());
-			}
 		}
 
 		user = UserLocalServiceUtil.updateStatus(

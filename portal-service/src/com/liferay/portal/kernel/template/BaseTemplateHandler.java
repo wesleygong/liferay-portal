@@ -14,14 +14,20 @@
 
 package com.liferay.portal.kernel.template;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.configuration.Filter;
+import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
+
+import java.io.IOException;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +35,7 @@ import java.util.List;
 /**
  * @author Jorge Ferrer
  */
+@ProviderType
 public abstract class BaseTemplateHandler implements TemplateHandler {
 
 	@Override
@@ -63,6 +70,29 @@ public abstract class BaseTemplateHandler implements TemplateHandler {
 		}
 
 		return new String[0];
+	}
+
+	@Override
+	public String getTemplatesHelpContent(String language) {
+		String content = StringPool.BLANK;
+
+		try {
+			Class<?> clazz = getClass();
+
+			content = StringUtil.read(
+				clazz.getClassLoader(), getTemplatesHelpPath(language));
+		}
+		catch (IOException ioe1) {
+			try {
+				content = StringUtil.read(
+					PortalClassLoaderUtil.getClassLoader(),
+					getTemplatesHelpPath(language));
+			}
+			catch (IOException ioe2) {
+			}
+		}
+
+		return content;
 	}
 
 	@Override

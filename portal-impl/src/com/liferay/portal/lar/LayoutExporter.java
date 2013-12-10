@@ -27,6 +27,7 @@ import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.portal.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.staging.LayoutStagingUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.FileUtil;
@@ -48,9 +49,11 @@ import com.liferay.portal.model.Image;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.LayoutConstants;
 import com.liferay.portal.model.LayoutPrototype;
+import com.liferay.portal.model.LayoutRevision;
 import com.liferay.portal.model.LayoutSet;
 import com.liferay.portal.model.LayoutSetBranch;
 import com.liferay.portal.model.LayoutSetPrototype;
+import com.liferay.portal.model.LayoutStagingHandler;
 import com.liferay.portal.model.LayoutTypePortlet;
 import com.liferay.portal.model.Portlet;
 import com.liferay.portal.model.impl.LayoutImpl;
@@ -58,6 +61,7 @@ import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.ImageLocalServiceUtil;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.service.LayoutPrototypeLocalServiceUtil;
+import com.liferay.portal.service.LayoutRevisionLocalServiceUtil;
 import com.liferay.portal.service.LayoutSetBranchLocalServiceUtil;
 import com.liferay.portal.service.LayoutSetLocalServiceUtil;
 import com.liferay.portal.service.LayoutSetPrototypeLocalServiceUtil;
@@ -471,8 +475,7 @@ public class LayoutExporter {
 
 		for (Layout layout : layouts) {
 			exportLayout(
-				portletDataContext, portlets, layoutIds, portletIds, layout,
-				zipWriter);
+				portletDataContext, portlets, layoutIds, portletIds, layout);
 		}
 
 		long previousScopeGroupId = portletDataContext.getScopeGroupId();
@@ -519,8 +522,9 @@ public class LayoutExporter {
 			portletDataContext.setScopeType(scopeType);
 			portletDataContext.setScopeLayoutUuid(scopeLayoutUuid);
 
-			boolean[] exportPortletControls = getExportPortletControls(
-				companyId, portletId, parameterMap, type);
+			boolean[] exportPortletControls =
+				ExportImportHelperUtil.getExportPortletControls(
+					companyId, portletId, parameterMap, type);
 
 			_portletExporter.exportPortlet(
 				portletDataContext, layoutCache, portletId, layout,
@@ -620,8 +624,7 @@ public class LayoutExporter {
 
 	protected void exportLayout(
 			PortletDataContext portletDataContext, List<Portlet> portlets,
-			long[] layoutIds, Map<String, Object[]> portletIds, Layout layout,
-			ZipWriter zipWriter)
+			long[] layoutIds, Map<String, Object[]> portletIds, Layout layout)
 		throws Exception {
 
 		if (!ArrayUtil.contains(layoutIds, layout.getLayoutId()) &&
@@ -633,6 +636,33 @@ public class LayoutExporter {
 			layoutElement.addAttribute("action", Constants.SKIP);
 
 			return;
+		}
+
+		boolean exportLAR = MapUtil.getBoolean(
+			portletDataContext.getParameterMap(), "exportLAR");
+
+		if (!exportLAR && LayoutStagingUtil.isBranchingLayout(layout) &&
+			!layout.isTypeURL()) {
+
+			long layoutSetBranchId = MapUtil.getLong(
+				portletDataContext.getParameterMap(), "layoutSetBranchId");
+
+			if (layoutSetBranchId <= 0) {
+				return;
+			}
+
+			LayoutRevision layoutRevision =
+				LayoutRevisionLocalServiceUtil.fetchLayoutRevision(
+					layoutSetBranchId, true, layout.getPlid());
+
+			if (layoutRevision == null) {
+				return;
+			}
+
+			LayoutStagingHandler layoutStagingHandler =
+				LayoutStagingUtil.getLayoutStagingHandler(layout);
+
+			layoutStagingHandler.setLayoutRevision(layoutRevision);
 		}
 
 		StagedModelDataHandlerUtil.exportStagedModel(
@@ -727,101 +757,6 @@ public class LayoutExporter {
 				}
 			);
 		}
-	}
-
-	protected boolean[] getExportPortletControls(
-			long companyId, String portletId,
-			Map<String, String[]> parameterMap, String type)
-		throws Exception {
-
-		boolean exportPortletConfiguration = MapUtil.getBoolean(
-			parameterMap, PortletDataHandlerKeys.PORTLET_CONFIGURATION);
-		boolean exportPortletConfigurationAll = MapUtil.getBoolean(
-			parameterMap, PortletDataHandlerKeys.PORTLET_CONFIGURATION_ALL);
-		boolean exportPortletData = MapUtil.getBoolean(
-			parameterMap, PortletDataHandlerKeys.PORTLET_DATA);
-		boolean exportPortletDataAll = MapUtil.getBoolean(
-			parameterMap, PortletDataHandlerKeys.PORTLET_DATA_ALL);
-
-		if (_log.isDebugEnabled()) {
-			_log.debug("Export portlet data " + exportPortletData);
-			_log.debug("Export all portlet data " + exportPortletDataAll);
-			_log.debug(
-				"Export portlet configuration " + exportPortletConfiguration);
-		}
-
-		boolean exportCurPortletData = exportPortletData;
-
-		String rootPortletId =
-			ExportImportHelperUtil.getExportableRootPortletId(
-				companyId, portletId);
-
-		if (exportPortletDataAll) {
-			exportCurPortletData = true;
-		}
-		else if (rootPortletId != null) {
-
-			// PORTLET_DATA and the PORTLET_DATA for this specific data handler
-			// must be true
-
-			exportCurPortletData =
-				exportPortletData &&
-				MapUtil.getBoolean(
-					parameterMap,
-					PortletDataHandlerKeys.PORTLET_DATA +
-						StringPool.UNDERLINE + rootPortletId);
-		}
-
-		boolean exportCurPortletArchivedSetups = exportPortletConfiguration;
-		boolean exportCurPortletSetup = exportPortletConfiguration;
-		boolean exportCurPortletUserPreferences = exportPortletConfiguration;
-
-		if (exportPortletConfigurationAll ||
-			(exportPortletConfiguration && type.equals("layout-prototype"))) {
-
-			exportCurPortletArchivedSetups =
-				MapUtil.getBoolean(
-					parameterMap,
-					PortletDataHandlerKeys.PORTLET_ARCHIVED_SETUPS_ALL);
-			exportCurPortletSetup =
-				MapUtil.getBoolean(
-					parameterMap, PortletDataHandlerKeys.PORTLET_SETUP_ALL);
-			exportCurPortletUserPreferences =
-				MapUtil.getBoolean(
-					parameterMap,
-					PortletDataHandlerKeys.PORTLET_USER_PREFERENCES_ALL);
-		}
-		else if (rootPortletId != null) {
-			boolean exportCurPortletConfiguration =
-				exportPortletConfiguration &&
-				MapUtil.getBoolean(
-					parameterMap,
-					PortletDataHandlerKeys.PORTLET_CONFIGURATION +
-						StringPool.UNDERLINE + rootPortletId);
-
-			exportCurPortletArchivedSetups =
-				exportCurPortletConfiguration &&
-				MapUtil.getBoolean(
-					parameterMap,
-					PortletDataHandlerKeys.PORTLET_ARCHIVED_SETUPS +
-						StringPool.UNDERLINE + rootPortletId);
-			exportCurPortletSetup =
-				exportCurPortletConfiguration &&
-				MapUtil.getBoolean(
-					parameterMap,
-					PortletDataHandlerKeys.PORTLET_SETUP +
-						StringPool.UNDERLINE + rootPortletId);
-			exportCurPortletUserPreferences =
-				exportCurPortletConfiguration &&
-				MapUtil.getBoolean(
-					parameterMap,
-					PortletDataHandlerKeys.PORTLET_USER_PREFERENCES +
-						StringPool.UNDERLINE + rootPortletId);
-		}
-
-		return new boolean[] {
-			exportCurPortletArchivedSetups, exportCurPortletData,
-			exportCurPortletSetup, exportCurPortletUserPreferences};
 	}
 
 	private static Log _log = LogFactoryUtil.getLog(LayoutExporter.class);

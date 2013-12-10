@@ -14,18 +14,22 @@
 
 package com.liferay.portlet.trash.util;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.search.Hits;
 import com.liferay.portal.kernel.security.pacl.permission.PortalRuntimePermission;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.model.Group;
+import com.liferay.portal.model.TrashedModel;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portlet.trash.model.TrashEntry;
 
 import java.util.Date;
 import java.util.List;
 
+import javax.portlet.ActionRequest;
 import javax.portlet.PortletURL;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @author Julio Camarero
  */
+@ProviderType
 public class TrashUtil {
 
 	public static void addBaseModelBreadcrumbEntries(
@@ -51,6 +56,31 @@ public class TrashUtil {
 
 		getTrash().addContainerModelBreadcrumbEntries(
 			request, className, classPK, containerModelURL);
+	}
+
+	public static void addTrashSessionMessages(
+		ActionRequest actionRequest, List<TrashedModel> trashedModels) {
+
+		getTrash().addTrashSessionMessages(actionRequest, trashedModels);
+	}
+
+	public static void addTrashSessionMessages(
+		ActionRequest actionRequest, List<TrashedModel> trashedModels,
+		String cmd) {
+
+		getTrash().addTrashSessionMessages(actionRequest, trashedModels, cmd);
+	}
+
+	public static void addTrashSessionMessages(
+		ActionRequest actionRequest, TrashedModel trashedModel) {
+
+		getTrash().addTrashSessionMessages(actionRequest, trashedModel);
+	}
+
+	public static void addTrashSessionMessages(
+		ActionRequest actionRequest, TrashedModel trashedModel, String cmd) {
+
+		getTrash().addTrashSessionMessages(actionRequest, trashedModel, cmd);
 	}
 
 	public static void deleteEntriesAttachments(

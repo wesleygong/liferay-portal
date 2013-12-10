@@ -41,12 +41,22 @@ AUI.add(
 
 						instance.toolbar.add(
 							{
+								label: Liferay.Language.get('choose'),
 								on: {
 									click: A.bind('_onClickChoose', instance)
-								},
-								label: Liferay.Language.get('choose')
+								}
 							},
 							1
+						);
+
+						instance.toolbar.add(
+							{
+								label: Liferay.Language.get('clear'),
+								on: {
+									click: A.bind('_onClickClear', instance)
+								}
+							},
+							2
 						);
 					},
 
@@ -69,6 +79,12 @@ AUI.add(
 								uri: portletURL.toString()
 							}
 						);
+					},
+
+					_onClickClear: function() {
+						var instance = this;
+
+						instance.set('value', STR_EMPTY);
 					},
 
 					_selectFileEntry: function(url, uuid, groupId, title, version) {

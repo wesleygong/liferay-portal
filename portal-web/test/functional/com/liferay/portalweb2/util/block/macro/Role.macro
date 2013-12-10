@@ -24,6 +24,27 @@
 		<execute action="CPRoles#assertTextEquals" locator-key1="SUCCESS_MESSAGE" value1="Your request completed successfully." />
 	</command>
 
+	<command name="assignMembersUserGroupsCP">
+		<var name="key_roleName" value="${roleName}" />
+
+		<execute action="CPRoles#type" locator-key1="SEARCH_FIELD" value1="${roleName}" />
+		<execute action="CPRoles#assertClick" locator-key1="SEARCH_BUTTON" value1="Search" />
+		<execute action="CPRoles#assertClick" locator-key1="ROLE_TABLE_ACTIONS" value1="Actions" />
+		<execute action="CPRoles#assertClick" locator-key1="ROLE_MENULIST_ASSIGN_MEMBERS" value1="Assign Members" />
+		<execute action="CPRolesAssignmembersUsers#assertClick" locator-key1="MEMBERS_USER_GROUPS" value1="User Groups" />
+
+		<var name="key_userGroupName" value="${userGroupName}" />
+
+		<execute action="CPRolesAssignmembersUsergroups#assertClick" locator-key1="AVAILABLE" value1="Available" />
+		<execute action="CPRolesAssignmembersUsergroups#type" locator-key1="SEARCH_FIELD" value1="${userGroupName}" />
+		<execute action="CPRolesAssignmembersUsergroups#assertClick" locator-key1="SEARCH_BUTTON" value1="Search" />
+		<execute action="CPRolesAssignmembersUsergroups#assertTextEquals" locator-key1="USER_GROUP_TABLE_NAME" value1="${userGroupName}" />
+		<execute action="CPRolesAssignmembersUsergroups#check" locator-key1="USER_GROUP_TABLE_CHECKBOX" />
+		<execute action="CPRolesAssignmembersUsergroups#assertClick" locator-key1="UPDATE_ASSOCIATIONS_BUTTON" value1="Update Associations" />
+		<execute action="CPRolesAssignmembersUsergroups#assertTextEquals" locator-key1="SUCCESS_MESSAGE" value1="Your request completed successfully." />
+		<execute action="CPRolesAssignmembersUsergroups#assertChecked" locator-key1="USER_GROUP_TABLE_CHECKBOX" />
+	</command>
+
 	<command name="assignRegRoleCP">
 		<var name="key_roleName" value="${roleName}" />
 
@@ -45,12 +66,38 @@
 	</command>
 
 	<command name="definePermissionCP">
+		<execute macro="Role#definePermissionCmdCP">
+			<var name="permissionDefinitionKey" value="${permissionDefinitionKey}" />
+			<var name="permissionDefinitionValue" value="${permissionDefinitionValue}" />
+			<var name="permissionNavigationKey" value="${permissionNavigationKey}" />
+			<var name="permissionNavigationValue" value="${permissionNavigationValue}" />
+			<var name="roleName" value="${roleName}" />
+		</execute>
+
+		<execute macro="Role#viewPermissionCP">
+			<var name="permissionDefinitionValue" value="${permissionDefinitionValue}" />
+			<var name="permissionNavigationValue" value="${permissionNavigationValue}" />
+		</execute>
+	</command>
+
+	<command name="definePermissionCmdCP">
 		<var name="key_roleName" value="${roleName}" />
 
 		<execute action="CPRoles#type" locator-key1="SEARCH_FIELD" value1="${roleName}" />
 		<execute action="CPRoles#assertClick" locator-key1="SEARCH_BUTTON" value1="Search" />
-		<execute action="CPRoles#assertTextEquals" locator-key1="ROLE_TABLE_TITLE" value1="${roleName}" />
-		<execute action="CPRoles#assertClick" locator-key1="ROLE_TABLE_ACTIONS" value1="Actions" />
+
+		<if>
+			<isset var="roleUser" />
+			<then>
+				<execute action="CPRoles#assertTextEquals" locator1="//tr[contains(.,'${roleName}') and contains(.,'${roleUser}')]/td[1]/a" value1="${roleUser}" />
+				<execute action="CPRoles#assertClick" locator-key1="ROLE_TABLE_ACTIONS" value1="Actions" />
+			</then>
+			<else>
+				<execute action="CPRoles#assertTextEquals" locator-key1="ROLE_TABLE_TITLE" value1="${roleName}" />
+				<execute action="CPRoles#assertClick" locator-key1="ROLE_TABLE_ACTIONS" value1="Actions" />
+			</else>
+		</if>
+
 		<execute action="CPRoles#assertClick" locator-key1="ROLE_MENULIST_DEFINE_PERMISSIONS" value1="Define Permissions" />
 
 		<execute action="CPRolesDefinepermissions#type" locator-key1="SEARCH_FIELD" value1="${permissionNavigationValue}" />
@@ -73,13 +120,7 @@
 			</elseif>
 		</if>
 
-		<var name="key_permissionNavigationValue" value="${permissionNavigationValue}" />
-		<var name="key_permissionDefinitionValue" value="${permissionDefinitionValue}" />
-
 		<execute action="CPRolesDefinepermissions#assertTextEquals" locator-key1="SUCCESS_MESSAGE" value1="The role permissions were updated." />
-		<execute action="CPRolesDefinepermissions#assertTextEquals" locator-key1="PERMISSION_TABLE_PERMISSIONS" value1="${permissionNavigationValue}" />
-		<execute action="CPRolesDefinepermissions#assertTextEquals" locator-key1="PERMISSION_TABLE_PERMISSIONS" value1="${permissionDefinitionValue}" />
-		<execute action="CPRolesDefinepermissions#assertTextEquals" locator-key1="PERMISSION_TABLE_REMOVE" value1="Remove" />
 	</command>
 
 	<command name="definePermissionPG">
@@ -143,6 +184,24 @@
 		</while>
 	</command>
 
+	<command name="unassignRegRoleCP">
+		<var name="key_roleName" value="${roleName}" />
+
+		<execute action="CPRoles#type" locator-key1="SEARCH_FIELD" value1="${roleName}" />
+		<execute action="CPRoles#assertClick" locator-key1="SEARCH_BUTTON" value1="Search" />
+		<execute action="CPRoles#assertClick" locator-key1="ROLE_TABLE_ACTIONS" value1="Actions" />
+		<execute action="CPRoles#assertClick" locator-key1="ROLE_MENULIST_ASSIGN_MEMBERS" value1="Assign Members" />
+
+		<var name="key_userScreenName" value="${userScreenName}" />
+
+		<execute action="CPRolesAssignmembersUsers#type" locator-key1="BASIC_SEARCH_FIELD" value1="${userScreenName}" />
+		<execute action="CPRolesAssignmembersUsers#assertClick" locator-key1="BASIC_SEARCH_BUTTON" value1="Search" />
+		<execute action="CPRolesAssignmembersUsers#assertTextEquals" locator-key1="USER_TABLE_SCREEN_NAME" value1="${userScreenName}" />
+		<execute action="CPRolesAssignmembersUsers#uncheck" locator-key1="USER_TABLE_CHECKBOX" />
+		<execute action="CPRolesAssignmembersUsers#assertClick" locator-key1="UPDATE_ASSOCIATIONS_BUTTON" value1="Update Associations" />
+		<execute action="CPRolesAssignmembersUsers#assertTextEquals" locator-key1="SUCCESS_MESSAGE" value1="Your request completed successfully." />
+	</command>
+
 	<command name="viewCP">
 		<var name="key_roleName" value="${roleName}" />
 
@@ -160,7 +219,15 @@
 		<var name="key_permissionNavigationValue" value="${permissionNavigationValue}" />
 		<var name="key_permissionDefinitionValue" value="${permissionDefinitionValue}" />
 
+		<while>
+			<condition action="CPRoles#isElementNotPresent" locator-key1="PERMISSION_TABLE_PERMISSIONS" />
+			<then>
+				<execute action="CPRoles#assertClick" locator-key1="PAGINATION_NEXT_BUTTON" value1="Next" />
+			</then>
+		</while>
+
 		<execute action="CPRolesDefinepermissions#assertTextEquals" locator-key1="PERMISSION_TABLE_PERMISSIONS" value1="${permissionNavigationValue}" />
 		<execute action="CPRolesDefinepermissions#assertTextEquals" locator-key1="PERMISSION_TABLE_PERMISSIONS" value1="${permissionDefinitionValue}" />
+		<execute action="CPRolesDefinepermissions#assertTextEquals" locator-key1="PERMISSION_TABLE_REMOVE" value1="Remove" />
 	</command>
 </definition>

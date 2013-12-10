@@ -731,7 +731,7 @@ public class SeleniumBuilderTest {
 	public void testMacroAndElement1001_2() throws Exception {
 		test(
 			"MacroAndElement1001_2.macro",
-			"Error 1001: Missing (echo|execute|fail|if|var|while) child " +
+			"Error 1001: Missing (echo|execute|fail|for|if|var|while) child " +
 				"element in " + _DIR_NAME + "/MacroAndElement1001_2.macro:8");
 	}
 
@@ -781,7 +781,7 @@ public class SeleniumBuilderTest {
 	public void testMacroCommandElement1001() throws Exception {
 		test(
 			"MacroCommandElement1001.macro",
-			"Error 1001: Missing (echo|execute|fail|if|var|while) child " +
+			"Error 1001: Missing (echo|execute|fail|for|if|var|while) child " +
 				"element in " + _DIR_NAME + "/MacroCommandElement1001.macro:2");
 	}
 
@@ -1018,6 +1018,14 @@ public class SeleniumBuilderTest {
 	}
 
 	@Test
+	public void testMacroDefinitionElement1006_1() throws Exception {
+		test(
+			"MacroDefinitionElement1006_1.macro",
+			"Error 1006: Invalid extends attribute value in " + _DIR_NAME +
+				"/MacroDefinitionElement1006_1.macro:1");
+	}
+
+	@Test
 	public void testMacroDefinitionElement1007() throws Exception {
 		test(
 			"MacroDefinitionElement1007.macro",
@@ -1037,7 +1045,7 @@ public class SeleniumBuilderTest {
 	public void testMacroElseElement1001() throws Exception {
 		test(
 			"MacroElseElement1001.macro",
-			"Error 1001: Missing (echo|execute|fail|if|var|while) child " +
+			"Error 1001: Missing (echo|execute|fail|for|if|var|while) child " +
 				"element in " + _DIR_NAME + "/MacroElseElement1001.macro:8");
 	}
 
@@ -1244,6 +1252,46 @@ public class SeleniumBuilderTest {
 	}
 
 	@Test
+	public void testMacroForElement1004_1() throws Exception {
+		test(
+			"MacroForElement1004_1.macro",
+			"Error 1004: Missing (list|param) attribute in " + _DIR_NAME +
+				"/MacroForElement1004_1.macro:3");
+	}
+
+	@Test
+	public void testMacroForElement1004_2() throws Exception {
+		test(
+			"MacroForElement1004_2.macro",
+			"Error 1004: Missing (list|param) attribute in " + _DIR_NAME +
+				"/MacroForElement1004_2.macro:3");
+	}
+
+	@Test
+	public void testMacroForElement1005() throws Exception {
+		test(
+			"MacroForElement1005.macro",
+			"Error 1005: Invalid value attribute in " + _DIR_NAME +
+				"/MacroForElement1005.macro:3");
+	}
+
+	@Test
+	public void testMacroForElement1006_1() throws Exception {
+		test(
+			"MacroForElement1006_1.macro",
+			"Error 1006: Invalid param attribute value in " + _DIR_NAME +
+				"/MacroForElement1006_1.macro:3");
+	}
+
+	@Test
+	public void testMacroForElement1006_2() throws Exception {
+		test(
+			"MacroForElement1006_2.macro",
+			"Error 1006: Invalid list attribute value in " + _DIR_NAME +
+				"/MacroForElement1006_2.macro:3");
+	}
+
+	@Test
 	public void testMacroIfElement1001_1() throws Exception {
 		test(
 			"MacroIfElement1001_1.macro",
@@ -1329,7 +1377,7 @@ public class SeleniumBuilderTest {
 	public void testMacroNotElement1001_2() throws Exception {
 		test(
 			"MacroNotElement1001_2.macro",
-			"Error 1001: Missing (echo|execute|fail|if|var|while) child " +
+			"Error 1001: Missing (echo|execute|fail|for|if|var|while) child " +
 				"element in " + _DIR_NAME + "/MacroNotElement1001_2.macro:7");
 	}
 
@@ -1379,7 +1427,7 @@ public class SeleniumBuilderTest {
 	public void testMacroOrElement1001_2() throws Exception {
 		test(
 			"MacroOrElement1001_2.macro",
-			"Error 1001: Missing (echo|execute|fail|if|var|while) child " +
+			"Error 1001: Missing (echo|execute|fail|for|if|var|while) child " +
 				"element in " + _DIR_NAME + "/MacroOrElement1001_2.macro:8");
 	}
 
@@ -1454,7 +1502,7 @@ public class SeleniumBuilderTest {
 	public void testMacroThenElement1001() throws Exception {
 		test(
 			"MacroThenElement1001.macro",
-			"Error 1001: Missing (echo|execute|fail|if|var|while) child " +
+			"Error 1001: Missing (echo|execute|fail|for|if|var|while) child " +
 				"element in " + _DIR_NAME + "/MacroThenElement1001.macro:5");
 	}
 
@@ -1760,10 +1808,37 @@ public class SeleniumBuilderTest {
 	}
 
 	@Test
+	public void testTestCaseActionComplexString1001() throws Exception {
+		test(
+			"TestCaseActionComplexString1001.testcase",
+			"Error 1001: Missing " +
+			"(echo|execute|fail|for|if|property|var|while) " +
+				"child element in " + _DIR_NAME +
+				"/TestCaseActionComplexString1001.testcase:2");
+	}
+
+	@Test
+	public void testTestCaseActionComplexString1004() throws Exception {
+		test(
+			"TestCaseActionComplexString1004.testcase",
+			"Error 1004: Missing (value) attribute in " +
+				_DIR_NAME + "/TestCaseActionComplexString1004.testcase:3");
+	}
+
+	@Test
+	public void testTestCaseActionComplexString1007() throws Exception {
+		test(
+			"TestCaseActionComplexString1007.testcase",
+			"Error 1007: Poorly formed XML in " + _DIR_NAME +
+				"/TestCaseActionComplexString1007.testcase");
+	}
+
+	@Test
 	public void testTestCaseCommandElement1001() throws Exception {
 		test(
 			"TestCaseCommandElement1001.testcase",
-			"Error 1001: Missing (echo|execute|fail|if|property|var|while) " +
+			"Error 1001: Missing " +
+			"(echo|execute|fail|for|if|property|var|while) " +
 				"child element in " + _DIR_NAME +
 				"/TestCaseCommandElement1001.testcase:2");
 	}

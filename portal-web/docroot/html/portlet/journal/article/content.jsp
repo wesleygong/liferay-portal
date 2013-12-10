@@ -332,15 +332,13 @@ if (Validator.isNotNull(content)) {
 										Locale[] locales = LanguageUtil.getAvailableLocales(themeDisplay.getSiteGroupId());
 
 										for (int i = 0; i < locales.length; i++) {
-											if (ArrayUtil.contains(article.getAvailableLanguageIds(), LocaleUtil.toLanguageId(locales[i]))) {
-												continue;
-											}
-
 											String taglibEditArticleURL = HttpUtil.addParameter(editArticleRenderPopUpURL.toString(), renderResponse.getNamespace() + "toLanguageId", LocaleUtil.toLanguageId(locales[i]));
 											String taglibEditURL = "javascript:Liferay.Util.openWindow({cache: false, id: '" + renderResponse.getNamespace() + LocaleUtil.toLanguageId(locales[i]) + "', title: '" + UnicodeLanguageUtil.get(pageContext, "web-content-translation") + "', uri: '" + taglibEditArticleURL + "'});";
 										%>
 
 											<liferay-ui:icon
+												cssClass='<%= ArrayUtil.contains(article.getAvailableLanguageIds(), LocaleUtil.toLanguageId(locales[i])) ? "hide" : StringPool.BLANK %>'
+												id='<%= renderResponse.getNamespace() + "languageId" + LocaleUtil.toLanguageId(locales[i]) %>'
 												image='<%= "../language/" + LocaleUtil.toLanguageId(locales[i]) %>'
 												message="<%= locales[i].getDisplayName(locale) %>"
 												url="<%= taglibEditURL %>"
@@ -476,6 +474,7 @@ if (Validator.isNotNull(content)) {
 					%>
 
 					<liferay-ddm:html
+						checkRequired="<%= classNameId == JournalArticleConstants.CLASSNAME_ID_DEFAULT %>"
 						classNameId="<%= PortalUtil.getClassNameId(DDMStructure.class) %>"
 						classPK="<%= ddmStructure.getStructureId() %>"
 						fields="<%= ddmFields %>"
@@ -535,6 +534,17 @@ if (Validator.isNotNull(content)) {
 				if (translationLink) {
 					translationLink.remove();
 				}
+
+				A.one('#<portlet:namespace />languageId' + newLanguageId).ancestor('li').show();
+
+				var availableLocales = availableTranslationContainer.all('a.lfr-token');
+
+				if (availableLocales.size() === 0) {
+					availableTranslationContainer.removeClass('contains-translations');
+
+					A.one('#<portlet:namespace />availableTranslationsLinks').hide();
+					A.one('#<portlet:namespace />translationsMessage').hide();
+				}
 			}
 			else if (!translationLink) {
 				var availableTranslationsLinks = A.one('#<portlet:namespace />availableTranslationsLinks');
@@ -577,6 +587,8 @@ if (Validator.isNotNull(content)) {
 				);
 
 				availableTranslationsLinks.append(translationLink);
+
+				A.one('#<portlet:namespace />languageId' + newLanguageId).ancestor('li').hide();
 
 				var languageInput = A.Node.create('<input name="<portlet:namespace />available_locales" type="hidden" value="' + newLanguageId + '" />');
 
@@ -629,6 +641,7 @@ if (Validator.isNotNull(content)) {
 				eventName: '<portlet:namespace />selectTemplate',
 				groupId: <%= groupId %>,
 				refererPortletName: '<%= PortletKeys.JOURNAL_CONTENT %>',
+				showGlobalScope: true,
 				struts_action: '/dynamic_data_mapping/select_template',
 				templateId: <%= (ddmTemplate != null) ? ddmTemplate.getTemplateId() : 0 %>,
 				title: '<%= UnicodeLanguageUtil.get(pageContext, "templates") %>'
@@ -700,10 +713,6 @@ if (Validator.isNotNull(content)) {
 							id: windowId,
 							title: '<%= UnicodeLanguageUtil.get(pageContext, "templates") %>',
 
-							<%
-							DDMTemplate curDDMTemplate = DDMTemplateLocalServiceUtil.fetchTemplate(groupId, PortalUtil.getClassNameId(DDMStructure.class), templateId);
-							%>
-
 							<liferay-portlet:renderURL portletName="<%= PortletKeys.DYNAMIC_DATA_MAPPING %>" var="editTemplateURL" windowState="<%= LiferayWindowState.POP_UP.toString() %>">
 								<portlet:param name="struts_action" value="/dynamic_data_mapping/edit_template" />
 								<portlet:param name="closeRedirect" value="<%= currentURL %>" />
@@ -711,7 +720,7 @@ if (Validator.isNotNull(content)) {
 								<portlet:param name="refererPortletName" value="<%= PortletKeys.JOURNAL %>" />
 								<portlet:param name="groupId" value="<%= String.valueOf(groupId) %>" />
 								<portlet:param name="classNameId" value="<%= String.valueOf(classNameId) %>" />
-								<portlet:param name="templateId" value="<%= (curDDMTemplate != null) ? String.valueOf(curDDMTemplate.getTemplateId()) : StringPool.BLANK %>" />
+								<portlet:param name="templateId" value="<%= (ddmTemplate != null) ? String.valueOf(ddmTemplate.getTemplateId()) : StringPool.BLANK %>" />
 							</liferay-portlet:renderURL>
 
 							uri: '<%= editTemplateURL %>'

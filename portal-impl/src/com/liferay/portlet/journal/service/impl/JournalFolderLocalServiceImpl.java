@@ -165,8 +165,14 @@ public class JournalFolderLocalServiceImpl
 
 		// Trash
 
-		trashEntryLocalService.deleteEntry(
-			JournalFolder.class.getName(), folder.getFolderId());
+		if (folder.isInTrashExplicitly()) {
+			trashEntryLocalService.deleteEntry(
+				JournalFolder.class.getName(), folder.getFolderId());
+		}
+		else {
+			trashVersionLocalService.deleteTrashVersion(
+				JournalFolder.class.getName(), folder.getFolderId());
+		}
 
 		return folder;
 	}
@@ -440,14 +446,14 @@ public class JournalFolderLocalServiceImpl
 		JournalFolder folder = journalFolderPersistence.findByPrimaryKey(
 			folderId);
 
-		TrashEntry trashEntry = folder.getTrashEntry();
-
-		if (trashEntry.isTrashEntry(JournalFolder.class, folderId)) {
+		if (folder.isInTrashExplicitly()) {
 			restoreFolderFromTrash(userId, folderId);
 		}
 		else {
 
 			// Folder
+
+			TrashEntry trashEntry = folder.getTrashEntry();
 
 			TrashVersion trashVersion =
 				trashVersionLocalService.fetchVersion(
@@ -549,7 +555,7 @@ public class JournalFolderLocalServiceImpl
 					return journalFolderPersistence.findByF_C_P_NotS(
 						previousId, companyId, parentPrimaryKey,
 						WorkflowConstants.STATUS_IN_TRASH, QueryUtil.ALL_POS,
-						size, new FolderIdComparator());
+						size, new FolderIdComparator(true));
 				}
 
 			}

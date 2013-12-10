@@ -164,7 +164,16 @@ for (int i = 0; i < results.size(); i++) {
 		continue;
 	}
 
-	ResourceURL editPermissionsURL = liferayPortletResponse.createResourceURL();
+	ResourceURL editPermissionsResourceURL = liferayPortletResponse.createResourceURL();
+
+	editPermissionsResourceURL.setParameter("struts_action", "/roles_admin/edit_role_permissions");
+	editPermissionsResourceURL.setParameter(Constants.CMD, Constants.EDIT);
+	editPermissionsResourceURL.setParameter("tabs1", "roles");
+	editPermissionsResourceURL.setParameter("roleId", String.valueOf(role.getRoleId()));
+	editPermissionsResourceURL.setParameter("redirect", permissionsAllURL.toString());
+	editPermissionsResourceURL.setParameter("portletResource", curPortletName);
+
+	PortletURL editPermissionsURL = liferayPortletResponse.createRenderURL();
 
 	editPermissionsURL.setParameter("struts_action", "/roles_admin/edit_role_permissions");
 	editPermissionsURL.setParameter(Constants.CMD, Constants.EDIT);
@@ -175,7 +184,11 @@ for (int i = 0; i < results.size(); i++) {
 
 	StringBundler sb = new StringBundler();
 
-	sb.append("<a class=\"permission-navigation-link\" href=\"");
+	sb.append("<a class=\"permission-navigation-link\" data-resource-href=\"");
+	sb.append(editPermissionsResourceURL);
+	sb.append(StringPool.POUND);
+	sb.append(_getResourceHtmlId(curResource));
+	sb.append("\" href=\"");
 	sb.append(editPermissionsURL);
 	sb.append(StringPool.POUND);
 	sb.append(_getResourceHtmlId(curResource));

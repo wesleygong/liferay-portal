@@ -165,8 +165,14 @@ public class BookmarksFolderLocalServiceImpl
 
 		// Trash
 
-		trashEntryLocalService.deleteEntry(
-			BookmarksFolder.class.getName(), folder.getFolderId());
+		if (folder.isInTrashExplicitly()) {
+			trashEntryLocalService.deleteEntry(
+				BookmarksFolder.class.getName(), folder.getFolderId());
+		}
+		else {
+			trashVersionLocalService.deleteTrashVersion(
+				BookmarksFolder.class.getName(), folder.getFolderId());
+		}
 
 		return folder;
 	}
@@ -364,14 +370,14 @@ public class BookmarksFolderLocalServiceImpl
 		BookmarksFolder folder = bookmarksFolderPersistence.findByPrimaryKey(
 			folderId);
 
-		TrashEntry trashEntry = folder.getTrashEntry();
-
-		if (trashEntry.isTrashEntry(BookmarksFolder.class, folderId)) {
+		if (folder.isInTrashExplicitly()) {
 			restoreFolderFromTrash(userId, folderId);
 		}
 		else {
 
 			// Folder
+
+			TrashEntry trashEntry = folder.getTrashEntry();
 
 			TrashVersion trashVersion =
 				trashVersionLocalService.fetchVersion(
@@ -465,7 +471,7 @@ public class BookmarksFolderLocalServiceImpl
 					return bookmarksFolderPersistence.findByF_C_P_NotS(
 						previousId, companyId, parentPrimaryKey,
 						WorkflowConstants.STATUS_IN_TRASH, QueryUtil.ALL_POS,
-						size, new FolderIdComparator());
+						size, new FolderIdComparator(true));
 				}
 
 			}
@@ -786,7 +792,7 @@ public class BookmarksFolderLocalServiceImpl
 
 				if (oldStatus != WorkflowConstants.STATUS_APPROVED) {
 					trashVersionLocalService.addTrashVersion(
-						trashEntryId, BookmarksEntry.class.getName(),
+						trashEntryId, BookmarksFolder.class.getName(),
 						folder.getFolderId(), oldStatus, null);
 				}
 

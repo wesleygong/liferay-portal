@@ -33,6 +33,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.Layout;
+import com.liferay.portal.model.TrashedModel;
 import com.liferay.portal.security.auth.PrincipalException;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
@@ -67,15 +68,19 @@ import com.liferay.portlet.journal.DuplicateArticleIdException;
 import com.liferay.portlet.journal.NoSuchArticleException;
 import com.liferay.portlet.journal.asset.JournalArticleAssetRenderer;
 import com.liferay.portlet.journal.model.JournalArticle;
+import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import com.liferay.portlet.journal.service.JournalArticleServiceUtil;
 import com.liferay.portlet.journal.service.JournalContentSearchLocalServiceUtil;
 import com.liferay.portlet.journal.util.JournalConverterUtil;
 import com.liferay.portlet.journal.util.JournalUtil;
+import com.liferay.portlet.trash.util.TrashUtil;
 
 import java.io.File;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -156,9 +161,6 @@ public class EditArticleAction extends PortletAction {
 			}
 			else if (cmd.equals(Constants.MOVE_TO_TRASH)) {
 				deleteArticles(actionRequest, true);
-			}
-			else if (cmd.equals(Constants.RESTORE)) {
-				restoreArticles(actionRequest);
 			}
 			else if (cmd.equals(Constants.SUBSCRIBE)) {
 				subscribeArticles(actionRequest);
@@ -348,8 +350,6 @@ public class EditArticleAction extends PortletAction {
 		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		String deleteEntryTitle = null;
-
 		String[] deleteArticleIds = null;
 
 		String articleId = ParamUtil.getString(actionRequest, "articleId");
@@ -362,47 +362,23 @@ public class EditArticleAction extends PortletAction {
 				ParamUtil.getString(actionRequest, "articleIds"));
 		}
 
-		long[] restoreArticleIds = new long[deleteArticleIds.length];
+		List<TrashedModel> trashedModels = new ArrayList<TrashedModel>();
 
-		for (int i = 0; i < deleteArticleIds.length; i++) {
-			String deleteArticleId = deleteArticleIds[i];
-
+		for (String deleteArticleId : deleteArticleIds) {
 			if (moveToTrash) {
 				JournalArticle article =
 					JournalArticleServiceUtil.moveArticleToTrash(
 						themeDisplay.getScopeGroupId(), deleteArticleId);
 
-				if (i == 0) {
-					deleteEntryTitle = article.getTitle(
-						themeDisplay.getLocale());
-				}
-
-				restoreArticleIds[i] = article.getResourcePrimKey();
+				trashedModels.add(article);
 			}
 			else {
 				ActionUtil.deleteArticle(actionRequest, deleteArticleId);
 			}
 		}
 
-		if (moveToTrash && (deleteArticleIds.length > 0)) {
-			Map<String, String[]> data = new HashMap<String, String[]>();
-
-			data.put(
-				"deleteEntryClassName",
-				new String[] {JournalArticle.class.getName()});
-
-			if (Validator.isNotNull(deleteEntryTitle)) {
-				data.put("deleteEntryTitle", new String[] {deleteEntryTitle});
-			}
-
-			data.put(
-				"restoreArticleIds",
-				ArrayUtil.toStringArray(restoreArticleIds));
-
-			SessionMessages.add(
-				actionRequest,
-				PortalUtil.getPortletId(actionRequest) +
-					SessionMessages.KEY_SUFFIX_DELETE_SUCCESS_DATA, data);
+		if (moveToTrash && !trashedModels.isEmpty()) {
+			TrashUtil.addTrashSessionMessages(actionRequest, trashedModels);
 
 			hideDefaultSuccessMessage(actionRequest);
 		}
@@ -506,21 +482,6 @@ public class EditArticleAction extends PortletAction {
 		}
 	}
 
-	protected void restoreArticles(ActionRequest actionRequest)
-		throws Exception {
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		String[] restoreEntryIds = StringUtil.split(
-			ParamUtil.getString(actionRequest, "restoreEntryIds"));
-
-		for (String restoreEntryId : restoreEntryIds) {
-			JournalArticleServiceUtil.restoreArticleFromTrash(
-				themeDisplay.getScopeGroupId(), restoreEntryId);
-		}
-	}
-
 	protected void subscribeArticles(ActionRequest actionRequest)
 		throws Exception {
 
@@ -615,10 +576,25 @@ public class EditArticleAction extends PortletAction {
 				languageId = defaultLanguageId;
 			}
 
-			Locale locale = LocaleUtil.fromLanguageId(languageId);
+			long id = 0;
+			boolean inherited = false;
+
+			if (cmd.equals(Constants.TRANSLATE)) {
+				JournalArticle article =
+					JournalArticleLocalServiceUtil.getArticle(
+						groupId, articleId, version);
+
+				if (!ArrayUtil.contains(
+						article.getAvailableLanguageIds(), languageId)) {
+
+					id = article.getId();
+					inherited = true;
+				}
+			}
 
 			Object[] contentAndImages = ActionUtil.getContentAndImages(
-				ddmStructure, locale, serviceContext);
+				ddmStructure, id, LocaleUtil.fromLanguageId(languageId),
+				defaultLocale, inherited, serviceContext);
 
 			content = (String)contentAndImages[0];
 			images = (HashMap<String, byte[]>)contentAndImages[1];

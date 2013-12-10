@@ -198,15 +198,8 @@ public class ServiceBuilder {
 
 		String fileName = arguments.get("service.input.file");
 		String hbmFileName = arguments.get("service.hbm.file");
-		String ormFileName = arguments.get("service.orm.file");
 		String modelHintsFileName = arguments.get("service.model.hints.file");
 		String springFileName = arguments.get("service.spring.file");
-		String springBaseFileName = arguments.get("service.spring.base.file");
-		String springClusterFileName = arguments.get("service.spring.cluster.file");
-		String springDynamicDataSourceFileName = arguments.get("service.spring.dynamic.data.source.file");
-		String springHibernateFileName = arguments.get("service.spring.hibernate.file");
-		String springInfrastructureFileName = arguments.get("service.spring.infrastructure.file");
-		String springShardDataSourceFileName = arguments.get("service.spring.shard.data.source.file");
 		String apiDir = arguments.get("service.api.dir");
 		String implDir = arguments.get("service.impl.dir");
 		String remotingFileName = arguments.get("service.remoting.file");
@@ -226,10 +219,7 @@ public class ServiceBuilder {
 
 		try {
 			new ServiceBuilder(
-				fileName, hbmFileName, ormFileName, modelHintsFileName,
-				springFileName, springBaseFileName, springClusterFileName,
-				springDynamicDataSourceFileName, springHibernateFileName,
-				springInfrastructureFileName, springShardDataSourceFileName,
+				fileName, hbmFileName, modelHintsFileName, springFileName,
 				apiDir, implDir, remotingFileName, sqlDir, sqlFileName,
 				sqlIndexesFileName, sqlIndexesPropertiesFileName,
 				sqlSequencesFileName, autoNamespaceTables, beanLocatorUtil,
@@ -242,7 +232,6 @@ public class ServiceBuilder {
 				"\n" +
 				"\tservice.input.file=${service.file}\n" +
 				"\tservice.hbm.file=${basedir}/src/META-INF/portal-hbm.xml\n" +
-				"\tservice.orm.file=${basedir}/src/META-INF/portal-orm.xml\n" +
 				"\tservice.model.hints.file=${basedir}/src/META-INF/portal-model-hints.xml\n" +
 				"\tservice.spring.file=${basedir}/src/META-INF/portal-spring.xml\n" +
 				"\tservice.api.dir=${basedir}/../portal-service/src\n" +
@@ -278,7 +267,6 @@ public class ServiceBuilder {
 				"\t-Dservice.tpl.finder=" + _TPL_ROOT + "finder.ftl\n"+
 				"\t-Dservice.tpl.finder_util=" + _TPL_ROOT + "finder_util.ftl\n"+
 				"\t-Dservice.tpl.hbm_xml=" + _TPL_ROOT + "hbm_xml.ftl\n"+
-				"\t-Dservice.tpl.orm_xml=" + _TPL_ROOT + "orm_xml.ftl\n"+
 				"\t-Dservice.tpl.json_js=" + _TPL_ROOT + "json_js.ftl\n"+
 				"\t-Dservice.tpl.json_js_method=" + _TPL_ROOT + "json_js_method.ftl\n"+
 				"\t-Dservice.tpl.model=" + _TPL_ROOT + "model.ftl\n"+
@@ -303,9 +291,6 @@ public class ServiceBuilder {
 				"\t-Dservice.tpl.service_soap=" + _TPL_ROOT + "service_soap.ftl\n"+
 				"\t-Dservice.tpl.service_util=" + _TPL_ROOT + "service_util.ftl\n"+
 				"\t-Dservice.tpl.service_wrapper=" + _TPL_ROOT + "service_wrapper.ftl\n"+
-				"\t-Dservice.tpl.spring_base_xml=" + _TPL_ROOT + "spring_base_xml.ftl\n"+
-				"\t-Dservice.tpl.spring_hibernate_xml=" + _TPL_ROOT + "spring_hibernate_xml.ftl\n"+
-				"\t-Dservice.tpl.spring_infrastructure_xml=" + _TPL_ROOT + "spring_infrastructure_xml.ftl\n"+
 				"\t-Dservice.tpl.spring_xml=" + _TPL_ROOT + "spring_xml.ftl\n"+
 				"\t-Dservice.tpl.spring_xml_session=" + _TPL_ROOT + "spring_xml_session.ftl");
 
@@ -492,12 +477,8 @@ public class ServiceBuilder {
 	}
 
 	public ServiceBuilder(
-		String fileName, String hbmFileName, String ormFileName,
-		String modelHintsFileName, String springFileName,
-		String springBaseFileName, String springClusterFileName,
-		String springDynamicDataSourceFileName, String springHibernateFileName,
-		String springInfrastructureFileName,
-		String springShardDataSourceFileName, String apiDir, String implDir,
+		String fileName, String hbmFileName, String modelHintsFileName,
+		String springFileName, String apiDir, String implDir,
 		String remotingFileName, String sqlDir, String sqlFileName,
 		String sqlIndexesFileName, String sqlIndexesPropertiesFileName,
 		String sqlSequencesFileName, boolean autoNamespaceTables,
@@ -505,10 +486,7 @@ public class ServiceBuilder {
 		String targetEntityName, String testDir) {
 
 		this(
-			fileName, hbmFileName, ormFileName, modelHintsFileName,
-			springFileName, springBaseFileName, springClusterFileName,
-			springDynamicDataSourceFileName, springHibernateFileName,
-			springInfrastructureFileName, springShardDataSourceFileName, apiDir,
+			fileName, hbmFileName, modelHintsFileName, springFileName, apiDir,
 			implDir, remotingFileName, sqlDir, sqlFileName, sqlIndexesFileName,
 			sqlIndexesPropertiesFileName, sqlSequencesFileName,
 			autoNamespaceTables, beanLocatorUtil, propsUtil, pluginName,
@@ -516,12 +494,8 @@ public class ServiceBuilder {
 	}
 
 	public ServiceBuilder(
-		String fileName, String hbmFileName, String ormFileName,
-		String modelHintsFileName, String springFileName,
-		String springBaseFileName, String springClusterFileName,
-		String springDynamicDataSourceFileName, String springHibernateFileName,
-		String springInfrastructureFileName,
-		String springShardDataSourceFileName, String apiDir, String implDir,
+		String fileName, String hbmFileName, String modelHintsFileName,
+		String springFileName, String apiDir, String implDir,
 		String remotingFileName, String sqlDir, String sqlFileName,
 		String sqlIndexesFileName, String sqlIndexesPropertiesFileName,
 		String sqlSequencesFileName, boolean autoNamespaceTables,
@@ -547,7 +521,6 @@ public class ServiceBuilder {
 		_tplFinder = _getTplProperty("finder", _tplFinder);
 		_tplFinderUtil = _getTplProperty("finder_util", _tplFinderUtil);
 		_tplHbmXml = _getTplProperty("hbm_xml", _tplHbmXml);
-		_tplOrmXml = _getTplProperty("orm_xml", _tplOrmXml);
 		_tplJsonJs = _getTplProperty("json_js", _tplJsonJs);
 		_tplJsonJsMethod = _getTplProperty("json_js_method", _tplJsonJsMethod);
 		_tplModel = _getTplProperty("model", _tplModel);
@@ -581,16 +554,6 @@ public class ServiceBuilder {
 		_tplServiceUtil = _getTplProperty("service_util", _tplServiceUtil);
 		_tplServiceWrapper = _getTplProperty(
 			"service_wrapper", _tplServiceWrapper);
-		_tplSpringBaseXml = _getTplProperty(
-			"spring_base_xml", _tplSpringBaseXml);
-		_tplSpringClusterXml = _getTplProperty(
-			"spring_cluster_xml", _tplSpringClusterXml);
-		_tplSpringHibernateXml = _getTplProperty(
-			"spring_hibernate_xml", _tplSpringHibernateXml);
-		_tplSpringInfrastructureXml = _getTplProperty(
-			"spring_infrastructure_xml", _tplSpringInfrastructureXml);
-		_tplSpringShardDataSourceXml = _getTplProperty(
-			"spring_shard_data_source_xml", _tplSpringShardDataSourceXml);
 		_tplSpringXml = _getTplProperty("spring_xml", _tplSpringXml);
 
 		try {
@@ -598,15 +561,8 @@ public class ServiceBuilder {
 			_badAliasNames = _readLines(_tplBadAliasNames);
 			_badColumnNames = _readLines(_tplBadColumnNames);
 			_hbmFileName = hbmFileName;
-			_ormFileName = ormFileName;
 			_modelHintsFileName = modelHintsFileName;
 			_springFileName = springFileName;
-			_springBaseFileName = springBaseFileName;
-			_springClusterFileName = springClusterFileName;
-			_springDynamicDataSourceFileName = springDynamicDataSourceFileName;
-			_springHibernateFileName = springHibernateFileName;
-			_springInfrastructureFileName = springInfrastructureFileName;
-			_springShardDataSourceFileName = springShardDataSourceFileName;
 			_apiDir = apiDir;
 			_implDir = implDir;
 			_remotingFileName = remotingFileName;
@@ -825,7 +781,6 @@ public class ServiceBuilder {
 				}
 
 				_createHbmXml();
-				_createOrmXml();
 				_createModelHintsXml();
 				_createSpringXml();
 
@@ -843,12 +798,9 @@ public class ServiceBuilder {
 				_createSQLSequences();
 
 				_createProps();
-				_createSpringBaseXml();
-				_createSpringClusterXml();
-				_createSpringDynamicDataSourceXml();
-				_createSpringHibernateXml();
-				_createSpringInfrastructureXml();
-				_createSpringShardDataSourceXml();
+
+				_deleteOrmXml();
+				_deleteSpringLegacyXml();
 			}
 		}
 		catch (FileNotFoundException fnfe) {
@@ -1010,10 +962,7 @@ public class ServiceBuilder {
 		}
 
 		ServiceBuilder serviceBuilder = new ServiceBuilder(
-			refFileName, _hbmFileName, _ormFileName, _modelHintsFileName,
-			_springFileName, _springBaseFileName, _springClusterFileName,
-			_springDynamicDataSourceFileName, _springHibernateFileName,
-			_springInfrastructureFileName, _springShardDataSourceFileName,
+			refFileName, _hbmFileName, _modelHintsFileName, _springFileName,
 			_apiDir, _implDir, _remotingFileName, _sqlDir, _sqlFileName,
 			_sqlIndexesFileName, _sqlIndexesPropertiesFileName,
 			_sqlSequencesFileName, _autoNamespaceTables, _beanLocatorUtil,
@@ -2418,114 +2367,6 @@ public class ServiceBuilder {
 		writeFile(modelFile, content, _author);
 	}
 
-	private void _createOrmXml() throws Exception {
-		Map<String, Object> context = _getContext();
-
-		context.put("entities", _ejbList);
-
-		// Content
-
-		String content = _processTemplate(_tplOrmXml, context);
-
-		String mappedClasses = "";
-
-		int lastMappedClassStart = content.lastIndexOf("<mapped-superclass");
-
-		if (lastMappedClassStart != -1) {
-			int lastMappedClassEnd = content.indexOf(
-				"</mapped-superclass>", lastMappedClassStart) + 20;
-
-			mappedClasses = content.substring(0, lastMappedClassEnd);
-
-			content = content.substring(lastMappedClassEnd + 1);
-		}
-
-		File xmlFile = new File(_ormFileName);
-
-		if (!xmlFile.exists()) {
-			String xml =
-				"<?xml version=\"1.0\"?>\n" +
-				"<entity-mappings version=\"1.0\" xmlns=\"http://java.sun.com/xml/ns/persistence/orm\"\n" +
-				"\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-				"\txsi:schemaLocation=\"http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd\"\n" +
-				">\n" +
-				"<persistence-unit-metadata>\n" +
-				"\t<xml-mapping-metadata-complete />\n" +
-				"\t<persistence-unit-defaults>\n" +
-				"\t\t<access>PROPERTY</access>\n" +
-				"\t</persistence-unit-defaults>\n" +
-				"</persistence-unit-metadata>\n" +
-				"</entity-mappings>";
-
-			FileUtil.write(xmlFile, xml);
-		}
-
-		String oldContent = FileUtil.read(xmlFile);
-		String newContent = oldContent;
-
-		int firstMappedClass = newContent.indexOf(
-			"<mapped-superclass class=\"" + _packagePath + ".model.");
-		int lastMappedClass = newContent.lastIndexOf(
-			"<mapped-superclass class=\"" + _packagePath + ".model.");
-
-		if (firstMappedClass == -1) {
-			int x = newContent.indexOf("<entity class=");
-
-			if (x != -1) {
-				newContent =
-					newContent.substring(0, x) + mappedClasses +
-						newContent.substring(x);
-			}
-			else {
-				content = mappedClasses + content;
-			}
-		}
-		else {
-			firstMappedClass = newContent.indexOf(
-				"<mapped-superclass", firstMappedClass) - 1;
-			lastMappedClass = newContent.indexOf(
-				"</mapped-superclass>", lastMappedClass) + 20;
-
-			newContent =
-				newContent.substring(0, firstMappedClass) + mappedClasses +
-					newContent.substring(lastMappedClass);
-		}
-
-		int firstEntity = newContent.indexOf(
-			"<entity class=\"" + _packagePath + ".model.impl.");
-		int lastEntity = newContent.lastIndexOf(
-			"<entity class=\"" + _packagePath + ".model.impl.");
-
-		if (firstEntity == -1) {
-			int x = newContent.indexOf("</entity-mappings>");
-
-			if (x != -1) {
-				newContent =
-					newContent.substring(0, x) + content +
-						newContent.substring(x);
-			}
-		}
-		else {
-			firstEntity = newContent.lastIndexOf("<entity", firstEntity) - 1;
-			lastEntity = newContent.indexOf("</entity>", lastEntity) + 9;
-
-			newContent =
-				newContent.substring(0, firstEntity) + content +
-					newContent.substring(lastEntity);
-		}
-
-		newContent = _formatXml(newContent);
-
-		newContent = StringUtil.replace(
-			newContent,
-			new String[] {"<attributes></attributes>", "<attributes/>"},
-			new String[] {"<attributes />", "<attributes />"});
-
-		if (!oldContent.equals(newContent)) {
-			FileUtil.write(xmlFile, newContent);
-		}
-	}
-
 	private void _createPersistence(Entity entity) throws Exception {
 		JavaClass javaClass = _getJavaClass(
 			_outputPath + "/service/persistence/" + entity.getName() +
@@ -3203,106 +3044,6 @@ public class ServiceBuilder {
 		writeFile(ejbFile, content, _author);
 	}
 
-	private void _createSpringBaseXml() throws Exception {
-		if (Validator.isNull(_springBaseFileName)) {
-			return;
-		}
-
-		// Content
-
-		String content = _processTemplate(_tplSpringBaseXml);
-
-		// Write file
-
-		File ejbFile = new File(_springBaseFileName);
-
-		FileUtil.write(ejbFile, content, true);
-
-		if (Validator.isNotNull(_pluginName)) {
-			FileUtil.delete(
-				"docroot/WEB-INF/src/META-INF/data-source-spring.xml");
-			FileUtil.delete("docroot/WEB-INF/src/META-INF/misc-spring.xml");
-		}
-	}
-
-	private void _createSpringClusterXml() throws Exception {
-		if (Validator.isNull(_springClusterFileName)) {
-			return;
-		}
-
-		// Content
-
-		String content = _processTemplate(_tplSpringClusterXml);
-
-		// Write file
-
-		File ejbFile = new File(_springClusterFileName);
-
-		FileUtil.write(ejbFile, content, true);
-	}
-
-	private void _createSpringDynamicDataSourceXml() throws Exception {
-		if (Validator.isNull(_springDynamicDataSourceFileName)) {
-			return;
-		}
-
-		File ejbFile = new File(_springDynamicDataSourceFileName);
-
-		if (ejbFile.exists()) {
-			System.out.println("Removing deprecated " + ejbFile);
-
-			ejbFile.delete();
-		}
-	}
-
-	private void _createSpringHibernateXml() throws Exception {
-		if (Validator.isNull(_springHibernateFileName)) {
-			return;
-		}
-
-		// Content
-
-		String content = _processTemplate(_tplSpringHibernateXml);
-
-		// Write file
-
-		File ejbFile = new File(_springHibernateFileName);
-
-		FileUtil.write(ejbFile, content, true);
-	}
-
-	private void _createSpringInfrastructureXml() throws Exception {
-		if (Validator.isNull(_springInfrastructureFileName)) {
-			return;
-		}
-
-		// Content
-
-		String content = _processTemplate(_tplSpringInfrastructureXml);
-
-		// Write file
-
-		File ejbFile = new File(_springInfrastructureFileName);
-
-		FileUtil.write(ejbFile, content, true);
-	}
-
-	private void _createSpringShardDataSourceXml() throws Exception {
-		if (Validator.isNull(_springShardDataSourceFileName)) {
-			return;
-		}
-
-		// Content
-
-		String content = _processTemplate(_tplSpringShardDataSourceXml);
-
-		// Write file
-
-		File ejbFile = new File(_springShardDataSourceFileName);
-
-		FileUtil.write(ejbFile, content, true);
-	}
-
 	private void _createSpringXml() throws Exception {
 		if (_packagePath.equals("com.liferay.counter")) {
 			return;
@@ -3828,6 +3569,32 @@ public class ServiceBuilder {
 		}
 	}
 
+	private void _deleteOrmXml() throws Exception {
+		if (Validator.isNull(_pluginName)) {
+			return;
+		}
+
+		FileUtil.delete("docroot/WEB-INF/src/META-INF/portlet-orm.xml");
+	}
+
+	private void _deleteSpringLegacyXml() throws Exception {
+		if (Validator.isNull(_pluginName)) {
+			return;
+		}
+
+		FileUtil.delete("docroot/WEB-INF/src/META-INF/base-spring.xml");
+		FileUtil.delete("docroot/WEB-INF/src/META-INF/cluster-spring.xml");
+		FileUtil.delete("docroot/WEB-INF/src/META-INF/data-source-spring.xml");
+		FileUtil.delete(
+			"docroot/WEB-INF/src/META-INF/dynamic-data-source-spring.xml");
+		FileUtil.delete("docroot/WEB-INF/src/META-INF/hibernate-spring.xml");
+		FileUtil.delete(
+			"docroot/WEB-INF/src/META-INF/infrastructure-spring.xml");
+		FileUtil.delete("docroot/WEB-INF/src/META-INF/misc-spring.xml");
+		FileUtil.delete(
+			"docroot/WEB-INF/src/META-INF/shard-data-source-spring.xml");
+	}
+
 	private String _fixHbmXml(String content) throws IOException {
 		StringBundler sb = new StringBundler();
 
@@ -3975,13 +3742,8 @@ public class ServiceBuilder {
 		Map<String, Object> context = new HashMap<String, Object>();
 
 		context.put("hbmFileName", _hbmFileName);
-		context.put("ormFileName", _ormFileName);
 		context.put("modelHintsFileName", _modelHintsFileName);
 		context.put("springFileName", _springFileName);
-		context.put("springBaseFileName", _springBaseFileName);
-		context.put("springHibernateFileName", _springHibernateFileName);
-		context.put(
-			"springInfrastructureFileName", _springInfrastructureFileName);
 		context.put("apiDir", _apiDir);
 		context.put("implDir", _implDir);
 		context.put("sqlDir", _sqlDir);
@@ -4966,10 +4728,6 @@ public class ServiceBuilder {
 				txRequiredList));
 	}
 
-	private String _processTemplate(String name) throws Exception {
-		return _processTemplate(name, _getContext());
-	}
-
 	private String _processTemplate(String name, Map<String, Object> context)
 		throws Exception {
 
@@ -5046,7 +4804,6 @@ public class ServiceBuilder {
 	private Map<String, JavaClass> _javaClasses =
 		new HashMap<String, JavaClass>();
 	private String _modelHintsFileName;
-	private String _ormFileName;
 	private String _outputPath;
 	private String _packagePath;
 	private String _pluginName;
@@ -5056,13 +4813,7 @@ public class ServiceBuilder {
 	private String _propsUtil;
 	private String _remotingFileName;
 	private String _serviceOutputPath;
-	private String _springBaseFileName;
-	private String _springClusterFileName;
-	private String _springDynamicDataSourceFileName;
 	private String _springFileName;
-	private String _springHibernateFileName;
-	private String _springInfrastructureFileName;
-	private String _springShardDataSourceFileName;
 	private String _sqlDir;
 	private String _sqlFileName;
 	private String _sqlIndexesFileName;
@@ -5098,7 +4849,6 @@ public class ServiceBuilder {
 	private String _tplModelImpl = _TPL_ROOT + "model_impl.ftl";
 	private String _tplModelSoap = _TPL_ROOT + "model_soap.ftl";
 	private String _tplModelWrapper = _TPL_ROOT + "model_wrapper.ftl";
-	private String _tplOrmXml = _TPL_ROOT + "orm_xml.ftl";
 	private String _tplPersistence = _TPL_ROOT + "persistence.ftl";
 	private String _tplPersistenceImpl = _TPL_ROOT + "persistence_impl.ftl";
 	private String _tplPersistenceTest = _TPL_ROOT + "persistence_test.ftl";
@@ -5119,14 +4869,6 @@ public class ServiceBuilder {
 	private String _tplServiceSoap = _TPL_ROOT + "service_soap.ftl";
 	private String _tplServiceUtil = _TPL_ROOT + "service_util.ftl";
 	private String _tplServiceWrapper = _TPL_ROOT + "service_wrapper.ftl";
-	private String _tplSpringBaseXml = _TPL_ROOT + "spring_base_xml.ftl";
-	private String _tplSpringClusterXml = _TPL_ROOT + "spring_cluster_xml.ftl";
-	private String _tplSpringHibernateXml =
-		_TPL_ROOT + "spring_hibernate_xml.ftl";
-	private String _tplSpringInfrastructureXml =
-		_TPL_ROOT + "spring_infrastructure_xml.ftl";
-	private String _tplSpringShardDataSourceXml =
-		_TPL_ROOT + "spring_shard_data_source_xml.ftl";
 	private String _tplSpringXml = _TPL_ROOT + "spring_xml.ftl";
 
 }

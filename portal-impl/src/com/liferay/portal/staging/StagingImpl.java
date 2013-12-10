@@ -1770,6 +1770,10 @@ public class StagingImpl implements Staging {
 			long groupId, boolean privateLayout, Date lastPublishDate)
 		throws Exception {
 
+		if (lastPublishDate == null) {
+			lastPublishDate = new Date();
+		}
+
 		LayoutSet layoutSet = LayoutSetLocalServiceUtil.getLayoutSet(
 			groupId, privateLayout);
 
@@ -1789,6 +1793,10 @@ public class StagingImpl implements Staging {
 			String portletId, PortletPreferences portletPreferences,
 			Date lastPublishDate)
 		throws Exception {
+
+		if (lastPublishDate == null) {
+			lastPublishDate = new Date();
+		}
 
 		try {
 			portletPreferences.setValue(
@@ -1822,8 +1830,7 @@ public class StagingImpl implements Staging {
 		long userId = permissionChecker.getUserId();
 
 		if (!GroupPermissionUtil.contains(
-				permissionChecker, liveGroup.getGroupId(),
-				ActionKeys.MANAGE_STAGING)) {
+				permissionChecker, liveGroup, ActionKeys.MANAGE_STAGING)) {
 
 			return;
 		}

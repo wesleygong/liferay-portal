@@ -22,7 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Brian Wing Shun Chan
+ * @author     Brian Wing Shun Chan
+ * @deprecated As of 7.0.0, moved to {@link
+ *             com.liferay.portal.words.BasicSpellCheckListener}
  */
 public class BasicSpellCheckListener implements SpellCheckListener {
 

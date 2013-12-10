@@ -692,6 +692,14 @@
 		<put name="portlet_content" value="/portlet/image_gallery_display/view_slide_show.jsp" />
 	</definition>
 
+	<!-- Image Uploader -->
+
+	<definition name="portlet.image_uploader" extends="portlet" />
+
+	<definition name="portlet.image_uploader.view" extends="portlet.image_uploader">
+		<put name="portlet_content" value="/portlet/image_uploader/view.jsp" />
+	</definition>
+
 	<!-- Invitation -->
 
 	<definition name="portlet.invitation" extends="portlet" />
@@ -1194,10 +1202,6 @@
 		<put name="portlet_content" value="/portlet/portal_settings/edit_company.jsp" />
 	</definition>
 
-	<definition name="portlet.portal_settings.edit_company_logo" extends="portlet.portal_settings">
-		<put name="portlet_content" value="/portlet/portal_settings/edit_company_logo.jsp" />
-	</definition>
-
 	<definition name="portlet.portal_settings.edit_ldap_server" extends="portlet.portal_settings">
 		<put name="portlet_content" value="/portlet/portal_settings/edit_ldap_server.jsp" />
 	</definition>
@@ -1671,16 +1675,8 @@
 		<put name="portlet_content" value="/portlet/users_admin/edit_organization_assignments.jsp" />
 	</definition>
 
-	<definition name="portlet.users_admin.edit_organization_logo" extends="portlet.users_admin">
-		<put name="portlet_content" value="/portlet/users_admin/edit_organization_logo.jsp" />
-	</definition>
-
 	<definition name="portlet.users_admin.edit_user" extends="portlet.users_admin">
 		<put name="portlet_content" value="/portlet/users_admin/edit_user.jsp" />
-	</definition>
-
-	<definition name="portlet.users_admin.edit_user_portrait" extends="portlet.users_admin">
-		<put name="portlet_content" value="/portlet/users_admin/edit_user_portrait.jsp" />
 	</definition>
 
 	<definition name="portlet.users_admin.error" extends="portlet.users_admin">

@@ -68,18 +68,6 @@ else {
 	privateLayout = layout.isPrivateLayout();
 }
 
-String scopeLayoutUuid = portletPreferences.getValue("lfrScopeLayoutUuid", null);
-
-if (Validator.isNotNull(scopeLayoutUuid)) {
-	Layout scopeLayout = LayoutLocalServiceUtil.fetchLayoutByUuidAndGroupId(scopeLayoutUuid, group.getGroupId(), privateLayout);
-
-	if (scopeLayout != null) {
-		portletPreferencesIds = PortletPreferencesFactoryUtil.getPortletPreferencesIds(request, scopeLayout, portletId);
-
-		portletPreferences = PortletPreferencesLocalServiceUtil.getStrictPreferences(portletPreferencesIds);
-	}
-}
-
 long portletItemId = ParamUtil.getLong(request, "p_p_i_id");
 
 if (portletItemId > 0) {
@@ -783,11 +771,11 @@ Boolean renderPortletBoundary = GetterUtil.getBoolean(request.getAttribute(WebKe
 		Properties freeformStyleProps = PropertiesUtil.load(portletSetup.getValue("portlet-freeform-styles", StringPool.BLANK));
 
 		sb.append("style=\"left: ");
-		sb.append(GetterUtil.getString(freeformStyleProps.getProperty("left"), "0"));
+		sb.append(GetterUtil.getString(HtmlUtil.escapeAttribute(freeformStyleProps.getProperty("left")), "0"));
 		sb.append("; position: absolute; top: ");
-		sb.append(GetterUtil.getString(freeformStyleProps.getProperty("top"), "0"));
+		sb.append(GetterUtil.getString(HtmlUtil.escapeAttribute(freeformStyleProps.getProperty("top")), "0"));
 		sb.append("; width: ");
-		sb.append(GetterUtil.getString(freeformStyleProps.getProperty("width"), "400px"));
+		sb.append(GetterUtil.getString(HtmlUtil.escapeAttribute(freeformStyleProps.getProperty("width")), "400px"));
 		sb.append(";\"");
 
 		freeformStyles = sb.toString();

@@ -162,7 +162,7 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 		long folderId = thread.getAttachmentsFolderId();
 
 		if (folderId != DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
-			PortletFileRepositoryUtil.deleteFolder(folderId);
+			PortletFileRepositoryUtil.deletePortletFolder(folderId);
 		}
 
 		// Subscriptions
@@ -255,8 +255,14 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 
 		// Trash
 
-		trashEntryLocalService.deleteEntry(
-			MBThread.class.getName(), thread.getThreadId());
+		if (thread.isInTrashExplicitly()) {
+			trashEntryLocalService.deleteEntry(
+				MBThread.class.getName(), thread.getThreadId());
+		}
+		else {
+			trashVersionLocalService.deleteTrashVersion(
+				MBThread.class.getName(), thread.getThreadId());
+		}
 
 		// Indexer
 
@@ -811,14 +817,14 @@ public class MBThreadLocalServiceImpl extends MBThreadLocalServiceBaseImpl {
 
 		MBThread thread = mbThreadPersistence.findByPrimaryKey(threadId);
 
-		TrashEntry trashEntry = thread.getTrashEntry();
-
-		if (trashEntry.isTrashEntry(MBThread.class, threadId)) {
+		if (thread.isInTrashExplicitly()) {
 			restoreThreadFromTrash(userId, threadId);
 		}
 		else {
 
 			// Thread
+
+			TrashEntry trashEntry = thread.getTrashEntry();
 
 			TrashVersion trashVersion =
 				trashVersionLocalService.fetchVersion(

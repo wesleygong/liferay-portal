@@ -40,6 +40,7 @@ import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.ResourcePermissionTestUtil;
 import com.liferay.portal.util.ResourceTypePermissionTestUtil;
 import com.liferay.portal.util.TestPropsValues;
+import com.liferay.portal.util.comparator.GroupNameComparator;
 import com.liferay.portlet.bookmarks.model.BookmarksFolder;
 
 import java.util.ArrayList;
@@ -137,7 +138,23 @@ public class GroupFinderTest {
 
 		Assert.fail(
 			"The method findByC_C_N_D should have returned the group " +
-			_group.getGroupId());
+				_group.getGroupId());
+	}
+
+	@Test
+	public void testFindByCompanyId() throws Exception {
+		LinkedHashMap<String, Object> groupParams =
+			new LinkedHashMap<String, Object>();
+
+		groupParams.put("inherit", Boolean.TRUE);
+		groupParams.put("site", Boolean.TRUE);
+		groupParams.put("usersGroups", TestPropsValues.getUserId());
+
+		List<Group> groups = GroupFinderUtil.findByCompanyId(
+			TestPropsValues.getCompanyId(), groupParams, QueryUtil.ALL_POS,
+			QueryUtil.ALL_POS, new GroupNameComparator(true));
+
+		Assert.assertFalse(groups.isEmpty());
 	}
 
 	@Test

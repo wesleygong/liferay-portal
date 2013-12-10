@@ -808,6 +808,10 @@ public interface Portal {
 			Layout layout, ThemeDisplay themeDisplay, boolean doAsUser)
 		throws PortalException, SystemException;
 
+	public String getLayoutURL(
+			Layout layout, ThemeDisplay themeDisplay, Locale locale)
+		throws PortalException, SystemException;
+
 	public String getLayoutURL(ThemeDisplay themeDisplay)
 		throws PortalException, SystemException;
 
@@ -1352,6 +1356,11 @@ public interface Portal {
 	public String transformCustomSQL(String sql);
 
 	public String transformSQL(String sql);
+
+	public void updateImageId(
+			BaseModel<?> baseModel, boolean image, byte[] bytes,
+			String fieldName, long maxSize, int maxHeight, int maxWidth)
+		throws PortalException, SystemException;
 
 	public PortletMode updatePortletMode(
 		String portletId, User user, Layout layout, PortletMode portletMode,

@@ -20,7 +20,7 @@
 </tr>
 <tr>
 	<td>PERMISSION_HEADER</td>
-	<td>//h3[contains(.,'${permissionNavigationValue}')]</td>
+	<td>//form/h3[contains(.,'${permissionNavigationValue}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -344,7 +344,7 @@
 <!--SITE_ADMIN_CONTENT_BLOGS_BLOGS_ENTRY-->
 <tr>
 	<td>SITE_ADMIN_CONTENT_BLOGS_BLOGS_ENTRY_ALL_CHECKBOX</td>
-	<td>xpath=(//input[@name='_128_allRowIds'])[2]</td>
+	<td>xpath=(//input[@name='_128_allRowIds'])[3]</td>
 	<td></td>
 </tr>
 <tr>
@@ -380,6 +380,22 @@
 <tr>
 	<td>SITE_ADMIN_CONTENT_BLOGS_BLOGS_ENTRY_VIEW_CHECKBOX</td>
 	<td>//input[@value='com.liferay.portlet.blogs.model.BlogsEntryVIEW']</td>
+	<td></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
+<!--SITE_ADMIN_CONTENT_BOOKMARKS_GENERAL-->
+<tr>
+	<td>SITE_ADMIN_CONTENT_BOOKMARKS_GENERAL_ALL_CHECKBOX</td>
+	<td>xpath=(//input[@name='_128_allRowIds'])[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SITE_ADMIN_CONTENT_BOOKMARKS_GENERAL_ACCESS_IN_SITE_ADMINISTRATION</td>
+	<td>//input[@value='28ACCESS_IN_CONTROL_PANEL']</td>
 	<td></td>
 </tr>
 <tr>

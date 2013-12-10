@@ -536,6 +536,10 @@ public class PropsValues {
 
 	public static final String DISCUSSION_THREAD_VIEW = PropsUtil.get(PropsKeys.DISCUSSION_THREAD_VIEW);
 
+	public static final String[] DL_CHAR_BLACKLIST = PropsUtil.getArray(PropsKeys.DL_CHAR_BLACKLIST);
+
+	public static final String[] DL_CHAR_LAST_BLACKLIST = PropsUtil.getArray(PropsKeys.DL_CHAR_LAST_BLACKLIST);
+
 	public static final String[] DL_COMPARABLE_FILE_EXTENSIONS = PropsUtil.getArray(PropsKeys.DL_COMPARABLE_FILE_EXTENSIONS);
 
 	public static final String DL_DEFAULT_DISPLAY_VIEW = PropsUtil.get(PropsKeys.DL_DEFAULT_DISPLAY_VIEW);
@@ -567,6 +571,8 @@ public class PropsValues {
 	public static final boolean DL_FILE_ENTRY_CONVERSIONS_ENABLED = GetterUtil.getBoolean(PropsUtil.get(PropsKeys.DL_FILE_ENTRY_CONVERSIONS_ENABLED));
 
 	public static boolean DL_FILE_ENTRY_DRAFTS_ENABLED = GetterUtil.getBoolean(PropsUtil.get(PropsKeys.DL_FILE_ENTRY_DRAFTS_ENABLED));
+
+	public static final boolean DL_FILE_ENTRY_IG_THUMBNAIL_GENERATION = GetterUtil.getBoolean(PropsUtil.get(PropsKeys.DL_FILE_ENTRY_IG_THUMBNAIL_GENERATION));
 
 	public static final int DL_FILE_ENTRY_LOCK_POLICY = GetterUtil.getInteger(PropsUtil.get(PropsKeys.DL_FILE_ENTRY_LOCK_POLICY));
 
@@ -612,8 +618,6 @@ public class PropsValues {
 
 	public static final boolean DL_FILE_ENTRY_THUMBNAIL_ENABLED = GetterUtil.getBoolean(PropsUtil.get(PropsKeys.DL_FILE_ENTRY_THUMBNAIL_ENABLED));
 
-	public static final boolean DL_FILE_ENTRY_IG_THUMBNAIL_GENERATION = GetterUtil.getBoolean(PropsUtil.get(PropsKeys.DL_FILE_ENTRY_IG_THUMBNAIL_GENERATION));
-
 	public static final int DL_FILE_ENTRY_THUMBNAIL_MAX_HEIGHT = GetterUtil.getInteger(PropsUtil.get(PropsKeys.DL_FILE_ENTRY_THUMBNAIL_MAX_HEIGHT));
 
 	public static final int DL_FILE_ENTRY_THUMBNAIL_MAX_WIDTH = GetterUtil.getInteger(PropsUtil.get(PropsKeys.DL_FILE_ENTRY_THUMBNAIL_MAX_WIDTH));
@@ -635,10 +639,6 @@ public class PropsValues {
 	public static final boolean DL_FILE_RANK_ENABLED = GetterUtil.getBoolean(PropsUtil.get(PropsKeys.DL_FILE_RANK_ENABLED));
 
 	public static final int DL_FILE_RANK_MAX_SIZE = GetterUtil.getInteger(PropsUtil.get(PropsKeys.DL_FILE_RANK_MAX_SIZE));
-
-	public static final String[] DL_CHAR_BLACKLIST = PropsUtil.getArray(PropsKeys.DL_CHAR_BLACKLIST);
-
-	public static final String[] DL_CHAR_LAST_BLACKLIST = PropsUtil.getArray(PropsKeys.DL_CHAR_LAST_BLACKLIST);
 
 	public static final String[] DL_NAME_BLACKLIST = PropsUtil.getArray(PropsKeys.DL_NAME_BLACKLIST);
 
@@ -923,16 +923,6 @@ public class PropsValues {
 	public static final boolean JOURNAL_PUBLISH_TO_LIVE_BY_DEFAULT = GetterUtil.getBoolean(PropsUtil.get(PropsKeys.JOURNAL_PUBLISH_TO_LIVE_BY_DEFAULT));
 
 	public static final boolean JOURNAL_PUBLISH_VERSION_HISTORY_BY_DEFAULT = GetterUtil.getBoolean(PropsUtil.get(PropsKeys.JOURNAL_PUBLISH_VERSION_HISTORY_BY_DEFAULT));
-
-	public static final String[] JPA_CONFIGS = PropsUtil.getArray(PropsKeys.JPA_CONFIGS);
-
-	public static final String JPA_DATABASE_PLATFORM = PropsUtil.get(PropsKeys.JPA_DATABASE_PLATFORM);
-
-	public static final String JPA_DATABASE_TYPE = PropsUtil.get(PropsKeys.JPA_DATABASE_TYPE);
-
-	public static final String JPA_LOAD_TIME_WEAVER = PropsUtil.get(PropsKeys.JPA_LOAD_TIME_WEAVER);
-
-	public static final String JPA_PROVIDER = PropsUtil.get(PropsKeys.JPA_PROVIDER);
 
 	public static final boolean JSON_DESERIALIZER_STRICT_MODE = GetterUtil.getBoolean(PropsUtil.get(PropsKeys.JSON_DESERIALIZER_STRICT_MODE));
 
@@ -1464,8 +1454,6 @@ public class PropsValues {
 
 	public static boolean PERMISSIONS_VIEW_DYNAMIC_INHERITANCE = GetterUtil.getBoolean(PropsUtil.get(PropsKeys.PERMISSIONS_VIEW_DYNAMIC_INHERITANCE));
 
-	public static final String PERSISTENCE_PROVIDER = GetterUtil.getString(PropsUtil.get(PropsKeys.PERSISTENCE_PROVIDER));
-
 	public static final String PHONE_NUMBER_FORMAT_IMPL = GetterUtil.getString(PropsUtil.get(PropsKeys.PHONE_NUMBER_FORMAT_IMPL));
 
 	public static String PHONE_NUMBER_FORMAT_INTERNATIONAL_REGEXP = GetterUtil.getString(PropsUtil.get(PropsKeys.PHONE_NUMBER_FORMAT_INTERNATIONAL_REGEXP));
@@ -1769,6 +1757,8 @@ public class PropsValues {
 	public static boolean SPRING_HIBERNATE_SESSION_DELEGATED = GetterUtil.getBoolean(PropsUtil.get(PropsKeys.SPRING_HIBERNATE_SESSION_DELEGATED));
 
 	public static final String[] SPRING_HIBERNATE_SESSION_FACTORY_PRELOAD_CLASSLOADER_CLASSES = PropsUtil.getArray(PropsKeys.SPRING_HIBERNATE_SESSION_FACTORY_PRELOAD_CLASSLOADER_CLASSES);
+
+	public static final String[] SPRING_PORTLET_CONFIGS = PropsUtil.getArray(PropsKeys.SPRING_PORTLET_CONFIGS);
 
 	public static final String SPRITE_FILE_NAME = PropsUtil.get(PropsKeys.SPRITE_FILE_NAME);
 

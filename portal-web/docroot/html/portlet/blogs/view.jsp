@@ -25,12 +25,7 @@ PortletURL portletURL = renderResponse.createRenderURL();
 portletURL.setParameter("struts_action", "/blogs/view");
 %>
 
-<portlet:actionURL var="undoTrashURL">
-	<portlet:param name="struts_action" value="/blogs/edit_entry" />
-	<portlet:param name="<%= Constants.CMD %>" value="<%= Constants.RESTORE %>" />
-</portlet:actionURL>
-
-<liferay-ui:trash-undo portletURL="<%= undoTrashURL %>" />
+<liferay-ui:trash-undo />
 
 <liferay-portlet:renderURL varImpl="searchURL">
 	<portlet:param name="struts_action" value="/blogs/search" />
@@ -39,7 +34,6 @@ portletURL.setParameter("struts_action", "/blogs/view");
 <aui:form action="<%= searchURL %>" method="get" name="fm1">
 	<liferay-portlet:renderURLParams varImpl="searchURL" />
 	<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
-	<aui:input name="groupId" type="hidden" value="<%= String.valueOf(scopeGroupId) %>" />
 
 	<%
 	SearchContainer searchContainer = new SearchContainer(renderRequest, null, null, SearchContainer.DEFAULT_CUR_PARAM, pageDelta, portletURL, null, null);

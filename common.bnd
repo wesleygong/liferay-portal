@@ -16,5 +16,21 @@ Liferay-Portal-Release-Info: ${release.info.release.info}
 Liferay-Portal-Server-Info: ${release.info.server.info}
 Liferay-Portal-Version: ${release.info.version}
 
+-baseline: *
+-baselinerepo: remoterepo
 -donotcopy: (\.touch)
+-plugin: \
+	aQute.bnd.deployer.repository.LocalIndexedRepo;\
+		local=${workspace}/.bnd/localrepo;\
+		name=localrepo;\
+		phase=build;\
+		type=R5,\
+	aQute.bnd.deployer.repository.FixedIndexedRepo;\
+		cache=${workspace}/.bnd/remoterepo;\
+		locations='http://obr.liferay.com/r5/liferay-portal/index.xml.gz';\
+		name=remoterepo;\
+		phase=any;\
+		type=R5
+-pluginpath: ${workspace}/osgi/lib/plugin/bnd-repository.jar
+-releaserepo: localrepo
 -sources: false

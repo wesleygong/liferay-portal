@@ -26,6 +26,8 @@ import com.thoughtworks.selenium.Selenium;
 
 import java.lang.reflect.Field;
 
+import java.util.Map;
+
 /**
  * @author Brian Wing Shun Chan
  */
@@ -68,10 +70,8 @@ public abstract class BaseSeleniumImpl
 	}
 
 	@Override
-	public void assertEmailContent(String index, String content)
-		throws Exception {
-
-		LiferaySeleniumHelper.assertEmailContent(this, index, content);
+	public void assertEmailBody(String index, String body) throws Exception {
+		LiferaySeleniumHelper.assertEmailBody(this, index, body);
 	}
 
 	@Override
@@ -237,8 +237,8 @@ public abstract class BaseSeleniumImpl
 	}
 
 	@Override
-	public String getEmailContent(String index) throws Exception {
-		return LiferaySeleniumHelper.getEmailContent(index);
+	public String getEmailBody(String index) throws Exception {
+		return LiferaySeleniumHelper.getEmailBody(index);
 	}
 
 	@Override
@@ -403,22 +403,22 @@ public abstract class BaseSeleniumImpl
 	}
 
 	@Override
+	public void pauseLoggerCheck() throws Exception {
+	}
+
+	@Override
 	public void refreshAndWait() {
 		super.refresh();
 		super.waitForPageToLoad("30000");
 	}
 
 	@Override
-	public void replyToEmail(String to, String content) throws Exception {
-		LiferaySeleniumHelper.replyToEmail(this, to, content);
+	public void replyToEmail(String to, String body) throws Exception {
+		LiferaySeleniumHelper.replyToEmail(this, to, body);
 	}
 
 	@Override
 	public void saveScreenshot(String fileName) throws Exception {
-		if (!TestPropsValues.SAVE_SCREENSHOT) {
-			return;
-		}
-
 		if (_screenshotFileName.equals(fileName)) {
 			_screenshotCount++;
 		}
@@ -444,21 +444,17 @@ public abstract class BaseSeleniumImpl
 	public void saveScreenshotAndSource() throws Exception {
 		String screenshotName = null;
 
-		if (TestPropsValues.SAVE_SCREENSHOT) {
-			screenshotName = getScreenshotFileName();
+		screenshotName = getScreenshotFileName();
 
-			captureEntirePageScreenshot(
-				_OUTPUT_SCREENSHOTS_DIR + screenshotName + ".jpg", "");
-		}
+		captureEntirePageScreenshot(
+			_OUTPUT_SCREENSHOTS_DIR + screenshotName + ".jpg", "");
 
-		if (TestPropsValues.SAVE_SOURCE) {
-			String content = getHtmlSource();
+		String content = getHtmlSource();
 
-			screenshotName = getScreenshotFileName();
+		screenshotName = getScreenshotFileName();
 
-			FileUtil.write(
-				_OUTPUT_SCREENSHOTS_DIR + screenshotName + ".html", content);
-		}
+		FileUtil.write(
+			_OUTPUT_SCREENSHOTS_DIR + screenshotName + ".html", content);
 	}
 
 	@Override
@@ -473,10 +469,10 @@ public abstract class BaseSeleniumImpl
 	}
 
 	@Override
-	public void sendEmail(String to, String subject, String content)
+	public void sendEmail(String to, String subject, String body)
 		throws Exception {
 
-		LiferaySeleniumHelper.sendEmail(this, to, subject, content);
+		LiferaySeleniumHelper.sendEmail(this, to, subject, body);
 	}
 
 	@Override
@@ -486,6 +482,11 @@ public abstract class BaseSeleniumImpl
 
 	@Override
 	public void sendLogger(String id, String status) {
+	}
+
+	@Override
+	public void sendLogger(
+		String id, String status, Map<String, String> context) {
 	}
 
 	@Override

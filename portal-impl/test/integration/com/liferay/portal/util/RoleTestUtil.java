@@ -102,4 +102,17 @@ public class RoleTestUtil {
 		return role;
 	}
 
+	public static void removeResourcePermission(
+			String roleName, String resourceName, int scope, String primKey,
+			String actionId)
+		throws Exception {
+
+		Role role = RoleLocalServiceUtil.getRole(
+			TestPropsValues.getCompanyId(), roleName);
+
+		ResourcePermissionLocalServiceUtil.removeResourcePermission(
+			role.getCompanyId(), resourceName, scope, primKey, role.getRoleId(),
+			actionId);
+	}
+
 }

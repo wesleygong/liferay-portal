@@ -25,7 +25,19 @@ if (portletResource.equals(PortletKeys.DOCUMENT_LIBRARY)) {
 
 String redirect = ParamUtil.getString(request, "redirect");
 
-String portletNameSpace = PortalUtil.getPortletNamespace(portletResource);
+try {
+	Folder rootFolder = DLAppLocalServiceUtil.getFolder(rootFolderId);
+
+	rootFolderName = rootFolder.getName();
+
+	if (rootFolder.getGroupId() != scopeGroupId) {
+		rootFolderId = DLFolderConstants.DEFAULT_PARENT_FOLDER_ID;
+		rootFolderName = StringPool.BLANK;
+	}
+}
+catch (NoSuchFolderException nsfe) {
+	rootFolderId = DLFolderConstants.DEFAULT_PARENT_FOLDER_ID;
+}
 %>
 
 <liferay-portlet:actionURL portletConfiguration="true" var="configurationURL" />
@@ -263,7 +275,7 @@ String portletNameSpace = PortalUtil.getPortletNamespace(portletResource);
 			valueMap.delta2 = fileEntriesPerPageInput.val();
 		}
 
-		var portlet = Liferay.Util.getTop().AUI().one('#p_p_id<%= HtmlUtil.escapeJS(portletNameSpace) %>');
+		var portlet = Liferay.Util.getTop().AUI().one('#p_p_id<%= HtmlUtil.escapeJS(PortalUtil.getPortletNamespace(portletResource)) %>');
 
 		portlet.refreshURL = portlet.refreshURL.replace(
 			/(cur\d{1}|delta[12])(=|%3D)[^%&]+/g,

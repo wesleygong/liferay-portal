@@ -134,18 +134,12 @@ User selUser = (User)request.getAttribute("user.selUser");
 				}
 				%>
 
-				<portlet:renderURL var="editOrganizationLogoURL" windowState="<%= LiferayWindowState.POP_UP.toString() %>">
-					<portlet:param name="struts_action" value="/users_admin/edit_organization_logo" />
-					<portlet:param name="redirect" value="<%= currentURL %>" />
-					<portlet:param name="groupId" value="<%= String.valueOf(groupId) %>" />
-					<portlet:param name="publicLayoutSetId" value="<%= String.valueOf(publicLayoutSet.getLayoutSetId()) %>" />
-				</portlet:renderURL>
-
 				<liferay-ui:logo-selector
+					currentLogoURL='<%= themeDisplay.getPathImage() + "/organization_logo?img_id=" + logoId + "&t=" + WebServerServletTokenUtil.getToken(logoId) %>'
+					defaultLogo="<%= logoId == 0 %>"
 					defaultLogoURL='<%= themeDisplay.getPathImage() + "/organization_logo?img_id=0" %>'
-					editLogoURL="<%= editOrganizationLogoURL %>"
-					imageId="<%= logoId %>"
 					logoDisplaySelector=".organization-logo"
+					tempImageFileName="<%= String.valueOf(groupId) %>"
 				/>
 			</c:if>
 		</div>
@@ -159,7 +153,7 @@ if ((organization == null) && (parentOrganizationId == OrganizationConstants.DEF
 	List<Organization> manageableOrganizations = new ArrayList<Organization>();
 
 	for (Organization curOrganization : user.getOrganizations()) {
-		if (OrganizationPermissionUtil.contains(permissionChecker, curOrganization.getOrganizationId(), ActionKeys.MANAGE_SUBORGANIZATIONS)) {
+		if (OrganizationPermissionUtil.contains(permissionChecker, curOrganization, ActionKeys.MANAGE_SUBORGANIZATIONS)) {
 			manageableOrganizations.add(curOrganization);
 		}
 	}

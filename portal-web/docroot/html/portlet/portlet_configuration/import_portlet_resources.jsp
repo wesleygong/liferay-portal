@@ -152,13 +152,15 @@ ManifestSummary manifestSummary = ExportImportHelperUtil.getManifestSummary(them
 			long modelDeletionCount = manifestSummary.getModelDeletionCount(portletDataHandler.getDeletionSystemEventStagedModelTypes());
 			%>
 
-			<c:if test="<%= !portletDataHandler.isDataPortletInstanceLevel() && ((importModelCount != 0) || (modelDeletionCount != 0)) %>">
+			<c:if test="<%= !portletDataHandler.isDisplayPortlet() && ((importModelCount != 0) || (modelDeletionCount != 0)) %>">
 				<aui:fieldset cssClass="options-group" label="content">
 					<ul class="lfr-tree select-options unstyled">
 						<li class="options">
 							<ul class="portlet-list">
 								<li class="tree-item">
 									<aui:input name="<%= PortletDataHandlerKeys.PORTLET_DATA_CONTROL_DEFAULT %>" type="hidden" value="<%= false %>" />
+
+									<aui:input name="<%= PortletDataHandlerKeys.PORTLET_DATA %>" type="hidden" value="<%= true %>" />
 
 									<liferay-util:buffer var="badgeHTML">
 										<span class="badge badge-info"><%= importModelCount > 0 ? importModelCount : StringPool.BLANK %></span>

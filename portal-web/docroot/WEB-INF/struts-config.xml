@@ -450,6 +450,7 @@
 
 		<action path="/dockbar/add_panel" type="com.liferay.portlet.layoutsadmin.action.EditLayoutsAction" >
 			<forward name="portlet.layouts_admin.edit_layouts" path="portlet.dockbar.add_panel" />
+			<forward name="portlet.layouts_admin.error" path="portlet.dockbar.add_panel" />
 		</action>
 
 		<action path="/dockbar/edit_layout_panel" type="com.liferay.portlet.layoutsadmin.action.EditLayoutsAction">
@@ -458,8 +459,8 @@
 		</action>
 
 		<action path="/dockbar/edit_layouts" type="com.liferay.portlet.grouppages.action.EditLayoutsAction">
-			<forward name="portlet.layouts_admin.edit_layouts" path="portlet.dockbar.add_layout" />
-			<forward name="portlet.layouts_admin.error" path="portlet.dockbar.add_layout" />
+			<forward name="portlet.layouts_admin.edit_layouts" path="portlet.dockbar.edit_layout_panel" />
+			<forward name="portlet.layouts_admin.error" path="portlet.dockbar.edit_layout_panel" />
 		</action>
 
 		<action path="/dockbar/preview_panel" forward="portlet.dockbar.preview_panel" />
@@ -817,6 +818,12 @@
 			<forward name="portlet.image_gallery_display.view_slide_show" path="portlet.image_gallery_display.view_slide_show" />
 		</action>
 
+		<!-- Image Uploader -->
+
+		<action path="/image_uploader/view" type="com.liferay.portlet.imageuploader.action.UploadImageAction">
+			<forward name="portlet.image_uploader.view" path="portlet.image_uploader.view" />
+		</action>
+
 		<!-- Invitation -->
 
 		<action path="/invitation/view" type="com.liferay.portlet.invitation.action.ViewAction">
@@ -932,6 +939,8 @@
 		</action>
 
 		<!-- Journal Content -->
+
+		<action path="/journal_content/add_asset_redirect" forward="portlet.journal.asset.add_asset_redirect" />
 
 		<action path="/journal_content/edit_article_discussion" type="com.liferay.portlet.messageboards.action.EditDiscussionAction">
 			<forward name="portlet.message_boards.error" path="portlet.journal_content.error" />
@@ -1139,10 +1148,6 @@
 			<forward name="portlet.message_boards.error" path="portlet.message_boards.error" />
 		</action>
 
-		<action path="/message_boards/edit_entry" type="com.liferay.portlet.messageboards.action.EditEntryAction">
-			<forward name="portlet.message_boards.error" path="portlet.message_boards.error" />
-		</action>
-
 		<action path="/message_boards/edit_message" type="com.liferay.portlet.messageboards.action.EditMessageAction">
 			<forward name="portlet.message_boards.edit_message" path="portlet.message_boards.edit_message" />
 			<forward name="portlet.message_boards.error" path="portlet.message_boards.error" />
@@ -1223,10 +1228,6 @@
 
 		<action path="/message_boards_admin/edit_discussion" type="com.liferay.portlet.messageboards.action.EditDiscussionAction">
 			<forward name="portlet.message_boards.edit_discussion" path="portlet.message_boards.edit_discussion" />
-			<forward name="portlet.message_boards.error" path="portlet.message_boards.error" />
-		</action>
-
-		<action path="/message_boards_admin/edit_entry" type="com.liferay.portlet.messageboards.action.EditEntryAction">
 			<forward name="portlet.message_boards.error" path="portlet.message_boards.error" />
 		</action>
 
@@ -1348,11 +1349,6 @@
 
 		<action path="/my_account/edit_user" type="com.liferay.portlet.myaccount.action.EditUserAction">
 			<forward name="portlet.users_admin.edit_user" path="portlet.users_admin.edit_user" />
-			<forward name="portlet.users_admin.error" path="portlet.users_admin.error" />
-		</action>
-
-		<action path="/my_account/edit_user_portrait" type="com.liferay.portlet.usersadmin.action.EditUserPortraitAction">
-			<forward name="portlet.users_admin.edit_user_portrait" path="portlet.users_admin.edit_user_portrait" />
 			<forward name="portlet.users_admin.error" path="portlet.users_admin.error" />
 		</action>
 
@@ -1536,11 +1532,6 @@
 			<forward name="portlet.portal_settings.error" path="portlet.portal_settings.error" />
 		</action>
 
-		<action path="/portal_settings/edit_company_logo" type="com.liferay.portlet.portalsettings.action.EditCompanyLogoAction">
-			<forward name="portlet.portal_settings.edit_company_logo" path="portlet.portal_settings.edit_company_logo" />
-			<forward name="portlet.portal_settings.error" path="portlet.portal_settings.error" />
-		</action>
-
 		<action path="/portal_settings/edit_ldap_server" type="com.liferay.portlet.portalsettings.action.EditLDAPServerAction">
 			<forward name="portlet.portal_settings.edit_ldap_server" path="portlet.portal_settings.edit_ldap_server" />
 			<forward name="portlet.portal_settings.error" path="portlet.portal_settings.error" />
@@ -1654,6 +1645,11 @@
 
 		<!-- Roles Admin -->
 
+		<action path="/roles_admin/edit_layouts" type="com.liferay.portlet.layoutsadmin.action.EditLayoutsAction">
+			<forward name="portlet.layouts_admin.edit_layouts" path="portlet.layouts_admin.edit_layouts" />
+			<forward name="portlet.layouts_admin.error" path="portlet.layouts_admin.error" />
+		</action>
+
 		<action path="/roles_admin/edit_role" type="com.liferay.portlet.rolesadmin.action.EditRoleAction">
 			<forward name="portlet.roles_admin.edit_role" path="portlet.roles_admin.edit_role" />
 			<forward name="portlet.roles_admin.error" path="portlet.roles_admin.error" />
@@ -1671,11 +1667,6 @@
 
 		<action path="/roles_admin/edit_user" type="com.liferay.portlet.usersadmin.action.EditUserAction">
 			<forward name="portlet.users_admin.edit_user" path="portlet.users_admin.edit_user" />
-			<forward name="portlet.users_admin.error" path="portlet.users_admin.error" />
-		</action>
-
-		<action path="/roles_admin/edit_user_portrait" type="com.liferay.portlet.usersadmin.action.EditUserPortraitAction">
-			<forward name="portlet.users_admin.edit_user_portrait" path="portlet.users_admin.edit_user_portrait" />
 			<forward name="portlet.users_admin.error" path="portlet.users_admin.error" />
 		</action>
 
@@ -2033,18 +2024,8 @@
 			<forward name="portlet.users_admin.error" path="portlet.users_admin.error" />
 		</action>
 
-		<action path="/users_admin/edit_organization_logo" type="com.liferay.portlet.usersadmin.action.EditOrganizationLogoAction">
-			<forward name="portlet.users_admin.edit_organization_logo" path="portlet.users_admin.edit_organization_logo" />
-			<forward name="portlet.users_admin.error" path="portlet.users_admin.error" />
-		</action>
-
 		<action path="/users_admin/edit_user" type="com.liferay.portlet.usersadmin.action.EditUserAction">
 			<forward name="portlet.users_admin.edit_user" path="portlet.users_admin.edit_user" />
-			<forward name="portlet.users_admin.error" path="portlet.users_admin.error" />
-		</action>
-
-		<action path="/users_admin/edit_user_portrait" type="com.liferay.portlet.usersadmin.action.EditUserPortraitAction">
-			<forward name="portlet.users_admin.edit_user_portrait" path="portlet.users_admin.edit_user_portrait" />
 			<forward name="portlet.users_admin.error" path="portlet.users_admin.error" />
 		</action>
 

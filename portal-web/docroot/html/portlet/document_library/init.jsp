@@ -37,7 +37,6 @@ page import="com.liferay.portlet.documentlibrary.FolderNameException" %><%@
 page import="com.liferay.portlet.documentlibrary.InvalidFileVersionException" %><%@
 page import="com.liferay.portlet.documentlibrary.NoSuchDirectoryException" %><%@
 page import="com.liferay.portlet.documentlibrary.NoSuchFileEntryException" %><%@
-page import="com.liferay.portlet.documentlibrary.NoSuchFileException" %><%@
 page import="com.liferay.portlet.documentlibrary.NoSuchFolderException" %><%@
 page import="com.liferay.portlet.documentlibrary.NoSuchMetadataSetException" %><%@
 page import="com.liferay.portlet.documentlibrary.RepositoryNameException" %><%@
@@ -99,8 +98,14 @@ if (rootFolderId != DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
 		Folder rootFolder = DLAppLocalServiceUtil.getFolder(rootFolderId);
 
 		rootFolderName = rootFolder.getName();
+
+		if (rootFolder.getGroupId() != scopeGroupId) {
+			rootFolderId = DLFolderConstants.DEFAULT_PARENT_FOLDER_ID;
+			rootFolderName = StringPool.BLANK;
+		}
 	}
 	catch (NoSuchFolderException nsfe) {
+		rootFolderId = DLFolderConstants.DEFAULT_PARENT_FOLDER_ID;
 	}
 }
 

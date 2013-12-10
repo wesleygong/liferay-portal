@@ -31,7 +31,7 @@ UnicodeProperties layoutTypeSettings = selLayout.getTypeSettingsProperties();
 
 <liferay-ui:error exception="<%= ImageTypeException.class %>" message="please-enter-a-file-with-a-valid-file-type" />
 
-<aui:fieldset>
+<aui:fieldset cssClass="lfr-portrait-editor">
 	<c:if test="<%= !group.isLayoutPrototype() %>">
 
 		<%
@@ -47,48 +47,39 @@ UnicodeProperties layoutTypeSettings = selLayout.getTypeSettingsProperties();
 
 	<aui:input label="target" name="TypeSettingsProperties--target--" size="15" type="text" value="<%= HtmlUtil.escapeAttribute(curTarget) %>" />
 
-	<aui:input name="iconImage" type="hidden" value="<%= selLayout.isIconImage() %>" />
-
 	<aui:field-wrapper helpMessage="this-icon-will-be-shown-in-the-navigation-menu" label="icon" name="iconFileName">
-		<aui:input inlineField="<%= true %>" label="" name="iconFileName" type="file" />
-
-		<c:if test="<%= selLayout.getIconImage() %>">
-			<liferay-ui:icon
-				cssClass="modify-link"
-				id="deleteIconLink"
-				image="delete"
-				label="<%= true %>"
-				url="javascript:;"
-			/>
-
-			<div id="<portlet:namespace />layoutIconContainer">
-				<liferay-theme:layout-icon layout="<%= selLayout %>" />
-			</div>
-		</c:if>
+		<liferay-ui:logo-selector
+			currentLogoURL='<%= themeDisplay.getPathImage() + (selLayout.getIconImageId() == 0 ? "/spacer.png" : "/logo?img_id=" + selLayout.getIconImageId() + "&t=" + WebServerServletTokenUtil.getToken(selLayout.getIconImageId())) %>'
+			defaultLogo="<%= selLayout.getIconImageId() == 0 %>"
+			defaultLogoURL='<%= themeDisplay.getPathThemeImages() + "/spacer.png" %>'
+			editLogoFn='<%= liferayPortletResponse.getNamespace() + "editLayoutLogo" %>'
+			logoDisplaySelector='<%= ".layout-logo-" + selLayout.getPlid() %>'
+			tempImageFileName="<%= String.valueOf(selLayout.getPlid()) %>"
+		/>
 	</aui:field-wrapper>
 </aui:fieldset>
 
-<aui:script use="aui-base">
-	var panel = A.one('#<portlet:namespace />advanced');
+<aui:script>
+	Liferay.provide(
+		window,
+		'<portlet:namespace />editLayoutLogo',
+		function(logoURL, deleteLogo) {
+			var A = AUI();
 
-	var deleteLogoLink = panel.one('#<portlet:namespace />deleteIconLink');
-	var iconFileNameInput = panel.one('#<portlet:namespace />iconFileName');
-	var iconImageInput = panel.one('#<portlet:namespace />iconImage');
-	var layoutIconContainer = panel.one('#<portlet:namespace />layoutIconContainer');
+			var layoutLogo = A.one('.layout-logo-<%= selLayout.getPlid() %>');
 
-	var changeLogo = function(event) {
-		var changeLogo = (event.type == 'change');
+			if (!layoutLogo) {
+				var layoutNavItem = A.one('#layout_<%= selLayout.getLayoutId() %> span');
 
-		iconImageInput.val(changeLogo);
+				layoutLogo = A.Node.create('<img class="layout-logo-<%= selLayout.getPlid() %>" src="' + logoURL + '" />');
 
-		if (layoutIconContainer) {
-			layoutIconContainer.hide();
-		}
-	};
+				if (layoutNavItem) {
+					layoutNavItem.prepend(layoutLogo);
+				}
+			}
 
-	if (deleteLogoLink) {
-		deleteLogoLink.on('click', changeLogo);
-	}
-
-	iconFileNameInput.on('change', changeLogo);
+			layoutLogo.toggle(!deleteLogo);
+		},
+		['aui-base']
+	);
 </aui:script>

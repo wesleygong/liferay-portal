@@ -171,10 +171,10 @@ portletURL.setParameter("tabs3", "current-and-previous");
 							</aui:fieldset>
 						</c:if>
 
-						<c:if test="<%= !portletDataHandler.isDataPortletInstanceLevel() %>">
+						<c:if test="<%= !portletDataHandler.isDisplayPortlet() %>">
 
 							<%
-							DateRange dateRange = ExportImportHelperUtil.getDateRange(renderRequest, themeDisplay.getScopeGroupId(), false, plid, selPortlet.getPortletId(), "fromLastPublishDate");
+							DateRange dateRange = ExportImportHelperUtil.getDateRange(renderRequest, themeDisplay.getScopeGroupId(), false, exportableLayout.getPlid(), selPortlet.getPortletId(), "fromLastPublishDate");
 
 							Date startDate = dateRange.getStartDate();
 							Date endDate = dateRange.getEndDate();
@@ -316,6 +316,8 @@ portletURL.setParameter("tabs3", "current-and-previous");
 												<ul class="portlet-list">
 													<li class="tree-item">
 														<aui:input name="<%= PortletDataHandlerKeys.PORTLET_DATA_CONTROL_DEFAULT %>" type="hidden" value="<%= false %>" />
+
+														<aui:input name="<%= PortletDataHandlerKeys.PORTLET_DATA %>" type="hidden" value="<%= true %>" />
 
 														<liferay-util:buffer var="badgeHTML">
 															<span class="badge badge-info"><%= exportModelCount > 0 ? exportModelCount : StringPool.BLANK %></span>

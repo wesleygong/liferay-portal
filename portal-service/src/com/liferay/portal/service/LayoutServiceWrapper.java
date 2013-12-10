@@ -1015,6 +1015,14 @@ public class LayoutServiceWrapper implements LayoutService,
 		_layoutService.unschedulePublishToRemote(groupId, jobName, groupName);
 	}
 
+	@Override
+	public com.liferay.portal.model.Layout updateIconImage(long plid,
+		byte[] bytes)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _layoutService.updateIconImage(plid, bytes);
+	}
+
 	/**
 	* Updates the layout with additional parameters.
 	*
@@ -1059,7 +1067,7 @@ public class LayoutServiceWrapper implements LayoutService,
 		java.util.Map<java.util.Locale, java.lang.String> robotsMap,
 		java.lang.String type, boolean hidden,
 		java.util.Map<java.util.Locale, java.lang.String> friendlyURLMap,
-		java.lang.Boolean iconImage, byte[] iconBytes,
+		boolean iconImage, byte[] iconBytes,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {

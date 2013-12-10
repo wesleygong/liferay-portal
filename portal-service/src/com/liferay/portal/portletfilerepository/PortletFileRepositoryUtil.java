@@ -14,6 +14,8 @@
 
 package com.liferay.portal.portletfilerepository;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.repository.model.FileEntry;
@@ -34,6 +36,7 @@ import java.util.List;
  * @author Eudaldo Alonso
  * @author Alexander Chow
  */
+@ProviderType
 public class PortletFileRepositoryUtil {
 
 	public static void addPortletFileEntries(
@@ -86,6 +89,9 @@ public class PortletFileRepositoryUtil {
 			groupId, portletId, serviceContext);
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link #deletePortletFolder}
+	 */
 	public static void deleteFolder(long folderId)
 		throws PortalException, SystemException {
 
@@ -118,6 +124,12 @@ public class PortletFileRepositoryUtil {
 
 		getPortletFileRepository().deletePortletFileEntry(
 			groupId, folderId, fileName);
+	}
+
+	public static void deletePortletFolder(long folderId)
+		throws PortalException, SystemException {
+
+		getPortletFileRepository().deletePortletFolder(folderId);
 	}
 
 	public static void deletePortletRepository(long groupId, String portletId)

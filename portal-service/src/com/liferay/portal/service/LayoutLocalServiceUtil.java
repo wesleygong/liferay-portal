@@ -1493,6 +1493,13 @@ public class LayoutLocalServiceUtil {
 		return getService().updateFriendlyURL(plid, friendlyURL, languageId);
 	}
 
+	public static com.liferay.portal.model.Layout updateIconImage(long plid,
+		byte[] bytes)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return getService().updateIconImage(plid, bytes);
+	}
+
 	/**
 	* Updates the layout.
 	*
@@ -1544,7 +1551,7 @@ public class LayoutLocalServiceUtil {
 		java.util.Map<java.util.Locale, java.lang.String> robotsMap,
 		java.lang.String type, boolean hidden,
 		java.util.Map<java.util.Locale, java.lang.String> friendlyURLMap,
-		java.lang.Boolean iconImage, byte[] iconBytes,
+		boolean iconImage, byte[] iconBytes,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {

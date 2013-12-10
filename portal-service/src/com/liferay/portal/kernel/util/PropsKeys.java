@@ -1213,18 +1213,6 @@ public interface PropsKeys {
 
 	public static final String JOURNAL_TRANSFORMER_LISTENER = "journal.transformer.listener";
 
-	public static final String JPA_CONFIGS = "jpa.configs";
-
-	public static final String JPA_DATABASE_PLATFORM = "jpa.database.platform";
-
-	public static final String JPA_DATABASE_TYPE = "jpa.database.type";
-
-	public static final String JPA_LOAD_TIME_WEAVER = "jpa.load.time.weaver";
-
-	public static final String JPA_PROVIDER = "jpa.provider";
-
-	public static final String JPA_PROVIDER_PROPERTY_PREFIX = "jpa.provider.property.";
-
 	public static final String JSON_DESERIALIZER_STRICT_MODE = "json.deserializer.strict.mode";
 
 	public static final String JSON_SERVICE_AUTH_TOKEN_ENABLED = "json.service.auth.token.enabled";
@@ -1599,6 +1587,8 @@ public interface PropsKeys {
 
 	public static final String MAIL_SESSION_MAIL_TRANSPORT_PROTOCOL = "mail.session.mail.transport.protocol";
 
+	public static final String MAIL_THROWS_EXCEPTION_ON_FAILURE = "mail.throws.exception.on.failure";
+
 	public static final String MEMBERSHIP_POLICY_AUTO_VERIFY = "membership.policy.auto.verify";
 
 	public static final String MEMBERSHIP_POLICY_ORGANIZATIONS = "membership.policy.organizations";
@@ -1954,8 +1944,6 @@ public interface PropsKeys {
 	public static final String PERMISSIONS_THREAD_LOCAL_CACHE_MAX_SIZE = "permissions.thread.local.cache.max.size";
 
 	public static final String PERMISSIONS_VIEW_DYNAMIC_INHERITANCE = "permissions.view.dynamic.inheritance";
-
-	public static final String PERSISTENCE_PROVIDER = "persistence.provider";
 
 	public static final String PHONE_NUMBER_FORMAT_IMPL = "phone.number.format.impl";
 
@@ -2339,6 +2327,10 @@ public interface PropsKeys {
 
 	public static final String SOCIAL_ACTIVITY_SETS_SELECTOR = "social.activity.sets.selector";
 
+	public static final String SOCIAL_BOOKMARK_DISPLAY_STYLES = "social.bookmark.display.styles";
+
+	public static final String SOCIAL_BOOKMARK_ICON = "social.bookmark.icon";
+
 	public static final String SOCIAL_BOOKMARK_JSP = "social.bookmark.jsp";
 
 	public static final String SOCIAL_BOOKMARK_POST_URL = "social.bookmark.post.url";
@@ -2358,6 +2350,8 @@ public interface PropsKeys {
 	public static final String SPRING_HIBERNATE_SESSION_FACTORY = "spring.hibernate.session.factory";
 
 	public static final String SPRING_HIBERNATE_SESSION_FACTORY_PRELOAD_CLASSLOADER_CLASSES = "spring.hibernate.session.factory.preload.classloader.classes";
+
+	public static final String SPRING_PORTLET_CONFIGS = "spring.portlet.configs";
 
 	public static final String SPRITE_FILE_NAME = "sprite.file.name";
 

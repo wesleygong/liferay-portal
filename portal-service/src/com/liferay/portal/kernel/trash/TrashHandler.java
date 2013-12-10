@@ -14,9 +14,10 @@
 
 package com.liferay.portal.kernel.trash;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.model.ClassedModel;
 import com.liferay.portal.model.ContainerModel;
 import com.liferay.portal.model.SystemEvent;
 import com.liferay.portal.model.TrashedModel;
@@ -86,6 +87,7 @@ import javax.portlet.PortletRequest;
  * @author Alexander Chow
  * @author Zsolt Berentey
  */
+@ProviderType
 public interface TrashHandler {
 
 	public SystemEvent addDeletionSystemEvent(
@@ -561,9 +563,6 @@ public interface TrashHandler {
 	 */
 	public boolean isRestorable(long classPK)
 		throws PortalException, SystemException;
-
-	public boolean isTrashEntry(
-		TrashEntry trashEntry, ClassedModel classedModel);
 
 	/**
 	 * Moves the entity with the class primary key to the container model with

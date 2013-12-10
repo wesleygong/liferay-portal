@@ -14,44 +14,20 @@
 
 package com.liferay.util.jazzy;
 
-import java.io.Serializable;
-
 import java.util.List;
 
 /**
- * @author Brian Wing Shun Chan
+ * @author     Brian Wing Shun Chan
+ * @deprecated As of 7.0.0, moved to {@link
+ *             com.liferay.portal.kernel.jazzy.InvalidWord}
  */
-public class InvalidWord implements Serializable {
+public class InvalidWord extends com.liferay.portal.kernel.jazzy.InvalidWord {
 
 	public InvalidWord(
 		String invalidWord, List<String> suggestions, String wordContext,
 		int wordContextPosition) {
 
-		_invalidWord = invalidWord;
-		_suggestions = suggestions;
-		_wordContext = wordContext;
-		_wordContextPosition = wordContextPosition;
+		super(invalidWord, suggestions, wordContext, wordContextPosition);
 	}
-
-	public String getInvalidWord() {
-		return _invalidWord;
-	}
-
-	public List<String> getSuggestions() {
-		return _suggestions;
-	}
-
-	public String getWordContext() {
-		return _wordContext;
-	}
-
-	public int getWordContextPosition() {
-		return _wordContextPosition;
-	}
-
-	private String _invalidWord;
-	private List<String> _suggestions;
-	private String _wordContext;
-	private int _wordContextPosition;
 
 }

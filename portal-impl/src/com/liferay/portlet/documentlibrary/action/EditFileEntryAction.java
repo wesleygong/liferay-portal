@@ -26,7 +26,6 @@ import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.kernel.servlet.ServletResponseConstants;
 import com.liferay.portal.kernel.servlet.SessionErrors;
-import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.upload.UploadException;
 import com.liferay.portal.kernel.upload.UploadPortletRequest;
 import com.liferay.portal.kernel.util.Constants;
@@ -82,10 +81,8 @@ import java.io.InputStream;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.portlet.ActionRequest;
@@ -157,6 +154,8 @@ public class EditFileEntryAction extends PortletAction {
 			else if (cmd.equals(Constants.ADD_MULTIPLE)) {
 				addMultipleFileEntries(
 					portletConfig, actionRequest, actionResponse);
+
+				hideDefaultSuccessMessage(actionRequest);
 			}
 			else if (cmd.equals(Constants.ADD_TEMP)) {
 				addTempFileEntry(actionRequest, actionResponse);
@@ -593,26 +592,10 @@ public class EditFileEntryAction extends PortletAction {
 		FileEntry fileEntry = DLAppServiceUtil.moveFileEntryToTrash(
 			fileEntryId);
 
-		Map<String, String[]> data = new HashMap<String, String[]>();
-
-		data.put(
-			"deleteEntryClassName", new String[] {DLFileEntry.class.getName()});
-
-		if (fileEntry != null) {
-			data.put(
-				"deleteEntryTitle",
-				new String[] {
-					TrashUtil.getOriginalTitle(fileEntry.getTitle())});
+		if (fileEntry.getModel() instanceof DLFileEntry) {
+			TrashUtil.addTrashSessionMessages(
+				actionRequest, (DLFileEntry)fileEntry.getModel());
 		}
-
-		data.put(
-			"restoreFileEntryIds", new String[] {String.valueOf(fileEntryId)});
-
-		SessionMessages.add(
-			actionRequest,
-			PortalUtil.getPortletId(actionRequest) +
-				SessionMessages.KEY_SUFFIX_DELETE_SUCCESS_DATA,
-			data);
 
 		hideDefaultSuccessMessage(actionRequest);
 	}
@@ -803,9 +786,25 @@ public class EditFileEntryAction extends PortletAction {
 				 e instanceof SourceFileNameException ||
 				 e instanceof StorageFieldRequiredException) {
 
-			if (!cmd.equals(Constants.ADD_DYNAMIC) &&
-				!cmd.equals(Constants.ADD_MULTIPLE) &&
-				!cmd.equals(Constants.ADD_TEMP)) {
+			if (Validator.isNull(cmd)) {
+				UploadException uploadException =
+					(UploadException)actionRequest.getAttribute(
+						WebKeys.UPLOAD_EXCEPTION);
+
+				if (uploadException != null) {
+					String uploadExceptionRedirect = ParamUtil.getString(
+						actionRequest, "uploadExceptionRedirect");
+
+					actionResponse.sendRedirect(uploadExceptionRedirect);
+				}
+
+				SessionErrors.add(actionRequest, e.getClass());
+
+				return;
+			}
+			else if (!cmd.equals(Constants.ADD_DYNAMIC) &&
+					 !cmd.equals(Constants.ADD_MULTIPLE) &&
+					 !cmd.equals(Constants.ADD_TEMP)) {
 
 				SessionErrors.add(actionRequest, e.getClass());
 

@@ -862,6 +862,7 @@ create index IX_3F9C2FA8 on SocialRelation (userId2, type_);
 create index IX_F0CA24A5 on SocialRelation (uuid_);
 create index IX_5B30F663 on SocialRelation (uuid_, companyId);
 
+create index IX_CEF175DD on SocialRequest (classNameId, classPK);
 create index IX_D3425487 on SocialRequest (classNameId, classPK, type_, receiverUserId, status);
 create index IX_A90FE5A0 on SocialRequest (companyId);
 create index IX_32292ED1 on SocialRequest (receiverUserId);
@@ -895,7 +896,7 @@ create index IX_526A032A on TrashEntry (groupId);
 create index IX_FC4EEA64 on TrashEntry (groupId, classNameId);
 create index IX_6CAAE2E8 on TrashEntry (groupId, createDate);
 
-create index IX_630A643B on TrashVersion (classNameId, classPK);
+create unique index IX_630A643B on TrashVersion (classNameId, classPK);
 create index IX_55D44577 on TrashVersion (entryId);
 create index IX_72D58D37 on TrashVersion (entryId, classNameId);
 create unique index IX_D639348C on TrashVersion (entryId, classNameId, classPK);

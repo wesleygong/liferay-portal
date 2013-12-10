@@ -357,6 +357,10 @@ public class MailEngine {
 		}
 		catch (SendFailedException sfe) {
 			_log.error(sfe);
+
+			if (_isThrowsExceptionOnFailure()) {
+				throw new MailEngineException(sfe);
+			}
 		}
 		catch (Exception e) {
 			throw new MailEngineException(e);
@@ -513,9 +517,15 @@ public class MailEngine {
 		}
 	}
 
+	private static boolean _isThrowsExceptionOnFailure() {
+		return GetterUtil.getBoolean(
+			PropsUtil.get(PropsKeys.MAIL_THROWS_EXCEPTION_ON_FAILURE));
+	}
+
 	private static void _send(
-		Session session, Message message, InternetAddress[] bulkAddresses,
-		int batchSize) {
+			Session session, Message message, InternetAddress[] bulkAddresses,
+			int batchSize)
+		throws MailEngineException {
 
 		try {
 			boolean smtpAuth = GetterUtil.getBoolean(
@@ -591,6 +601,10 @@ public class MailEngine {
 			}
 			else {
 				LogUtil.log(_log, me);
+			}
+
+			if (_isThrowsExceptionOnFailure()) {
+				throw new MailEngineException(me);
 			}
 		}
 	}

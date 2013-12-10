@@ -1135,7 +1135,7 @@ public abstract class BaseIndexer implements Indexer {
 				Field.REMOVED_BY_USER_NAME, trashEntry.getUserName(), true);
 
 			if (trashedModel.isInTrash() &&
-				!trashEntry.isTrashEntry(trashedModel)) {
+				!trashedModel.isInTrashExplicitly()) {
 
 				document.addKeyword(
 					Field.ROOT_ENTRY_CLASS_NAME, trashEntry.getClassName());
@@ -1447,13 +1447,15 @@ public abstract class BaseIndexer implements Indexer {
 		addSearchAssetCategoryTitles(
 			document, Field.ASSET_CATEGORY_TITLES, assetCategories);
 
-		String[] assetTagNames = AssetTagLocalServiceUtil.getTagNames(
-			className, classPK);
-
-		document.addText(Field.ASSET_TAG_NAMES, assetTagNames);
+		long classNameId = PortalUtil.getClassNameId(className);
 
 		List<AssetTag> assetTags = AssetTagLocalServiceUtil.getTags(
-			className, classPK);
+			classNameId, classPK);
+
+		String[] assetTagNames = StringUtil.split(
+			ListUtil.toString(assetTags, AssetTag.NAME_ACCESSOR));
+
+		document.addText(Field.ASSET_TAG_NAMES, assetTagNames);
 
 		long[] assetTagsIds = StringUtil.split(
 			ListUtil.toString(assetTags, AssetTag.TAG_ID_ACCESSOR), 0L);

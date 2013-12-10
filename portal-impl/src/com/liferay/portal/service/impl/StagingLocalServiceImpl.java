@@ -76,7 +76,7 @@ public class StagingLocalServiceImpl extends StagingLocalServiceBaseImpl {
 		throws PortalException, SystemException {
 
 		try {
-			PortletFileRepositoryUtil.deleteFolder(stagingRequestId);
+			PortletFileRepositoryUtil.deletePortletFolder(stagingRequestId);
 		}
 		catch (NoSuchFolderException nsfe) {
 			if (_log.isDebugEnabled()) {
@@ -211,12 +211,25 @@ public class StagingLocalServiceImpl extends StagingLocalServiceBaseImpl {
 		if (!liveGroup.hasStagingGroup()) {
 			serviceContext.setAttribute("staging", String.valueOf(true));
 
+			long parentGroupId = GroupConstants.DEFAULT_PARENT_GROUP_ID;
+
+			if (liveGroup.getParentGroupId() !=
+					GroupConstants.DEFAULT_PARENT_GROUP_ID) {
+
+				Group parentGroup = liveGroup.getParentGroup();
+
+				if (parentGroup.hasStagingGroup()) {
+					parentGroup = parentGroup.getStagingGroup();
+				}
+
+				parentGroupId = parentGroup.getGroupId();
+			}
+
 			Group stagingGroup = groupLocalService.addGroup(
-				userId, GroupConstants.DEFAULT_PARENT_GROUP_ID,
-				liveGroup.getClassName(), liveGroup.getClassPK(),
-				liveGroup.getGroupId(), liveGroup.getDescriptiveName(),
-				liveGroup.getDescription(), liveGroup.getType(),
-				liveGroup.isManualMembership(),
+				userId, parentGroupId, liveGroup.getClassName(),
+				liveGroup.getClassPK(), liveGroup.getGroupId(),
+				liveGroup.getDescriptiveName(), liveGroup.getDescription(),
+				liveGroup.getType(), liveGroup.isManualMembership(),
 				liveGroup.getMembershipRestriction(),
 				liveGroup.getFriendlyURL(), false, liveGroup.isActive(),
 				serviceContext);

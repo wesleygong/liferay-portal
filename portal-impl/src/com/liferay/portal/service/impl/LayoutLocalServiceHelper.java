@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.portlet.FriendlyURLMapper;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizerUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Layout;
@@ -130,11 +131,15 @@ public class LayoutLocalServiceHelper implements IdentifiableBean {
 			}
 		}
 
-		if (newFriendlyURLMap.isEmpty()) {
+		Locale siteDefaultLocale = LocaleUtil.getSiteDefault();
+
+		if (newFriendlyURLMap.isEmpty() ||
+			Validator.isNull(newFriendlyURLMap.get(siteDefaultLocale))) {
+
 			String friendlyURL = getFriendlyURL(
 				groupId, privateLayout, layoutId, name, StringPool.BLANK);
 
-			newFriendlyURLMap.put(LocaleUtil.getSiteDefault(), friendlyURL);
+			newFriendlyURLMap.put(siteDefaultLocale, friendlyURL);
 		}
 
 		return newFriendlyURLMap;
@@ -320,8 +325,14 @@ public class LayoutLocalServiceHelper implements IdentifiableBean {
 				layoutFriendlyURL.getPlid());
 
 			if (layout.getLayoutId() != layoutId) {
-				throw new LayoutFriendlyURLException(
-					LayoutFriendlyURLException.DUPLICATE);
+				LayoutFriendlyURLException lfurle =
+					new LayoutFriendlyURLException(
+						LayoutFriendlyURLException.DUPLICATE);
+
+				lfurle.setDuplicateClassPK(layout.getPlid());
+				lfurle.setDuplicateClassName(Layout.class.getName());
+
+				throw lfurle;
 			}
 		}
 
@@ -360,6 +371,32 @@ public class LayoutLocalServiceHelper implements IdentifiableBean {
 			}
 		}
 
+		Locale[] availableLocales = LanguageUtil.getAvailableLocales();
+
+		for (Locale locale : availableLocales) {
+			String languageId = StringUtil.toLowerCase(
+				LocaleUtil.toLanguageId(locale));
+
+			String i18nPathLanguageId =
+				StringPool.SLASH +
+					PortalUtil.getI18nPathLanguageId(locale, languageId);
+
+			if (friendlyURL.startsWith(i18nPathLanguageId + StringPool.SLASH) ||
+				friendlyURL.startsWith(
+					StringPool.SLASH + languageId + StringPool.SLASH) ||
+				friendlyURL.endsWith(i18nPathLanguageId) ||
+				friendlyURL.endsWith(StringPool.SLASH + languageId)) {
+
+				LayoutFriendlyURLException lfurle =
+					new LayoutFriendlyURLException(
+						LayoutFriendlyURLException.KEYWORD_CONFLICT);
+
+				lfurle.setKeywordConflict(i18nPathLanguageId);
+
+				throw lfurle;
+			}
+		}
+
 		String layoutIdFriendlyURL = friendlyURL.substring(1);
 
 		if (Validator.isNumber(layoutIdFriendlyURL) &&
@@ -382,20 +419,22 @@ public class LayoutLocalServiceHelper implements IdentifiableBean {
 		LayoutFriendlyURLsException layoutFriendlyURLsException = null;
 
 		for (Map.Entry<Locale, String> entry : friendlyURLMap.entrySet()) {
-			String friendlyURL = entry.getValue();
-
 			try {
+				String friendlyURL = entry.getValue();
+
 				validateFriendlyURL(
 					groupId, privateLayout, layoutId, friendlyURL);
 			}
 			catch (LayoutFriendlyURLException lfurle) {
+				Locale locale = entry.getKey();
+
 				if (layoutFriendlyURLsException == null) {
 					layoutFriendlyURLsException =
 						new LayoutFriendlyURLsException();
 				}
 
-				layoutFriendlyURLsException.addLayoutFriendlyURLException(
-					lfurle);
+				layoutFriendlyURLsException.addLocalizedException(
+					locale, lfurle);
 			}
 		}
 

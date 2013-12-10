@@ -269,7 +269,7 @@ public class AssetTagFinderImpl
 					PortalUtil.getSiteGroupId(groupId));
 			}
 
-			SQLQuery q = session.createSQLQuery(sql);
+			SQLQuery q = session.createSynchronizedSQLQuery(sql);
 
 			q.addScalar(COUNT_COLUMN_NAME, Type.LONG);
 

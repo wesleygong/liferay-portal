@@ -68,16 +68,9 @@ public class LayoutLocalServiceVirtualLayoutsAdvice
 		Method method = methodInvocation.getMethod();
 
 		String methodName = method.getName();
-
-		Object[] arguments = methodInvocation.getArguments();
-
 		Class<?>[] parameterTypes = method.getParameterTypes();
 
-		if (MergeLayoutPrototypesThreadLocal.isMergeComplete(
-				method, arguments)) {
-
-			return methodInvocation.proceed();
-		}
+		Object[] arguments = methodInvocation.getArguments();
 
 		boolean workflowEnabled = WorkflowThreadLocal.isEnabled();
 
@@ -87,13 +80,18 @@ public class LayoutLocalServiceVirtualLayoutsAdvice
 
 			Layout layout = (Layout)methodInvocation.proceed();
 
+			Group group = layout.getGroup();
+
+			if (isMergeComplete(method, arguments, group)) {
+				return layout;
+			}
+
 			if (Validator.isNull(layout.getLayoutPrototypeUuid()) &&
 				Validator.isNull(layout.getSourcePrototypeLayoutUuid())) {
 
 				return layout;
 			}
 
-			Group group = layout.getGroup();
 			LayoutSet layoutSet = layout.getLayoutSet();
 
 			try {
@@ -119,12 +117,17 @@ public class LayoutLocalServiceVirtualLayoutsAdvice
 				  Arrays.equals(parameterTypes, _TYPES_L_B_L_B_I_I))) {
 
 			long groupId = (Long)arguments[0];
+
+			Group group = GroupLocalServiceUtil.getGroup(groupId);
+
+			if (isMergeComplete(method, arguments, group)) {
+				return methodInvocation.proceed();
+			}
+
 			boolean privateLayout = (Boolean)arguments[1];
 			long parentLayoutId = (Long)arguments[2];
 
 			try {
-				Group group = GroupLocalServiceUtil.getGroup(groupId);
-
 				LayoutSet layoutSet = LayoutSetLocalServiceUtil.getLayoutSet(
 					groupId, privateLayout);
 
@@ -259,6 +262,21 @@ public class LayoutLocalServiceVirtualLayoutsAdvice
 		dynamicQuery.add(sourcePrototypeLayoutUuidProperty.isNotNull());
 
 		return LayoutLocalServiceUtil.dynamicQuery(dynamicQuery);
+	}
+
+	protected boolean isMergeComplete(
+		Method method, Object[] arguments, Group group) {
+
+		if (MergeLayoutPrototypesThreadLocal.isMergeComplete(
+				method, arguments) &&
+			(!group.isUser() ||
+			 PropsValues.USER_GROUPS_COPY_LAYOUTS_TO_USER_PERSONAL_SITE)) {
+
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	protected void mergeLayoutSetPrototypeLayouts(

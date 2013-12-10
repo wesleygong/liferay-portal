@@ -133,7 +133,7 @@
 <!--PAGE-->
 <tr>
 	<td>PAGE</td>
-	<td>//li[contains(@class,'add-page')]/a[contains(.,'${key_pageName}')]</td>
+	<td>//li[contains(@class,'lfr-nav-item')]/a[contains(.,'${key_pageName}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -184,6 +184,11 @@
 <tr>
 	<td>PAGE_DELETE</td>
 	<td>//li[contains(@class,'lfr-nav-deletable') and contains(@class,'lfr-nav-hover')]/span[@class='delete-tab']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_NAVIGATION_BAR</td>
+	<td>//nav[@id='navigation']</td>
 	<td></td>
 </tr>
 <tr>
@@ -294,6 +299,16 @@
 <tr>
 	<td>SITE_ADMINISTRATION_NAVIGATION</td>
 	<td>//ul[@class='category-portlets']/li[contains(.,'${key_portletName}')]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SITE_ADMINISTRATION_USERS</td>
+	<td>//div[@id='panel-manage-site_administration.users']/div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SITE_ADMINISTRATION_USERS_SITE_MEMBERSHIPS</td>
+	<td>//ul[@class='category-portlets']/li[contains(.,'Site Memberships')]/a</td>
 	<td></td>
 </tr>
 </tbody>

@@ -47,11 +47,10 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.Group;
-import com.liferay.portal.model.Repository;
 import com.liferay.portal.security.permission.ActionKeys;
 import com.liferay.portal.security.permission.PermissionChecker;
-import com.liferay.portal.service.RepositoryLocalServiceUtil;
 import com.liferay.portal.service.persistence.GroupActionableDynamicQuery;
+import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
 import com.liferay.portal.util.PrefsPropsUtil;
 import com.liferay.portal.util.PropsValues;
@@ -116,7 +115,6 @@ public class DLFileEntryIndexer extends BaseIndexer {
 
 		document.addKeyword(Field.FOLDER_ID, dlFileEntry.getFolderId());
 		document.addKeyword(Field.HIDDEN, dlFileEntry.isInHiddenFolder());
-		document.addKeyword(Field.RELATED_ENTRY, true);
 	}
 
 	@Override
@@ -383,20 +381,18 @@ public class DLFileEntryIndexer extends BaseIndexer {
 			addFileEntryTypeAttributes(document, dlFileVersion);
 
 			if (dlFileEntry.isInHiddenFolder()) {
-				try {
-					Repository repository =
-						RepositoryLocalServiceUtil.getRepository(
-							dlFileEntry.getRepositoryId());
+				Indexer indexer = IndexerRegistryUtil.getIndexer(
+					dlFileEntry.getClassName());
 
-					String portletId = repository.getPortletId();
+				if (indexer != null) {
+					indexer.addRelatedEntryFields(document, obj);
 
-					for (Indexer indexer : IndexerRegistryUtil.getIndexers()) {
-						if (portletId.equals(indexer.getPortletId())) {
-							indexer.addRelatedEntryFields(document, obj);
-						}
-					}
-				}
-				catch (Exception e) {
+					document.addKeyword(
+						Field.CLASS_NAME_ID,
+						PortalUtil.getClassNameId(dlFileEntry.getClassName()));
+					document.addKeyword(
+						Field.CLASS_PK, dlFileEntry.getClassPK());
+					document.addKeyword(Field.RELATED_ENTRY, true);
 				}
 			}
 

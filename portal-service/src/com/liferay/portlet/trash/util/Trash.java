@@ -14,17 +14,21 @@
 
 package com.liferay.portlet.trash.util;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.search.Hits;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.model.Group;
+import com.liferay.portal.model.TrashedModel;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portlet.trash.model.TrashEntry;
 
 import java.util.Date;
 import java.util.List;
 
+import javax.portlet.ActionRequest;
 import javax.portlet.PortletURL;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @author Julio Camarero
  */
+@ProviderType
 public interface Trash {
 
 	public static final String TRASH_TIME_SEPARATOR = "_TRASH_TIME_";
@@ -45,6 +50,19 @@ public interface Trash {
 			HttpServletRequest request, String className, long classPK,
 			PortletURL containerModelURL)
 		throws PortalException, SystemException;
+
+	public void addTrashSessionMessages(
+		ActionRequest actionRequest, List<TrashedModel> trashedModels);
+
+	public void addTrashSessionMessages(
+		ActionRequest actionRequest, List<TrashedModel> trashedModels,
+		String cmd);
+
+	public void addTrashSessionMessages(
+		ActionRequest actionRequest, TrashedModel trashedModel);
+
+	public void addTrashSessionMessages(
+		ActionRequest actionRequest, TrashedModel trashedModel, String cmd);
 
 	public void deleteEntriesAttachments(
 			long companyId, long repositoryId, Date date,

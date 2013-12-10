@@ -9,6 +9,14 @@
 		<execute action="CPUsersandorganizationsAdduser#type" locator-key1="DETAILS_SCREEN_NAME_FIELD" value1="${userScreenName}" />
 		<execute action="CPUsersandorganizationsAdduser#type" locator-key1="DETAILS_EMAIL_ADDRESS_FIELD" value1="${userEmailAddress}" />
 		<execute action="CPUsersandorganizationsAdduser#type" locator-key1="DETAILS_FIRST_NAME_FIELD" value1="${userFirstName}" />
+
+		<if>
+			<isset var="userMiddleName" />
+			<then>
+				<execute action="CPUsersandorganizationsAdduser#type" locator-key1="DETAILS_MIDDLE_NAME_FIELD" value1="${userMiddleName}" />
+			</then>
+		</if>
+
 		<execute action="CPUsersandorganizationsAdduser#type" locator-key1="DETAILS_LAST_NAME_FIELD" value1="${userLastName}" />
 		<execute action="CPUsersandorganizationsAdduser#assertClick" locator-key1="SAVE" value1="Save" />
 
@@ -35,6 +43,14 @@
 				<execute action="CPUsersandorganizationsUser#assertTextEquals" locator-key1="DETAILS_SCREEN_NAME_FIELD" value1="${userScreenName}" />
 				<execute action="CPUsersandorganizationsUser#assertTextEquals" locator-key1="DETAILS_EMAIL_ADDRESS_FIELD" value1="${userEmailAddress}" />
 				<execute action="CPUsersandorganizationsUser#assertTextEquals" locator-key1="DETAILS_FIRST_NAME_FIELD" value1="${userFirstName}" />
+
+				<if>
+					<isset var="userMiddleName" />
+					<then>
+						<execute action="CPUsersandorganizationsUser#assertTextEquals" locator-key1="DETAILS_MIDDLE_NAME_FIELD" value1="${userMiddleName}" />
+					</then>
+				</if>
+
 				<execute action="CPUsersandorganizationsUser#assertTextEquals" locator-key1="DETAILS_LAST_NAME_FIELD" value1="${userLastName}" />
 			</else>
 		</if>
@@ -425,6 +441,18 @@
 		<execute action="CPUsersandorganizationsUser#type" locator-key1="DETAILS_MIDDLE_NAME_FIELD" value1="${userMiddleName}" />
 		<execute action="CPUsersandorganizationsUser#assertClick" locator-key1="SAVE_BUTTON" value1="Save" />
 		<execute action="CPUsersandorganizationsUser#assertTextEquals" locator-key1="SUCCESS_MESSAGE" value1="Your request completed successfully." />
+	</command>
+
+	<command name="expandRootCP">
+		<execute action="CPUsersandorganizationsManagepages#click" locator-key1="PAGE_TREE_ROOT_ARROW" />
+		<execute action="CPUsersandorganizationsManagepages#assertElementPresent" locator-key1="PAGE_TREE_PAGE_LINK_1" />
+
+		<if>
+			<condition action="CPUsersandorganizationsManagepages#isElementNotPresent" locator-key1="PAGE_TREE_PAGE_LINK_1" />
+			<then>
+				<execute action="CPUsersandorganizationsManagepages#click" locator-key1="PAGE_TREE_ROOT_ARROW" />
+			</then>
+		</if>
 	</command>
 
 	<command name="firstLoginPG">

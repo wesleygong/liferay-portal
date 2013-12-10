@@ -303,9 +303,23 @@ public class DLAppHelperLocalServiceImpl
 		// Trash
 
 		if (fileEntry.getModel() instanceof DLFileEntry) {
-			trashEntryLocalService.deleteEntry(
-				DLFileEntryConstants.getClassName(),
-				fileEntry.getFileEntryId());
+			DLFileEntry dlFileEntry = (DLFileEntry)fileEntry.getModel();
+
+			if (dlFileEntry.isInTrashExplicitly()) {
+				trashEntryLocalService.deleteEntry(
+					DLFileEntryConstants.getClassName(),
+					fileEntry.getFileEntryId());
+			}
+			else {
+				List<DLFileVersion> dlFileVersions =
+					dlFileEntry.getFileVersions(WorkflowConstants.STATUS_ANY);
+
+				for (DLFileVersion dlFileVersion : dlFileVersions) {
+					trashVersionLocalService.deleteTrashVersion(
+						DLFileVersion.class.getName(),
+						dlFileVersion.getFileVersionId());
+				}
+			}
 		}
 	}
 
@@ -329,8 +343,16 @@ public class DLAppHelperLocalServiceImpl
 		// Trash
 
 		if (folder.getModel() instanceof DLFolder) {
-			trashEntryLocalService.deleteEntry(
-				DLFolderConstants.getClassName(), folder.getFolderId());
+			DLFolder dlFolder = (DLFolder)folder.getModel();
+
+			if (dlFolder.isInTrashExplicitly()) {
+				trashEntryLocalService.deleteEntry(
+					DLFolderConstants.getClassName(), dlFolder.getFolderId());
+			}
+			else {
+				trashVersionLocalService.deleteTrashVersion(
+					DLFolderConstants.getClassName(), dlFolder.getFolderId());
+			}
 		}
 	}
 
@@ -1021,8 +1043,7 @@ public class DLAppHelperLocalServiceImpl
 
 		dlFileEntryPersistence.update(dlFileEntry);
 
-		FileVersion fileVersion = new LiferayFileVersion(
-			dlFileEntry.getLatestFileVersion(true));
+		FileVersion fileVersion = fileEntry.getFileVersion();
 
 		TrashEntry trashEntry = trashEntryLocalService.getEntry(
 			DLFileEntryConstants.getClassName(), fileEntry.getFileEntryId());
@@ -1544,11 +1565,7 @@ public class DLAppHelperLocalServiceImpl
 
 		DLFileEntry dlFileEntry = (DLFileEntry)fileEntry.getModel();
 
-		TrashEntry trashEntry = dlFileEntry.getTrashEntry();
-
-		if (trashEntry.isTrashEntry(
-				DLFileEntry.class, dlFileEntry.getFileEntryId())) {
-
+		if (dlFileEntry.isInTrashExplicitly()) {
 			restoreFileEntryFromTrash(userId, fileEntry);
 
 			fileEntry = dlAppLocalService.moveFileEntry(
@@ -1562,6 +1579,8 @@ public class DLAppHelperLocalServiceImpl
 
 			return fileEntry;
 		}
+
+		TrashEntry trashEntry = dlFileEntry.getTrashEntry();
 
 		List<DLFileVersion> dlFileVersions =
 			dlFileVersionLocalService.getFileVersions(
@@ -1662,7 +1681,7 @@ public class DLAppHelperLocalServiceImpl
 		dlFileVersions = ListUtil.sort(
 			dlFileVersions, new FileVersionVersionComparator());
 
-		FileVersion fileVersion = new LiferayFileVersion(dlFileVersions.get(0));
+		FileVersion fileVersion = fileEntry.getFileVersion();
 
 		int oldStatus = fileVersion.getStatus();
 
@@ -1695,11 +1714,11 @@ public class DLAppHelperLocalServiceImpl
 		List<ObjectValuePair<Long, Integer>> dlFileVersionStatusOVPs =
 			new ArrayList<ObjectValuePair<Long, Integer>>();
 
+		DLFileVersion oldDLFileVersion = (DLFileVersion)fileVersion.getModel();
+
+		oldDLFileVersionStatus = oldDLFileVersion.getStatus();
+
 		if ((dlFileVersions != null) && !dlFileVersions.isEmpty()) {
-			DLFileVersion oldDLFileVersion = dlFileVersions.get(0);
-
-			oldDLFileVersionStatus = oldDLFileVersion.getStatus();
-
 			dlFileVersionStatusOVPs = getDlFileVersionStatuses(dlFileVersions);
 		}
 
@@ -1764,14 +1783,14 @@ public class DLAppHelperLocalServiceImpl
 
 		DLFolder dlFolder = (DLFolder)folder.getModel();
 
-		TrashEntry trashEntry = dlFolder.getTrashEntry();
-
-		if (trashEntry.isTrashEntry(DLFolder.class, dlFolder.getFolderId())) {
+		if (dlFolder.isInTrashExplicitly()) {
 			restoreFolderFromTrash(userId, folder);
 		}
 		else {
 
 			// Folder
+
+			TrashEntry trashEntry = dlFolder.getTrashEntry();
 
 			TrashVersion trashVersion =
 				trashVersionLocalService.fetchVersion(
@@ -1940,6 +1959,21 @@ public class DLAppHelperLocalServiceImpl
 		}
 	}
 
+	protected void notify(final SubscriptionSender subscriptionSender) {
+		TransactionCommitCallbackRegistryUtil.registerCallback(
+			new Callable<Void>() {
+
+				@Override
+				public Void call() throws Exception {
+					subscriptionSender.flushNotificationsAsync();
+
+					return null;
+				}
+
+			}
+		);
+	}
+
 	protected void notifySubscribers(
 			FileVersion fileVersion, ServiceContext serviceContext)
 		throws PortalException, SystemException {
@@ -2070,7 +2104,7 @@ public class DLAppHelperLocalServiceImpl
 		subscriptionSender.addPersistedSubscribers(
 			DLFileEntry.class.getName(), fileEntry.getFileEntryId());
 
-		subscriptionSender.flushNotificationsAsync();
+		notify(subscriptionSender);
 	}
 
 	protected void registerDLProcessorCallback(

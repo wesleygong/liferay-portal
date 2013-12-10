@@ -81,12 +81,7 @@ request.setAttribute("view.jsp-viewFolder", Boolean.TRUE.toString());
 request.setAttribute("view.jsp-useAssetEntryQuery", String.valueOf(useAssetEntryQuery));
 %>
 
-<portlet:actionURL var="undoTrashURL">
-	<portlet:param name="struts_action" value="/document_library/edit_entry" />
-	<portlet:param name="<%= Constants.CMD %>" value="<%= Constants.RESTORE %>" />
-</portlet:actionURL>
-
-<liferay-ui:trash-undo portletURL="<%= undoTrashURL %>" />
+<liferay-ui:trash-undo />
 
 <liferay-util:include page="/html/portlet/document_library/top_links.jsp" />
 
@@ -101,15 +96,15 @@ request.setAttribute("view.jsp-useAssetEntryQuery", String.valueOf(useAssetEntry
 
 	</c:when>
 	<c:when test='<%= topLink.equals("home") %>'>
-		<aui:row>
-			<c:if test="<%= (folder != null) %>">
-				<liferay-ui:header
-					backURL="<%= redirect %>"
-					localizeTitle="<%= false %>"
-					title="<%= folder.getName() %>"
-				/>
-			</c:if>
+		<c:if test="<%= (folder != null) %>">
+			<liferay-ui:header
+				backURL="<%= redirect %>"
+				localizeTitle="<%= false %>"
+				title="<%= folder.getName() %>"
+			/>
+		</c:if>
 
+		<aui:row>
 			<aui:col cssClass="lfr-asset-column lfr-asset-column-details" width="<%= showFolderMenu ? 75 : 100 %>">
 				<liferay-ui:panel-container extended="<%= false %>" id='<%= renderResponse.getNamespace() + "documentLibraryDisplayInfoPanelContainer" %>' persistState="<%= true %>">
 					<c:if test="<%= folder != null %>">

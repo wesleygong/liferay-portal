@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.Sort;
+import com.liferay.portal.kernel.transaction.TransactionCommitCallbackRegistryUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -65,6 +66,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import javax.portlet.PortletPreferences;
 
@@ -196,8 +198,14 @@ public class BookmarksEntryLocalServiceImpl
 
 		// Trash
 
-		trashEntryLocalService.deleteEntry(
-			BookmarksEntry.class.getName(), entry.getEntryId());
+		if (entry.isInTrashExplicitly()) {
+			trashEntryLocalService.deleteEntry(
+				BookmarksEntry.class.getName(), entry.getEntryId());
+		}
+		else {
+			trashVersionLocalService.deleteTrashVersion(
+				BookmarksEntry.class.getName(), entry.getEntryId());
+		}
 
 		return entry;
 	}
@@ -349,14 +357,14 @@ public class BookmarksEntryLocalServiceImpl
 
 		BookmarksEntry entry = getBookmarksEntry(entryId);
 
-		TrashEntry trashEntry = entry.getTrashEntry();
-
-		if (trashEntry.isTrashEntry(BookmarksEntry.class, entryId)) {
+		if (entry.isInTrashExplicitly()) {
 			restoreEntryFromTrash(userId, entryId);
 		}
 		else {
 
 			// Entry
+
+			TrashEntry trashEntry = entry.getTrashEntry();
 
 			TrashVersion trashVersion =
 				trashVersionLocalService.fetchVersion(
@@ -665,6 +673,21 @@ public class BookmarksEntryLocalServiceImpl
 		return folderId;
 	}
 
+	protected void notify(final SubscriptionSender subscriptionSender) {
+		TransactionCommitCallbackRegistryUtil.registerCallback(
+			new Callable<Void>() {
+
+				@Override
+				public Void call() throws Exception {
+					subscriptionSender.flushNotificationsAsync();
+
+					return null;
+				}
+
+			}
+		);
+	}
+
 	protected void notifySubscribers(
 			BookmarksEntry entry, ServiceContext serviceContext)
 		throws PortalException, SystemException {
@@ -774,7 +797,7 @@ public class BookmarksEntryLocalServiceImpl
 		subscriptionSender.addPersistedSubscribers(
 			BookmarksEntry.class.getName(), entry.getEntryId());
 
-		subscriptionSender.flushNotificationsAsync();
+		notify(subscriptionSender);
 	}
 
 	protected void validate(String url) throws PortalException {

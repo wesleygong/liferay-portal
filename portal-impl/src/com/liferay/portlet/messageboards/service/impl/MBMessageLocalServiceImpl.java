@@ -532,7 +532,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 		long folderId = message.getAttachmentsFolderId();
 
 		if (folderId != DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
-			PortletFileRepositoryUtil.deleteFolder(folderId);
+			PortletFileRepositoryUtil.deletePortletFolder(folderId);
 		}
 
 		// Thread
@@ -549,7 +549,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 			if (threadAttachmentsFolderId !=
 					DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
 
-				PortletFileRepositoryUtil.deleteFolder(
+				PortletFileRepositoryUtil.deletePortletFolder(
 					threadAttachmentsFolderId);
 			}
 
@@ -1129,10 +1129,21 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 			ThreadLastPostDateComparator comparator =
 				new ThreadLastPostDateComparator(false);
 
-			MBThread[] prevAndNextThreads =
-				mbThreadPersistence.findByG_C_PrevAndNext(
-					message.getThreadId(), message.getGroupId(),
-					message.getCategoryId(), comparator);
+			MBThread[] prevAndNextThreads = null;
+
+			if (status == WorkflowConstants.STATUS_ANY) {
+				prevAndNextThreads =
+					mbThreadPersistence.filterFindByG_C_NotS_PrevAndNext(
+						message.getThreadId(), message.getGroupId(),
+						message.getCategoryId(),
+						WorkflowConstants.STATUS_IN_TRASH, comparator);
+			}
+			else {
+				prevAndNextThreads =
+					mbThreadPersistence.filterFindByG_C_S_PrevAndNext(
+						message.getThreadId(), message.getGroupId(),
+						message.getCategoryId(), status, comparator);
+			}
 
 			previousThread = prevAndNextThreads[0];
 			nextThread = prevAndNextThreads[2];
@@ -1560,6 +1571,16 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 
 		mbMessagePersistence.update(message);
 
+		// Statistics
+
+		if ((serviceContext.getWorkflowAction() ==
+				WorkflowConstants.ACTION_SAVE_DRAFT) &&
+			!message.isDiscussion()) {
+
+			mbStatsUserLocalService.updateStatsUser(
+				message.getGroupId(), userId, message.getModifiedDate());
+		}
+
 		// Thread
 
 		if ((priority != MBThreadConstants.PRIORITY_NOT_GIVEN) &&
@@ -1688,17 +1709,18 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 							}
 
 							socialActivityLocalService.addActivity(
-								userId, message.getGroupId(),
+								message.getUserId(), message.getGroupId(),
 								MBMessage.class.getName(),
 								message.getMessageId(),
 								MBActivityKeys.ADD_MESSAGE,
 								extraDataJSONObject.toString(), receiverUserId);
 
 							if ((parentMessage != null) &&
-								(receiverUserId != userId)) {
+								(receiverUserId != message.getUserId())) {
 
 								socialActivityLocalService.addActivity(
-									userId, parentMessage.getGroupId(),
+									message.getUserId(),
+									parentMessage.getGroupId(),
 									MBMessage.class.getName(),
 									parentMessage.getMessageId(),
 									MBActivityKeys.REPLY_MESSAGE,
@@ -1725,8 +1747,8 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 									"messageId", message.getMessageId());
 
 								socialActivityLocalService.addActivity(
-									userId, assetEntry.getGroupId(), className,
-									classPK,
+									message.getUserId(),
+									assetEntry.getGroupId(), className, classPK,
 									SocialActivityConstants.TYPE_ADD_COMMENT,
 									extraDataJSONObject.toString(),
 									assetEntry.getUserId());
