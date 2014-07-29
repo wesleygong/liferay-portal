@@ -20,10 +20,10 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.test.LiferayIntegrationJUnitTestRunner;
-import com.liferay.portal.test.MainServletExecutionTestListener;
 import com.liferay.portal.test.Sync;
 import com.liferay.portal.test.SynchronousDestinationExecutionTestListener;
+import com.liferay.portal.test.listeners.MainServletExecutionTestListener;
+import com.liferay.portal.test.runners.LiferayIntegrationJUnitTestRunner;
 import com.liferay.portal.util.test.TestPropsValues;
 import com.liferay.portlet.blogs.model.BlogsEntry;
 import com.liferay.portlet.blogs.service.BlogsEntryLocalServiceUtil;
@@ -180,7 +180,7 @@ public class BlogsEntryTrashHandlerTest extends BaseTrashHandlerTestCase {
 		throws Exception {
 
 		String title = getSearchKeywords();
-		String deckTitle = StringPool.BLANK;
+		String subtitle = StringPool.BLANK;
 		String description = "Description";
 		String content = "Content";
 		int displayDateMonth = 1;
@@ -201,7 +201,7 @@ public class BlogsEntryTrashHandlerTest extends BaseTrashHandlerTestCase {
 		serviceContext.setWorkflowAction(WorkflowConstants.ACTION_SAVE_DRAFT);
 
 		BlogsEntry entry = BlogsEntryLocalServiceUtil.addEntry(
-			TestPropsValues.getUserId(), title, deckTitle, description, content,
+			TestPropsValues.getUserId(), title, subtitle, description, content,
 			displayDateMonth, displayDateDay, displayDateYear, displayDateHour,
 			displayDateMinute, allowPingbacks, allowTrackbacks, trackbacks,
 			smallImage, smallImageURL, smallImageFileName,

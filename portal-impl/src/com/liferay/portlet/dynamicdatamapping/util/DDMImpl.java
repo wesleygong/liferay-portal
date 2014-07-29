@@ -228,7 +228,9 @@ public class DDMImpl implements DDM {
 			boolean localizable = GetterUtil.getBoolean(
 				ddmStructure.getFieldProperty(fieldName, "localizable"), true);
 
-			if (!localizable && translating) {
+			if (!localizable && translating &&
+				!ddmStructure.isFieldPrivate(fieldName)) {
+
 				continue;
 			}
 
@@ -490,7 +492,12 @@ public class DDMImpl implements DDM {
 			Serializable fieldValue = serviceContext.getAttribute(
 				fieldNameValue);
 
-			if (fieldDataType.equals(FieldConstants.DATE)) {
+			if (fieldType.equals(DDMImpl.TYPE_CHECKBOX) &&
+				Validator.isNull(fieldValue)) {
+
+				fieldValue = "false";
+			}
+			else if (fieldDataType.equals(FieldConstants.DATE)) {
 				int fieldValueMonth = GetterUtil.getInteger(
 					serviceContext.getAttribute(fieldNameValue + "Month"));
 				int fieldValueDay = GetterUtil.getInteger(

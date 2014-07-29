@@ -5,6 +5,7 @@
 		<execute action="CPPortalinstancesAdd#type" locator-key1="WEB_ID_FIELD" value1="${webId}" />
 		<execute action="CPPortalinstancesAdd#type" locator-key1="VIRTUAL_HOST_FIELD" value1="${virtualHost}" />
 		<execute action="CPPortalinstancesAdd#type" locator-key1="MAIL_DOMAIN_FIELD" value1="${mailDomain}" />
+
 		<if>
 			<equals arg1="${maxUsers}" arg2="true" />
 			<then>
@@ -45,6 +46,18 @@
 		<execute action="CPPortalinstances#confirm" locator-key1="CONFIRMATION" value1="Are you sure you want to delete this? It will be deleted immediately." />
 		<execute action="CPPortalinstances#assertTextEquals" locator-key1="SUCCESS_MESSAGE" value1="Your request completed successfully." />
 		<execute action="CPPortalinstances#assertTextNotPresent" locator-key1="INSTANCE_TABLE_VIRTUAL_HOST" value1="${virtualHost}" />
+	</command>
+
+	<command name="editCP">
+		<var name="key_virtualHost" value="${virtualHost}" />
+
+		<execute action="CPPortalinstances#assertTextEquals" locator-key1="INSTANCE_TABLE_VIRTUAL_HOST" value1="${virtualHost}" />
+		<execute action="CPPortalinstances#assertClick" locator-key1="INSTANCE_TABLE_EDIT" value1="Edit" />
+
+		<execute action="CPPortalinstancesEdit#type" locator-key1="MAIL_DOMAIN_FIELD" value1="${mailDomain}" />
+		<execute action="CPPortalinstancesEdit#assertClick" locator-key1="SAVE_BUTTON" value1="Save" />
+
+		<execute action="CPPortalinstances#assertTextEquals" locator-key1="SUCCESS_MESSAGE" value1="Your request completed successfully." />
 	</command>
 
 	<command name="tearDownCP">

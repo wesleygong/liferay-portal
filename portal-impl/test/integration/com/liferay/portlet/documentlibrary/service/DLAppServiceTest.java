@@ -43,13 +43,13 @@ import com.liferay.portal.security.permission.DoAsUserThread;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.test.DeleteAfterTestRun;
-import com.liferay.portal.test.LiferayIntegrationJUnitTestRunner;
-import com.liferay.portal.test.MainServletExecutionTestListener;
 import com.liferay.portal.test.Sync;
 import com.liferay.portal.test.SynchronousDestinationExecutionTestListener;
+import com.liferay.portal.test.listeners.MainServletExecutionTestListener;
 import com.liferay.portal.test.log.ExpectedLog;
 import com.liferay.portal.test.log.ExpectedLogs;
 import com.liferay.portal.test.log.ExpectedType;
+import com.liferay.portal.test.runners.LiferayIntegrationJUnitTestRunner;
 import com.liferay.portal.util.test.RandomTestUtil;
 import com.liferay.portal.util.test.ServiceContextTestUtil;
 import com.liferay.portal.util.test.UserTestUtil;
@@ -72,7 +72,6 @@ import org.hibernate.util.JDBCExceptionReporter;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -87,25 +86,6 @@ import org.junit.runner.RunWith;
 @RunWith(LiferayIntegrationJUnitTestRunner.class)
 @Sync
 public class DLAppServiceTest extends BaseDLAppTestCase {
-
-	@Before
-	@Override
-	public void setUp() throws Exception {
-		super.setUp();
-
-		_fileEntry = DLAppTestUtil.addFileEntry(
-			group.getGroupId(), parentFolder.getFolderId(),
-			"Test DLAppService.txt");
-
-		_users = new User[ServiceTestUtil.THREAD_COUNT];
-
-		for (int i = 0; i < ServiceTestUtil.THREAD_COUNT; i++) {
-			User user = UserTestUtil.addUser(
-				"DLAppServiceTest" + (i + 1), group.getGroupId());
-
-			_users[i] = user;
-		}
-	}
 
 	@After
 	@Override
@@ -147,6 +127,15 @@ public class DLAppServiceTest extends BaseDLAppTestCase {
 	)
 	@Test
 	public void testAddFileEntriesConcurrently() throws Exception {
+		_users = new User[ServiceTestUtil.THREAD_COUNT];
+
+		for (int i = 0; i < ServiceTestUtil.THREAD_COUNT; i++) {
+			User user = UserTestUtil.addUser(
+				"DLAppServiceTest" + (i + 1), group.getGroupId());
+
+			_users[i] = user;
+		}
+
 		DoAsUserThread[] doAsUserThreads = new DoAsUserThread[_users.length];
 
 		_fileEntryIds = new long[_users.length];
@@ -195,6 +184,10 @@ public class DLAppServiceTest extends BaseDLAppTestCase {
 
 	@Test
 	public void testAddFileEntryWithDuplicateName() throws Exception {
+		_fileEntry = DLAppTestUtil.addFileEntry(
+			group.getGroupId(), parentFolder.getFolderId(),
+			"Test DLAppService.txt");
+
 		addFileEntry(false);
 
 		try {
@@ -224,6 +217,9 @@ public class DLAppServiceTest extends BaseDLAppTestCase {
 		long folderId = parentFolder.getFolderId();
 		String description = StringPool.BLANK;
 		String changeLog = StringPool.BLANK;
+
+		_fileEntry = DLAppTestUtil.addFileEntry(
+			group.getGroupId(), folderId, "Test DLAppService.txt");
 
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(group.getGroupId());

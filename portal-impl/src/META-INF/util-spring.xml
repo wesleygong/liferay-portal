@@ -9,12 +9,13 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd"
 >
-	<bean id="com.liferay.mail.util.HookFactory" class="com.liferay.mail.util.HookFactory" />
+	<bean id="com.liferay.mail.util.DummyHook" class="com.liferay.mail.util.DummyHook" />
 	<bean id="com.liferay.portal.events.StartupHelperUtil" class="com.liferay.portal.events.StartupHelperUtil">
 		<property name="startupHelper">
 			<bean class="com.liferay.portal.events.StartupHelper" />
 		</property>
 	</bean>
+	<bean id="com.liferay.portal.format.IdenticalPhoneNumberFormatImpl" class="com.liferay.portal.format.IdenticalPhoneNumberFormatImpl" />
 	<bean id="com.liferay.portal.kernel.audit.AuditMessageFactoryUtil" class="com.liferay.portal.kernel.audit.AuditMessageFactoryUtil">
 		<property name="auditMessageFactory">
 			<bean class="com.liferay.portal.audit.AuditMessageFactoryImpl" />
@@ -143,11 +144,6 @@
 			<bean class="com.liferay.portal.facebook.FacebookConnectImpl" />
 		</property>
 	</bean>
-	<bean id="com.liferay.portal.kernel.format.PhoneNumberFormatUtil" class="com.liferay.portal.kernel.format.PhoneNumberFormatUtil">
-		<property name="phoneNumberFormat">
-			<bean class="com.liferay.portal.format.PhoneNumberFormatImpl" />
-		</property>
-	</bean>
 	<bean id="com.liferay.portal.kernel.image.GhostscriptUtil" class="com.liferay.portal.kernel.image.GhostscriptUtil">
 		<property name="ghostscript">
 			<bean class="com.liferay.portal.image.GhostscriptImpl" />
@@ -200,11 +196,6 @@
 	<bean id="com.liferay.portal.kernel.lar.ExportImportHelper" class="com.liferay.portal.lar.ExportImportHelperImpl" />
 	<bean id="com.liferay.portal.kernel.lar.ExportImportHelperUtil" class="com.liferay.portal.kernel.lar.ExportImportHelperUtil">
 		<property name="exportImportHelper" ref="com.liferay.portal.kernel.lar.ExportImportHelper" />
-	</bean>
-	<bean id="com.liferay.portal.kernel.lock.LockListenerRegistryUtil" class="com.liferay.portal.kernel.lock.LockListenerRegistryUtil">
-		<property name="lockListenerRegistry">
-			<bean class="com.liferay.portal.util.LockListenerRegistryImpl" />
-		</property>
 	</bean>
 	<bean id="com.liferay.portal.kernel.management.PortalManagerUtil" class="com.liferay.portal.kernel.management.PortalManagerUtil">
 		<property name="portalManager">
@@ -564,6 +555,7 @@
 	<bean id="com.liferay.portal.resiliency.mpi.portlet.PortalResiliencyPortletContainerWrapper" class="com.liferay.portal.resiliency.mpi.portlet.PortalResiliencyPortletContainerWrapper" factory-method="createPortalResiliencyPortletContainerWrapper">
 		<constructor-arg name="portletContainer" ref="com.liferay.portlet.PortletContainerImpl" />
 	</bean>
+	<bean id="com.liferay.portal.sanitizer.DummySanitizerImpl" class="com.liferay.portal.sanitizer.DummySanitizerImpl" />
 	<bean id="com.liferay.portal.security.ac.AccessControlUtil" class="com.liferay.portal.security.ac.AccessControlUtil">
 		<property name="accessControl">
 			<bean class="com.liferay.portal.security.ac.AccessControlImpl" />
@@ -653,11 +645,7 @@
 	<bean id="com.liferay.portal.security.permission.ResourceActionsUtil" class="com.liferay.portal.security.permission.ResourceActionsUtil">
 		<property name="resourceActions" ref="com.liferay.portal.security.permission.ResourceActions" />
 	</bean>
-	<bean id="com.liferay.portal.security.pwd.PwdToolkitUtil" class="com.liferay.portal.security.pwd.PwdToolkitUtil">
-		<property name="toolkit">
-			<bean class="com.liferay.portal.security.pwd.ToolkitImpl" />
-		</property>
-	</bean>
+	<bean id="com.liferay.portal.security.pwd.PasswordPolicyToolkit" class="com.liferay.portal.security.pwd.PasswordPolicyToolkit" />
 	<bean id="com.liferay.portal.service.impl.LayoutLocalServiceHelper" class="com.liferay.portal.service.impl.LayoutLocalServiceHelper" />
 	<bean id="com.liferay.portal.service.PersistedModelLocalServiceRegistry" class="com.liferay.portal.service.PersistedModelLocalServiceRegistryImpl" />
 	<bean id="com.liferay.portal.service.PersistedModelLocalServiceRegistryUtil" class="com.liferay.portal.service.PersistedModelLocalServiceRegistryUtil">
@@ -813,6 +801,7 @@
 			</bean>
 		</property>
 	</bean>
+	<bean id="com.liferay.portlet.DefaultControlPanelEntry" class="com.liferay.portlet.DefaultControlPanelEntry" />
 	<bean id="com.liferay.portlet.DefaultControlPanelEntryFactory" class="com.liferay.portlet.DefaultControlPanelEntryFactory" />
 	<bean id="com.liferay.portlet.PortletContainerImpl" class="com.liferay.portlet.PortletContainerImpl" />
 	<bean id="com.liferay.portlet.SecurityPortletContainerWrapper" class="com.liferay.portlet.SecurityPortletContainerWrapper" factory-method="createSecurityPortletContainerWrapper">
@@ -840,6 +829,7 @@
 			<bean class="com.liferay.portlet.documentlibrary.store.StoreProxyImpl" />
 		</constructor-arg>
 	</bean>
+	<bean id="com.liferay.portlet.documentlibrary.util.DLFileEntryLockListener" class="com.liferay.portlet.documentlibrary.util.DLFileEntryLockListener" />
 	<bean id="com.liferay.portlet.documentlibrary.util.DLProcessorRegistryUtil" class="com.liferay.portlet.documentlibrary.util.DLProcessorRegistryUtil">
 		<property name="dLProcessorRegistry">
 			<bean class="com.liferay.portlet.documentlibrary.util.DLProcessorRegistryImpl" />
@@ -913,6 +903,11 @@
 	<bean id="com.liferay.portlet.dynamicdatamapping.render.DDMFormRendererUtil" class="com.liferay.portlet.dynamicdatamapping.render.DDMFormRendererUtil">
 		<property name="DDMFormRenderer">
 			<bean class="com.liferay.portlet.dynamicdatamapping.render.DDMFormRendererImpl" />
+		</property>
+	</bean>
+	<bean id="com.liferay.portlet.dynamicdatamapping.storage.DDMFormValuesValidatorUtil" class="com.liferay.portlet.dynamicdatamapping.storage.DDMFormValuesValidatorUtil">
+		<property name="DDMFormValuesValidator">
+			<bean class="com.liferay.portlet.dynamicdatamapping.storage.DDMFormValuesValidatorImpl" />
 		</property>
 	</bean>
 	<bean id="com.liferay.portlet.dynamicdatamapping.storage.FieldRendererFactory" class="com.liferay.portlet.dynamicdatamapping.storage.FieldRendererFactory">

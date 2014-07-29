@@ -15,15 +15,17 @@
 package com.liferay.portal.service.persistence;
 
 import com.liferay.portal.NoSuchLayoutException;
-import com.liferay.portal.kernel.bean.PortalBeanLocatorUtil;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.template.TemplateException;
 import com.liferay.portal.kernel.template.TemplateManagerUtil;
+import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.util.IntegerWrapper;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
@@ -34,8 +36,9 @@ import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.ModelListener;
 import com.liferay.portal.model.impl.LayoutModelImpl;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
-import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.TransactionalTestRule;
+import com.liferay.portal.test.runners.LiferayIntegrationJUnitTestRunner;
+import com.liferay.portal.tools.DBUpgrader;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portal.util.test.RandomTestUtil;
 
@@ -58,23 +61,24 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author Brian Wing Shun Chan
+ * @generated
  */
-@RunWith(LiferayPersistenceIntegrationJUnitTestRunner.class)
+@RunWith(LiferayIntegrationJUnitTestRunner.class)
 public class LayoutPersistenceTest {
+	@ClassRule
+	public static TransactionalTestRule transactionalTestRule = new TransactionalTestRule(Propagation.REQUIRED);
+
 	@BeforeClass
 	public static void setupClass() throws TemplateException {
+		try {
+			DBUpgrader.upgrade();
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+		}
+
 		TemplateManagerUtil.init();
-
-		PropsValues.SPRING_HIBERNATE_SESSION_DELEGATED = false;
 	}
-
-	public static void tearDownClass() {
-		PropsValues.SPRING_HIBERNATE_SESSION_DELEGATED = true;
-	}
-
-	@ClassRule
-	public static TransactionalTestRule transactionalTestRule = new TransactionalTestRule();
 
 	@Before
 	public void setUp() {
@@ -402,23 +406,6 @@ public class LayoutPersistenceTest {
 	}
 
 	@Test
-	public void testCountByG_P_F() {
-		try {
-			_persistence.countByG_P_F(RandomTestUtil.nextLong(),
-				RandomTestUtil.randomBoolean(), StringPool.BLANK);
-
-			_persistence.countByG_P_F(0L, RandomTestUtil.randomBoolean(),
-				StringPool.NULL);
-
-			_persistence.countByG_P_F(0L, RandomTestUtil.randomBoolean(),
-				(String)null);
-		}
-		catch (Exception e) {
-			Assert.fail(e.getMessage());
-		}
-	}
-
-	@Test
 	public void testCountByG_P_T() {
 		try {
 			_persistence.countByG_P_T(RandomTestUtil.nextLong(),
@@ -428,6 +415,23 @@ public class LayoutPersistenceTest {
 				StringPool.NULL);
 
 			_persistence.countByG_P_T(0L, RandomTestUtil.randomBoolean(),
+				(String)null);
+		}
+		catch (Exception e) {
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testCountByG_P_F() {
+		try {
+			_persistence.countByG_P_F(RandomTestUtil.nextLong(),
+				RandomTestUtil.randomBoolean(), StringPool.BLANK);
+
+			_persistence.countByG_P_F(0L, RandomTestUtil.randomBoolean(),
+				StringPool.NULL);
+
+			_persistence.countByG_P_F(0L, RandomTestUtil.randomBoolean(),
 				(String)null);
 		}
 		catch (Exception e) {
@@ -816,7 +820,8 @@ public class LayoutPersistenceTest {
 		return layout;
 	}
 
+	private static Log _log = LogFactoryUtil.getLog(LayoutPersistenceTest.class);
 	private List<Layout> _layouts = new ArrayList<Layout>();
 	private ModelListener<Layout>[] _modelListeners;
-	private LayoutPersistence _persistence = (LayoutPersistence)PortalBeanLocatorUtil.locate(LayoutPersistence.class.getName());
+	private LayoutPersistence _persistence = LayoutUtil.getPersistence();
 }

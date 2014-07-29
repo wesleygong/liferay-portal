@@ -28,7 +28,7 @@ if (layout != null) {
 boolean hasLayoutCustomizePermission = LayoutPermissionUtil.contains(permissionChecker, layout, ActionKeys.CUSTOMIZE);
 boolean hasLayoutUpdatePermission = LayoutPermissionUtil.contains(permissionChecker, layout, ActionKeys.UPDATE);
 
-String toggleControlsState = GetterUtil.getString(SessionClicks.get(request, "liferay_toggle_controls", ""));
+String toggleControlsState = GetterUtil.getString(SessionClicks.get(request, "liferay_toggle_controls", "visible"));
 %>
 
 <aui:nav-bar cssClass="dockbar navbar-static-top" data-namespace="<%= renderResponse.getNamespace() %>" id="dockbar">
@@ -214,7 +214,6 @@ String toggleControlsState = GetterUtil.getString(SessionClicks.get(request, "li
 				<portlet:renderURL var="editLayoutURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>">
 					<portlet:param name="struts_action" value="/dockbar/edit_layout_panel" />
 					<portlet:param name="closeRedirect" value="<%= PortalUtil.getLayoutURL(layout, themeDisplay) %>" />
-					<portlet:param name="groupId" value="<%= String.valueOf(scopeGroupId) %>" />
 					<portlet:param name="selPlid" value="<%= String.valueOf(plid) %>" />
 				</portlet:renderURL>
 

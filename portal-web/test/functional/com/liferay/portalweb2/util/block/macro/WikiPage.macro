@@ -104,10 +104,6 @@
 	</command>
 
 	<command name="addCP">
-		<var name="key_wikiNodeName" value="${wikiNodeName}" />
-
-		<execute action="CPWiki#assertClick" locator-key1="WIKI_NODE_TABLE_WIKI" value1="${wikiNodeName}" />
-
 		<execute action="CPWikiAllpages#assertClick" locator-key1="NAVIGATION_ALL_PAGES" value1="All Pages" />
 		<execute action="CPWikiAllpages#assertClick" locator-key1="ADD_PAGE_BUTTON" value1="Add Page" />
 
@@ -310,6 +306,36 @@
 
 		<execute action="PGWikidisplay#assertTextEquals" locator-key1="SUCCESS_MESSAGE" value1="Your request completed successfully." />
 		<execute action="PGWikidisplay#assertTextEquals" locator-key1="WIKI_PAGE_BODY" value1="${wikiPageContent}" />
+	</command>
+
+	<command name="addLocalizedFrontPagePG">
+		<execute action="PGWiki#assertClick" locator-key1="ADD_FRONTPAGE" value1="${emptyPageMessage}" />
+
+		<execute action="CKEditor#type" locator-key1="BODY_FIELD_LOCALIZED" value1="${wikiPageContent}" />
+		<execute action="CKEditor#selectFrame" locator-key1="BODY_FIELD_LOCALIZED" />
+
+		<if>
+			<equals arg1="${rtl}" arg2="true" />
+			<then>
+				<var name="textDirection" value="rtl" />
+			</then>
+			<else>
+				<var name="textDirection" value="ltr" />
+			</else>
+		</if>
+
+		<execute action="CKEditor#assertElementPresent" locator1="//html[@dir='${textDirection}']" />
+		<execute action="CKEditor#selectFrame" locator1="relative=top" />
+
+		<execute action="PGWikiEditpage#click" locator-key1="PUBLISH_BUTTON_LOCALIZED" />
+
+		<execute action="PGWikiAddpage#assertTextEquals" locator-key1="SUCCESS_MESSAGE_LOCALIZED" value1="${successMessage}" />
+
+		<execute action="PGWiki#assertElementPresent" locator1="//html[@dir='${textDirection}']" />
+
+		<var name="key_htmlTags" value="p" />
+
+		<execute action="PGWikiWikipage#assertTextEquals" locator-key1="WIKI_PAGE_HTML_BODY" value1="${wikiPageContent}" />
 	</command>
 
 	<command name="addPagePGViaWD">
@@ -828,6 +854,27 @@
 		<execute action="PGWiki#assertTextEquals" locator-key1="SUCCESS_MESSAGE" value1="Your request completed successfully." />
 	</command>
 
+	<command name="gotoCP">
+		<if>
+			<equals arg1="${isOrphanPage}" arg2="true" />
+			<then>
+				<execute action="CPWikiAllpages#assertClick" locator-key1="NAVIGATION_ORPHAN_PAGES" value1="Orphan Pages" />
+			</then>
+			<else>
+				<execute action="CPWikiAllpages#assertClick" locator-key1="NAVIGATION_ALL_PAGES" value1="All Pages" />
+			</else>
+		</if>
+
+		<var name="key_wikiPageTitle" value="${wikiPageTitle}" />
+
+		<execute action="CPWikiAllpages#assertTextEquals" locator-key1="WIKI_PAGE_TABLE_PAGE" value1="${wikiPageTitle}" />
+		<execute action="CPWikiAllpages#assertTextEquals" locator-key1="WIKI_PAGE_TABLE_STATUS" value1="Approved" />
+		<execute action="CPWikiAllpages#assertTextEquals" locator-key1="WIKI_PAGE_TABLE_REVISION" value1="${wikiPageRevision}" />
+		<execute action="CPWikiAllpages#assertTextEquals" locator-key1="WIKI_PAGE_TABLE_USER" value1="${wikiPageUsername}" />
+		<execute action="CPWikiAllpages#assertElementPresent" locator-key1="WIKI_PAGE_TABLE_DATE" />
+		<execute action="CPWikiAllpages#assertClick" locator-key1="WIKI_PAGE_TABLE_PAGE" value1="${wikiPageTitle}" />
+	</command>
+
 	<command name="gotoPageEditPG">
 		<var name="key_wikiPageTitle" value="${wikiPageTitle}" />
 
@@ -974,6 +1021,12 @@
 		<execute action="PGWikiWikipage#assertClick" locator-key1="WIKI_PAGE_BODY_LINK" value1="${wikiPage2Title}" />
 		<execute action="PGWikiWikipage#assertTextEquals" locator-key1="WIKI_PAGE_TITLE_HEADER" value1="${wikiPage2Title}" />
 		<execute action="PGWikiWikipage#assertTextEquals" locator-key1="WIKI_PAGE_BODY" value1="${wikiPage2Content}" />
+	</command>
+
+	<command name="markAsSpamCP">
+		<execute action="CPWikiWikipage#assertClick" locator-key1="WIKI_PAGE_ACTIONS_MARK_AS_SPAM" value1="Mark as Spam" />
+		<execute action="CPWikiWikipage#assertTextEquals" locator-key1="SUCCESS_MESSAGE" value1="Version ${wikiPageRevision} was marked as spam." />
+		<execute action="CPWikiWikipage#assertTextEquals" locator-key1="ERROR_MESSAGE" value1="This version has been flagged as spam. An administrator will review your version as soon as possible." />
 	</command>
 
 	<command name="moveToRecycleBinCP">
@@ -1336,11 +1389,16 @@
 	</command>
 
 	<command name="viewCP">
-		<var name="key_wikiPageTitle" value="${wikiPageTitle}" />
-
-		<execute action="CPWikiAllpages#assertClick" locator-key1="WIKI_PAGE_TABLE_PAGE" value1="${wikiPageTitle}" />
 		<execute action="CPWikiWikipage#assertTextEquals" locator-key1="WIKI_PAGE_TITLE_HEADER" value1="${wikiPageTitle}" />
 		<execute action="CPWikiWikipage#assertTextEquals" locator-key1="WIKI_PAGE_BODY" value1="${wikiPageContent}" />
+
+		<if>
+			<equals arg1="${akismetEnabled}" arg2="true" />
+			<then>
+				<execute action="CPWikiWikipage#assertTextNotPresent" locator-key1="SUCCESS_MESSAGE" value1="Version ${wikiPageRevision} was marked as spam." />
+				<execute action="CPWikiWikipage#assertTextNotPresent" locator-key1="ERROR_MESSAGE" value1="This version has been flagged as spam. An administrator will review your version as soon as possible." />
+			</then>
+		</if>
 	</command>
 
 	<command name="viewCustomADTSocialPG" >

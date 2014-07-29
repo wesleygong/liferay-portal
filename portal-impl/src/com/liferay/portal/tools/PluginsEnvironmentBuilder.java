@@ -230,7 +230,7 @@ public class PluginsEnvironmentBuilder {
 			jars.add(currentImportShared + ".jar");
 
 			File currentImportSharedLibDir = new File(
-				projectDir, "/../../shared/" + currentImportShared + "/lib");
+				projectDir, "../../shared/" + currentImportShared + "/lib");
 
 			if (!currentImportSharedLibDir.exists()) {
 				continue;

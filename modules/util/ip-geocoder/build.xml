@@ -3,10 +3,11 @@
 
 <project>
 	<property name="osgi.ide.dependencies" value="xz.jar" />
+	<property name="osgi.runtime.dependencies" value="geoip-api.jar" />
 	<property name="plugin.full.version" value="1.0.0" />
 	<property name="plugin.name" value="com.liferay.ip.geocoder" />
 
 	<import file="../../../tools/sdk/build-common-osgi-plugin.xml" />
 
-	<property name="auto.deploy.dir" value="${liferay.home}/osgi/util" />
+	<property name="auto.deploy.dir" value="${liferay.home}/osgi/modules" />
 </project>

@@ -128,6 +128,16 @@
 		<execute action="CPDynamicdatalistsListAddrecord#assertTextEquals" locator-key1="DOCUMENTS_AND_MEDIA_FIELD" value1="${ddlRecordFieldData}" />
 	</command>
 
+	<command name="populateFieldGeolocation">
+		<var name="key_fieldName" value="${fieldName}" />
+
+		<execute action="CPDynamicdatalistsListAddrecord#assertClick" locator-key1="GEOLOCATION_GEOLOCATE" value1="Geolocate" />
+		<execute action="CPDynamicdatalistsListAddrecord#sikuliClick" locator-key1="GEOLOCATION_SHARE_LOCATION_BUTTON_PNG" />
+		<execute action="CPDynamicdatalistsListAddrecord#sikuliClick" locator-key1="GEOLOCATION_SHARE_LOCATION_BUTTON_PNG" />
+		<execute action="CPDynamicdatalistsListAddrecord#assertTextEquals" locator-key1="GEOLOCATION_LOCATION_LABEL" value1="Location:" />
+		<execute action="CPDynamicdatalistsListAddrecord#assertTextEquals" locator-key1="GEOLOCATION_LOCATION" value1="${ddlRecordFieldData}" />
+	</command>
+
 	<command name="populateFieldHTML">
 		<var name="key_fieldName" value="${fieldName}" />
 
@@ -144,8 +154,7 @@
 		<var name="key_fieldName" value="${fieldName}" />
 		<var name="key_recordFieldData" value="${ddlRecordFieldData}" />
 
-		<execute action="CPDynamicdatalistsListAddrecord#click" locator-key1="LINK_TO_PAGE_SELECT" />
-		<execute action="CPDynamicdatalistsListAddrecord#doubleClick" locator-key1="LINK_TO_PAGE_SELECT_OPTION" />
+		<execute action="CPDynamicdatalistsListAddrecord#select" locator-key1="LINK_TO_PAGE_SELECT" value1="regexp:.*${ddlRecordFieldData}" />
 	</command>
 
 	<command name="populateFieldNumber">
@@ -223,7 +232,15 @@
 	</command>
 
 	<command name="publishPGViaDDLDisplay">
-		<execute action="PGDynamicdatalistsAddrecord#assertClick" locator-key1="PUBLISH_BUTTON" value1="Publish" />
+		<if>
+			<isset var="workflowDefinition" />
+			<then>
+				<execute action="PGDynamicdatalistsAddrecord#assertClick" locator-key1="SUBMIT_FOR_PUBLICATION_BUTTON" value1="Submit for Publication" />
+			</then>
+			<else>
+				<execute action="PGDynamicdatalistsAddrecord#assertClick" locator-key1="PUBLISH_BUTTON" value1="Publish" />
+			</else>
+		</if>
 
 		<execute action="PGDynamicdatalists#assertTextEquals" locator-key1="SUCCESS_MESSAGE" value1="Your request completed successfully." />
 	</command>

@@ -14,23 +14,26 @@
 
 package com.liferay.portlet.journal.service.persistence;
 
-import com.liferay.portal.kernel.bean.PortalBeanLocatorUtil;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.template.TemplateException;
 import com.liferay.portal.kernel.template.TemplateManagerUtil;
+import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.util.IntegerWrapper;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.ModelListener;
-import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.TransactionalTestRule;
+import com.liferay.portal.test.runners.LiferayIntegrationJUnitTestRunner;
+import com.liferay.portal.tools.DBUpgrader;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portal.util.test.RandomTestUtil;
 
@@ -58,23 +61,24 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author Brian Wing Shun Chan
+ * @generated
  */
-@RunWith(LiferayPersistenceIntegrationJUnitTestRunner.class)
+@RunWith(LiferayIntegrationJUnitTestRunner.class)
 public class JournalArticleResourcePersistenceTest {
+	@ClassRule
+	public static TransactionalTestRule transactionalTestRule = new TransactionalTestRule(Propagation.REQUIRED);
+
 	@BeforeClass
 	public static void setupClass() throws TemplateException {
+		try {
+			DBUpgrader.upgrade();
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+		}
+
 		TemplateManagerUtil.init();
-
-		PropsValues.SPRING_HIBERNATE_SESSION_DELEGATED = false;
 	}
-
-	public static void tearDownClass() {
-		PropsValues.SPRING_HIBERNATE_SESSION_DELEGATED = true;
-	}
-
-	@ClassRule
-	public static TransactionalTestRule transactionalTestRule = new TransactionalTestRule();
 
 	@Before
 	public void setUp() {
@@ -494,7 +498,8 @@ public class JournalArticleResourcePersistenceTest {
 		return journalArticleResource;
 	}
 
+	private static Log _log = LogFactoryUtil.getLog(JournalArticleResourcePersistenceTest.class);
 	private List<JournalArticleResource> _journalArticleResources = new ArrayList<JournalArticleResource>();
 	private ModelListener<JournalArticleResource>[] _modelListeners;
-	private JournalArticleResourcePersistence _persistence = (JournalArticleResourcePersistence)PortalBeanLocatorUtil.locate(JournalArticleResourcePersistence.class.getName());
+	private JournalArticleResourcePersistence _persistence = JournalArticleResourceUtil.getPersistence();
 }

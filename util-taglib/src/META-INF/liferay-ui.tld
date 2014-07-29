@@ -2016,6 +2016,11 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
+			<name>toolbarSet</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
 			<name>type</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -2508,6 +2513,11 @@
 		</attribute>
 		<attribute>
 			<name>groupId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>incomplete</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>

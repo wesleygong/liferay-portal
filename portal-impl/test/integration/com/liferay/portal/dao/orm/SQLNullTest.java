@@ -21,15 +21,14 @@ import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.SQLQuery;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.dao.orm.SessionFactory;
-import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
-import com.liferay.portal.test.MainServletExecutionTestListener;
+import com.liferay.portal.test.TransactionalTestRule;
+import com.liferay.portal.test.runners.LiferayIntegrationJUnitTestRunner;
 
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -437,13 +436,12 @@ import org.junit.runner.RunWith;
  *
  * @author Shuyang Zhou
  */
-@ExecutionTestListeners(
-	listeners = {
-		MainServletExecutionTestListener.class,
-		PersistenceExecutionTestListener.class
-	})
-@RunWith(LiferayPersistenceIntegrationJUnitTestRunner.class)
+@RunWith(LiferayIntegrationJUnitTestRunner.class)
 public class SQLNullTest {
+
+	@ClassRule
+	public static TransactionalTestRule transactionalTestRule =
+		new TransactionalTestRule();
 
 	@Test
 	public void testBlankStringEqualsNull() {
@@ -467,7 +465,7 @@ public class SQLNullTest {
 			Assert.assertTrue(list.isEmpty());
 		}
 		finally {
-			session.close();
+			_sessionFactory.closeSession(session);
 		}
 	}
 
@@ -498,7 +496,7 @@ public class SQLNullTest {
 			}
 		}
 		finally {
-			session.close();
+			_sessionFactory.closeSession(session);
 		}
 	}
 
@@ -529,7 +527,7 @@ public class SQLNullTest {
 			}
 		}
 		finally {
-			session.close();
+			_sessionFactory.closeSession(session);
 		}
 	}
 
@@ -550,7 +548,7 @@ public class SQLNullTest {
 			Assert.assertTrue(list.isEmpty());
 		}
 		finally {
-			session.close();
+			_sessionFactory.closeSession(session);
 		}
 	}
 
@@ -581,7 +579,7 @@ public class SQLNullTest {
 			}
 		}
 		finally {
-			session.close();
+			_sessionFactory.closeSession(session);
 		}
 	}
 
@@ -607,7 +605,7 @@ public class SQLNullTest {
 			}
 		}
 		finally {
-			session.close();
+			_sessionFactory.closeSession(session);
 		}
 	}
 
@@ -638,7 +636,7 @@ public class SQLNullTest {
 			}
 		}
 		finally {
-			session.close();
+			_sessionFactory.closeSession(session);
 		}
 	}
 
@@ -664,7 +662,7 @@ public class SQLNullTest {
 			Assert.assertTrue(list.isEmpty());
 		}
 		finally {
-			session.close();
+			_sessionFactory.closeSession(session);
 		}
 	}
 
@@ -690,7 +688,7 @@ public class SQLNullTest {
 			Assert.assertFalse(list.isEmpty());
 		}
 		finally {
-			session.close();
+			_sessionFactory.closeSession(session);
 		}
 	}
 
@@ -711,7 +709,7 @@ public class SQLNullTest {
 			Assert.assertTrue(list.isEmpty());
 		}
 		finally {
-			session.close();
+			_sessionFactory.closeSession(session);
 		}
 	}
 
@@ -737,7 +735,7 @@ public class SQLNullTest {
 			Assert.assertTrue(list.isEmpty());
 		}
 		finally {
-			session.close();
+			_sessionFactory.closeSession(session);
 		}
 	}
 
@@ -763,7 +761,7 @@ public class SQLNullTest {
 			}
 		}
 		finally {
-			session.close();
+			_sessionFactory.closeSession(session);
 		}
 	}
 
@@ -784,7 +782,7 @@ public class SQLNullTest {
 			Assert.assertTrue(list.isEmpty());
 		}
 		finally {
-			session.close();
+			_sessionFactory.closeSession(session);
 		}
 	}
 
@@ -805,7 +803,7 @@ public class SQLNullTest {
 			Assert.assertFalse(list.isEmpty());
 		}
 		finally {
-			session.close();
+			_sessionFactory.closeSession(session);
 		}
 	}
 
@@ -826,7 +824,7 @@ public class SQLNullTest {
 			Assert.assertTrue(list.isEmpty());
 		}
 		finally {
-			session.close();
+			_sessionFactory.closeSession(session);
 		}
 	}
 
@@ -855,7 +853,7 @@ public class SQLNullTest {
 			Assert.assertTrue(list.isEmpty());
 		}
 		finally {
-			session.close();
+			_sessionFactory.closeSession(session);
 		}
 	}
 
@@ -881,7 +879,7 @@ public class SQLNullTest {
 			}
 		}
 		finally {
-			session.close();
+			_sessionFactory.closeSession(session);
 		}
 	}
 
@@ -915,7 +913,7 @@ public class SQLNullTest {
 			}
 		}
 		finally {
-			session.close();
+			_sessionFactory.closeSession(session);
 		}
 	}
 

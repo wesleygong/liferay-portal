@@ -23,13 +23,11 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.Document;
-import com.liferay.portal.kernel.xml.DocumentException;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.tools.ComparableRoute;
 import com.liferay.util.ContentUtil;
 
 import java.io.File;
-import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,6 +72,143 @@ public class XMLSourceProcessor extends BaseSourceProcessor {
 		return newContent;
 	}
 
+	protected void checkServiceXMLExceptions(
+		String fileName, Element rootElement) {
+
+		Element exceptionsElement = rootElement.element("exceptions");
+
+		if (exceptionsElement == null) {
+			return;
+		}
+
+		List<Element> exceptionElements = exceptionsElement.elements(
+			"exception");
+
+		String previousException = StringPool.BLANK;
+
+		for (Element exceptionElement : exceptionElements) {
+			String exception = exceptionElement.getStringValue();
+
+			if (Validator.isNotNull(previousException) &&
+				(previousException.compareToIgnoreCase(exception) > 0)) {
+
+				processErrorMessage(
+					fileName, "sort: " + fileName + " " + exception);
+			}
+
+			previousException = exception;
+		}
+	}
+
+	protected void checkServiceXMLFinders(
+			String fileName, Element entityElement, String entityName,
+			String portalTablesContent)
+		throws Exception {
+
+		List<String> columnNames = getColumnNames(
+			entityName, portalTablesContent);
+
+		List<Element> finderElements = entityElement.elements("finder");
+
+		List<Element> previousFinderColumnElements = null;
+
+		for (Element finderElement : finderElements) {
+			String finderName = finderElement.attributeValue("name");
+
+			List<Element> finderColumnElements = finderElement.elements(
+				"finder-column");
+
+			if (previousFinderColumnElements == null) {
+				previousFinderColumnElements = finderColumnElements;
+
+				continue;
+			}
+
+			int finderColumnCount = finderColumnElements.size();
+			int previousFinderColumnCount = previousFinderColumnElements.size();
+
+			if (previousFinderColumnCount > finderColumnCount) {
+				processErrorMessage(
+					fileName,
+					"order by number of columms: " + fileName + " " +
+						entityName + " " + finderName);
+
+				return;
+			}
+
+			if (previousFinderColumnCount < finderColumnCount) {
+				previousFinderColumnElements = finderColumnElements;
+
+				continue;
+			}
+
+			for (int i = 0; i < finderColumnCount; i++) {
+				Element finderColumnElement = finderColumnElements.get(i);
+				Element previousFinderColumnElement =
+					previousFinderColumnElements.get(i);
+
+				String finderColumnName = finderColumnElement.attributeValue(
+					"name");
+				String previousFinderColumnName =
+					previousFinderColumnElement.attributeValue("name");
+
+				int index = columnNames.indexOf(finderColumnName);
+				int previousIndex = columnNames.indexOf(
+					previousFinderColumnName);
+
+				if (previousIndex > index) {
+					processErrorMessage(
+						fileName,
+						"order by column order in table: " + fileName + " " +
+							entityName + " " + finderName);
+
+					return;
+				}
+
+				if (previousIndex < index) {
+					break;
+				}
+			}
+
+			previousFinderColumnElements = finderColumnElements;
+		}
+	}
+
+	protected void checkServiceXMLReferences(
+		String fileName, Element entityElement, String entityName) {
+
+		String previousReferenceEntity = StringPool.BLANK;
+		String previousReferencePackagePath = StringPool.BLANK;
+
+		List<Element> referenceElements = entityElement.elements(
+			"reference");
+
+		for (Element referenceElement : referenceElements) {
+			String referenceEntity = referenceElement.attributeValue(
+				"entity");
+			String referencePackagePath = referenceElement.attributeValue(
+				"package-path");
+
+			if (Validator.isNotNull(previousReferencePackagePath)) {
+				if ((previousReferencePackagePath.compareToIgnoreCase(
+						referencePackagePath) > 0) ||
+					(previousReferencePackagePath.equals(
+						referencePackagePath) &&
+					 (previousReferenceEntity.compareToIgnoreCase(
+						 referenceEntity) > 0))) {
+
+					processErrorMessage(
+						fileName,
+						"sort: " + fileName + " " + entityName + " " +
+							referenceEntity);
+				}
+			}
+
+			previousReferenceEntity = referenceEntity;
+			previousReferencePackagePath = referencePackagePath;
+		}
+	}
+
 	protected String fixAntXMLProjectName(String fileName, String content) {
 		int x = 0;
 
@@ -110,6 +245,10 @@ public class XMLSourceProcessor extends BaseSourceProcessor {
 			}
 		}
 		else {
+			return content;
+		}
+
+		if (content.contains("<project>")) {
 			return content;
 		}
 
@@ -307,6 +446,14 @@ public class XMLSourceProcessor extends BaseSourceProcessor {
 
 		_friendlyUrlRoutesSortExclusions = getExclusions(
 			"friendly.url.routes.sort.excludes");
+		_numericalPortletNameElementExclusions = getExclusions(
+			"numerical.portlet.name.element.excludes");
+
+		String portalTablesContent = null;
+
+		if (portalSource) {
+			portalTablesContent = getContent("sql/portal-tables.sql", 4);
+		}
 
 		List<String> fileNames = getFileNames(excludes, includes);
 
@@ -337,11 +484,12 @@ public class XMLSourceProcessor extends BaseSourceProcessor {
 			else if (fileName.endsWith("routes.xml")) {
 				newContent = formatFriendlyURLRoutesXML(fileName, newContent);
 			}
-			else if ((portalSource &&
+			else if (fileName.endsWith("/liferay-portlet.xml") ||
+					 (portalSource &&
 					  fileName.endsWith("/portlet-custom.xml")) ||
 					 (!portalSource && fileName.endsWith("/portlet.xml"))) {
 
-				newContent = formatPortletXML(newContent);
+				newContent = formatPortletXML(fileName, newContent);
 			}
 			else if (portalSource &&
 					 (fileName.endsWith(".action") ||
@@ -352,7 +500,7 @@ public class XMLSourceProcessor extends BaseSourceProcessor {
 				newContent = formatPoshiXML(fileName, newContent);
 			}
 			else if (portalSource && fileName.endsWith("/service.xml")) {
-				formatServiceXML(fileName, newContent);
+				formatServiceXML(fileName, newContent, portalTablesContent);
 			}
 			else if (portalSource && fileName.endsWith("/struts-config.xml")) {
 				formatStrutsConfigXML(fileName, newContent);
@@ -360,7 +508,9 @@ public class XMLSourceProcessor extends BaseSourceProcessor {
 			else if (portalSource && fileName.endsWith("/tiles-defs.xml")) {
 				formatTilesDefsXML(fileName, newContent);
 			}
-			else if ((portalSource && fileName.endsWith("WEB-INF/web.xml")) ||
+			else if ((portalSource &&
+					  fileName.endsWith(
+						  "portal-web/docroot/WEB-INF/web.xml")) ||
 					 (!portalSource && fileName.endsWith("/web.xml"))) {
 
 				newContent = formatWebXML(fileName, newContent);
@@ -373,7 +523,7 @@ public class XMLSourceProcessor extends BaseSourceProcessor {
 	}
 
 	protected String formatAntXML(String fileName, String content)
-		throws DocumentException, IOException {
+		throws Exception {
 
 		String newContent = trimContent(content, true);
 
@@ -407,9 +557,7 @@ public class XMLSourceProcessor extends BaseSourceProcessor {
 		return newContent;
 	}
 
-	protected String formatDDLStructuresXML(String content)
-		throws DocumentException, IOException {
-
+	protected String formatDDLStructuresXML(String content) throws Exception {
 		Document document = saxReaderUtil.read(content);
 
 		Element rootElement = document.getRootElement();
@@ -441,7 +589,7 @@ public class XMLSourceProcessor extends BaseSourceProcessor {
 	}
 
 	protected String formatFriendlyURLRoutesXML(String fileName, String content)
-		throws DocumentException {
+		throws Exception {
 
 		if (isExcluded(_friendlyUrlRoutesSortExclusions, fileName)) {
 			return content;
@@ -574,8 +722,8 @@ public class XMLSourceProcessor extends BaseSourceProcessor {
 		return sb.toString();
 	}
 
-	protected String formatPortletXML(String content)
-		throws DocumentException, IOException {
+	protected String formatPortletXML(String fileName, String content)
+		throws Exception {
 
 		Document document = saxReaderUtil.read(content);
 
@@ -583,9 +731,31 @@ public class XMLSourceProcessor extends BaseSourceProcessor {
 
 		rootElement.sortAttributes(true);
 
+		boolean checkNumericalPortletNameElement = !isExcluded(
+			_numericalPortletNameElementExclusions, fileName);
+
 		List<Element> portletElements = rootElement.elements("portlet");
 
 		for (Element portletElement : portletElements) {
+			if (checkNumericalPortletNameElement) {
+				Element portletNameElement = portletElement.element(
+					"portlet-name");
+
+				String portletNameText = portletNameElement.getText();
+
+				if (!Validator.isNumber(portletNameText)) {
+					processErrorMessage(
+						fileName,
+						fileName +
+							" contains a nonstandard portlet-name element " +
+								portletNameText);
+				}
+			}
+
+			if (fileName.endsWith("/liferay-portlet.xml")) {
+				continue;
+			}
+
 			portletElement.sortElementsByChildElement("init-param", "name");
 
 			Element portletPreferencesElement = portletElement.element(
@@ -601,7 +771,7 @@ public class XMLSourceProcessor extends BaseSourceProcessor {
 	}
 
 	protected String formatPoshiXML(String fileName, String content)
-		throws IOException {
+		throws Exception {
 
 		content = sortPoshiAttributes(fileName, content);
 
@@ -620,8 +790,9 @@ public class XMLSourceProcessor extends BaseSourceProcessor {
 		return fixPoshiXMLNumberOfTabs(content);
 	}
 
-	protected void formatServiceXML(String fileName, String content)
-		throws DocumentException {
+	protected void formatServiceXML(
+			String fileName, String content, String portalTablesContent)
+		throws Exception {
 
 		Document document = saxReaderUtil.read(content);
 
@@ -641,67 +812,18 @@ public class XMLSourceProcessor extends BaseSourceProcessor {
 					fileName, "sort: " + fileName + " " + entityName);
 			}
 
-			String previousReferenceEntity = StringPool.BLANK;
-			String previousReferencePackagePath = StringPool.BLANK;
-
-			List<Element> referenceElements = entityElement.elements(
-				"reference");
-
-			for (Element referenceElement : referenceElements) {
-				String referenceEntity = referenceElement.attributeValue(
-					"entity");
-				String referencePackagePath = referenceElement.attributeValue(
-					"package-path");
-
-				if (Validator.isNotNull(previousReferencePackagePath)) {
-					if ((previousReferencePackagePath.compareToIgnoreCase(
-							referencePackagePath) > 0) ||
-						(previousReferencePackagePath.equals(
-							referencePackagePath) &&
-						 (previousReferenceEntity.compareToIgnoreCase(
-							 referenceEntity) > 0))) {
-
-						processErrorMessage(
-							fileName,
-							"sort: " + fileName + " " + entityName + " " +
-								referenceEntity);
-					}
-				}
-
-				previousReferenceEntity = referenceEntity;
-				previousReferencePackagePath = referencePackagePath;
-			}
+			checkServiceXMLFinders(
+				fileName, entityElement, entityName, portalTablesContent);
+			checkServiceXMLReferences(fileName, entityElement, entityName);
 
 			previousEntityName = entityName;
 		}
 
-		Element exceptionsElement = rootElement.element("exceptions");
-
-		if (exceptionsElement == null) {
-			return;
-		}
-
-		List<Element> exceptionElements = exceptionsElement.elements(
-			"exception");
-
-		String previousException = StringPool.BLANK;
-
-		for (Element exceptionElement : exceptionElements) {
-			String exception = exceptionElement.getStringValue();
-
-			if (Validator.isNotNull(previousException) &&
-				(previousException.compareToIgnoreCase(exception) > 0)) {
-
-				processErrorMessage(
-					fileName, "sort: " + fileName + " " + exception);
-			}
-
-			previousException = exception;
-		}
+		checkServiceXMLExceptions(fileName, rootElement);
 	}
 
 	protected void formatStrutsConfigXML(String fileName, String content)
-		throws DocumentException {
+		throws Exception {
 
 		Document document = saxReaderUtil.read(content);
 
@@ -729,7 +851,7 @@ public class XMLSourceProcessor extends BaseSourceProcessor {
 	}
 
 	protected void formatTilesDefsXML(String fileName, String content)
-		throws DocumentException {
+		throws Exception {
 
 		Document document = saxReaderUtil.read(content);
 
@@ -754,7 +876,7 @@ public class XMLSourceProcessor extends BaseSourceProcessor {
 	}
 
 	protected String formatWebXML(String fileName, String content)
-		throws IOException {
+		throws Exception {
 
 		if (!portalSource) {
 			String webXML = ContentUtil.get(
@@ -840,8 +962,45 @@ public class XMLSourceProcessor extends BaseSourceProcessor {
 			newContent.substring(y);
 	}
 
+	protected List<String> getColumnNames(
+			String entityName, String portalTablesContent)
+		throws Exception {
+
+		List<String> columnNames = new ArrayList<String>();
+
+		Pattern pattern = Pattern.compile(
+			"create table " + entityName + "_? \\(\n([\\s\\S]*?)\n\\);");
+
+		Matcher matcher = pattern.matcher(portalTablesContent);
+
+		if (!matcher.find()) {
+			return columnNames;
+		}
+
+		String tableContent = matcher.group(1);
+
+		UnsyncBufferedReader unsyncBufferedReader = new UnsyncBufferedReader(
+			new UnsyncStringReader(tableContent));
+
+		String line = null;
+
+		while ((line = unsyncBufferedReader.readLine()) != null) {
+			line = StringUtil.trim(line);
+
+			String columnName = line.substring(
+				0, line.indexOf(StringPool.SPACE));
+
+			columnName = StringUtil.replace(
+				columnName, StringPool.UNDERLINE, StringPool.BLANK);
+
+			columnNames.add(columnName);
+		}
+
+		return columnNames;
+	}
+
 	protected String sortPoshiAttributes(String fileName, String content)
-		throws IOException {
+		throws Exception {
 
 		StringBundler sb = new StringBundler();
 
@@ -1030,6 +1189,7 @@ public class XMLSourceProcessor extends BaseSourceProcessor {
 		"[\t ]-->\n[\t<]");
 
 	private List<String> _friendlyUrlRoutesSortExclusions;
+	private List<String> _numericalPortletNameElementExclusions;
 	private Pattern _poshiClosingTagPattern = Pattern.compile("</[^>/]*>");
 	private Pattern _poshiCommandsPattern = Pattern.compile(
 		"\\<command.*name=\\\"([^\\\"]*)\\\".*\\>[\\s\\S]*?\\</command\\>" +

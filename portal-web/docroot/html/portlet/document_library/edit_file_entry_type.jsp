@@ -31,10 +31,10 @@ long ddmStructureId = BeanParamUtil.getLong(ddmStructure, request, "structureId"
 
 String script = BeanParamUtil.getString(ddmStructure, request, "definition");
 
-JSONArray scriptJSONArray = null;
+JSONArray fieldsJSONArray = null;
 
 if (Validator.isNotNull(script)) {
-	scriptJSONArray = DDMXSDUtil.getJSONArray(script);
+	fieldsJSONArray = DDMXSDUtil.getJSONArray(script);
 }
 
 List<DDMStructure> ddmStructures = null;
@@ -191,7 +191,7 @@ String scopeAvailableFields = ParamUtil.getString(request, "scopeAvailableFields
 		window,
 		'<portlet:namespace />saveStructure',
 		function() {
-			document.<portlet:namespace />fm.<portlet:namespace />definition.value = window.<portlet:namespace />formBuilder.getContentDefinition();
+			document.<portlet:namespace />fm.<portlet:namespace />definition.value = window.<portlet:namespace />formBuilder.getContentValue();
 
 			submitForm(document.<portlet:namespace />fm);
 		},

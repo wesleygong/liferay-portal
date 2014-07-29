@@ -139,6 +139,10 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 		_elasticsearchConnectionManager = elasticsearchConnectionManager;
 	}
 
+	public void setMaxResultSize(int maxResultSize) {
+		_maxResultSize = maxResultSize;
+	}
+
 	protected void addFacets(
 		SearchRequestBuilder searchRequestBuilder,
 		SearchContext searchContext) {
@@ -177,6 +181,8 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 			return;
 		}
 
+		addHighlightedField(
+			searchRequestBuilder, queryConfig, Field.ASSET_CATEGORY_TITLES);
 		addHighlightedField(searchRequestBuilder, queryConfig, Field.CONTENT);
 		addHighlightedField(
 			searchRequestBuilder, queryConfig, Field.DESCRIPTION);
@@ -187,7 +193,7 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 		SearchRequestBuilder searchRequestBuilder, int start, int end) {
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS)) {
-			searchRequestBuilder.setSize(0);
+			searchRequestBuilder.setSize(_maxResultSize);
 		}
 		else {
 			searchRequestBuilder.setFrom(start);
@@ -270,6 +276,9 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 			return;
 		}
 
+		addSnippets(
+			document, queryTerms, highlightFields, Field.ASSET_CATEGORY_TITLES,
+			queryConfig.getLocale());
 		addSnippets(
 			document, queryTerms, highlightFields, Field.CONTENT,
 			queryConfig.getLocale());
@@ -414,6 +423,7 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 		ElasticsearchIndexSearcher.class);
 
 	private ElasticsearchConnectionManager _elasticsearchConnectionManager;
+	private int _maxResultSize = 1000;
 	private Pattern _pattern = Pattern.compile("<em>(.*?)</em>");
 
 }

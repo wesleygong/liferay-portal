@@ -20,7 +20,7 @@ feature or API will be dropped in an upcoming version.
 replaces an old API, in spite of the old API being kept in Liferay Portal for
 backwards compatibility.
 
-*This document has been reviewed through commit `b62c5e4`.*
+*This document has been reviewed through commit `10c9096`.*
 
 ## Breaking Changes Contribution Guidelines
 
@@ -389,3 +389,46 @@ Replace the old exception with the equivalent inner class exception as follows:
 This change provides more information to clients of the services API about the
 root cause of an error. It provides a more helpful error message to the end-user
 and it allows for easier recovery, when possible.
+
+---------------------------------------
+
+### Removed Trash Logic from `DLAppHelperLocalService` Methods
+- **Date:** 2014-Jul-22
+- **JIRA Ticket:** LPS-47508
+
+#### What changed?
+
+The `deleteFileEntry()` and `deleteFolder()` methods in
+`DLAppHelperLocalService` deleted the corresponding trash entry in the database.
+This logic has been removed from these methods.
+
+#### Who is affected?
+
+Every caller of the `deleteFileEntry()` and `deleteFolder()` methods is
+affected.
+
+#### How should I update my code?
+
+There is no direct replacement. Trash operations are now accessible through the
+`TrashCapability` implementations for each repository. The following code
+demonstrates using a `TrashCapability` instance to delete a `FileEntry`:
+
+    Repository repository = getRepository();
+
+    TrashCapability trashCapability = repository.getCapability(
+        TrashCapability.class);
+
+    FileEntry fileEntry = repository.getFileEntry(fileEntryId);
+
+    trashCapability.deleteFileEntry(fileEntry);
+
+Note that the `deleteFileEntry()` and `deleteFolder()` methods in
+`TrashCapability` not only remove the trash entry, but also remove the folder or
+file entry itself, and any associated data, such as assets, previews, etc.
+
+#### Why was this change made?
+
+This change was made to allow different kinds of repositories to support trash
+operations in a uniform way.
+
+---------------------------------------

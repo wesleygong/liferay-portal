@@ -113,7 +113,7 @@ if (!inlineEdit) {
 
 		<script src="<%= HtmlUtil.escape(PortalUtil.getStaticResourceURL(request, themeDisplay.getCDNHost() + themeDisplay.getPathJavaScript() + "/editor/ckeditor/ckeditor.js", javaScriptLastModified)) %>" type="text/javascript"></script>
 
-		<c:if test="<%= inlineEdit && (inlineEditSaveURL != null) %>">
+		<c:if test="<%= inlineEdit && Validator.isNotNull(inlineEditSaveURL) %>">
 			<script src="<%= HtmlUtil.escape(PortalUtil.getStaticResourceURL(request, themeDisplay.getCDNHost() + themeDisplay.getPathJavaScript() + "/editor/ckeditor/main.js", javaScriptLastModified)) %>" type="text/javascript"></script>
 		</c:if>
 
@@ -200,7 +200,7 @@ String textareaName = name;
 
 String modules = "aui-node-base";
 
-if (inlineEdit && (inlineEditSaveURL != null)) {
+if (inlineEdit && Validator.isNotNull(inlineEditSaveURL)) {
 	textareaName = name + "_original";
 
 	modules += ",inline-editor-ckeditor";
@@ -260,7 +260,7 @@ if (inlineEdit && (inlineEditSaveURL != null)) {
 		}
 	};
 
-	<c:if test="<%= inlineEdit && (inlineEditSaveURL != null) %>">
+	<c:if test="<%= inlineEdit && Validator.isNotNull(inlineEditSaveURL) %>">
 		var inlineEditor;
 
 		Liferay.on(
@@ -309,7 +309,7 @@ if (inlineEdit && (inlineEditSaveURL != null)) {
 		}
 
 		function initData() {
-			<c:if test="<%= Validator.isNotNull(initMethod) && !(inlineEdit && (inlineEditSaveURL != null)) %>">
+			<c:if test="<%= Validator.isNotNull(initMethod) && !(inlineEdit && Validator.isNotNull(inlineEditSaveURL)) %>">
 				ckEditor.setData(
 					window['<%= HtmlUtil.escapeJS(namespace + initMethod) %>'](),
 					function() {
@@ -384,7 +384,7 @@ if (inlineEdit && (inlineEditSaveURL != null)) {
 
 		var ckEditor = CKEDITOR.instances['<%= name %>'];
 
-		<c:if test="<%= inlineEdit && (inlineEditSaveURL != null) %>">
+		<c:if test="<%= inlineEdit && (Validator.isNotNull(inlineEditSaveURL)) %>">
 			inlineEditor = new Liferay.CKEditorInline(
 				{
 					editor: ckEditor,
@@ -463,24 +463,24 @@ if (inlineEdit && (inlineEditSaveURL != null)) {
 				var destroyInstance = function(event) {
 					if (event.portletId === '<%= portletId %>') {
 						try {
-		 					var ckeditorInstances = window.CKEDITOR.instances;
+							var ckeditorInstances = window.CKEDITOR.instances;
 
-			 				A.Object.each(
-			 					ckeditorInstances,
-			 					function(value, key) {
-			 						var inst = ckeditorInstances[key];
+							A.Object.each(
+								ckeditorInstances,
+								function(value, key) {
+									var inst = ckeditorInstances[key];
 
-			 						delete ckeditorInstances[key];
+									delete ckeditorInstances[key];
 
-			 						inst.destroy();
-			 					}
-			 				);
-		 				}
-		 				catch(error) {
-		 				}
+									inst.destroy();
+								}
+							);
+						}
+						catch (error) {
+						}
 
-		 				Liferay.detach('destroyPortlet', destroyInstance);
-		 			}
+						Liferay.detach('destroyPortlet', destroyInstance);
+					}
 				};
 
 				Liferay.on('destroyPortlet', destroyInstance);
@@ -560,7 +560,7 @@ if (inlineEdit && (inlineEditSaveURL != null)) {
 	};
 
 	<%
-	String toogleControlsStatus = GetterUtil.getString(SessionClicks.get(request, "liferay_toggle_controls", ""));
+	String toogleControlsStatus = GetterUtil.getString(SessionClicks.get(request, "liferay_toggle_controls", "visible"));
 	%>
 
 	<c:if test='<%= (inlineEdit && toogleControlsStatus.equals("visible")) || !inlineEdit %>'>;

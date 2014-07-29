@@ -45,19 +45,23 @@ String structureKey = BeanParamUtil.getString(structure, request, "structureKey"
 
 String script = BeanParamUtil.getString(structure, request, "definition");
 
-JSONArray scriptJSONArray = null;
+JSONArray fieldsJSONArray = null;
 
 if (Validator.isNotNull(script)) {
 	if (structure != null) {
 		try {
-			scriptJSONArray = DDMXSDUtil.getJSONArray(structure, script);
+			fieldsJSONArray = DDMXSDUtil.getJSONArray(structure, script);
 		}
 		catch (Exception e) {
-			scriptJSONArray = DDMXSDUtil.getJSONArray(structure.getDefinition());
+			fieldsJSONArray = DDMXSDUtil.getJSONArray(structure.getDefinition());
 		}
 	}
 	else {
-		scriptJSONArray = DDMXSDUtil.getJSONArray(script);
+		try {
+			fieldsJSONArray = DDMXSDUtil.getJSONArray(script);
+		}
+		catch (Exception e) {
+		}
 	}
 }
 %>
@@ -277,7 +281,7 @@ if (Validator.isNotNull(requestEditStructureURL)) {
 		window,
 		'<portlet:namespace />saveStructure',
 		function() {
-			document.<portlet:namespace />fm.<portlet:namespace />definition.value = window.<portlet:namespace />formBuilder.getContentDefinition();
+			document.<portlet:namespace />fm.<portlet:namespace />definition.value = window.<portlet:namespace />formBuilder.getContentValue();
 
 			submitForm(document.<portlet:namespace />fm);
 		},

@@ -52,12 +52,12 @@ AssetEntry assetEntry = (AssetEntry)request.getAttribute("view_entry_content.jsp
 				</c:if>
 
 				<%
-				String deckTitle = entry.getDeckTitle();
+				String subtitle = entry.getSubtitle();
 				%>
 
-				<c:if test="<%= Validator.isNotNull(deckTitle) %>">
-					<div class="entry-deck-title">
-						<p><%= HtmlUtil.escape(deckTitle) %></p>
+				<c:if test="<%= Validator.isNotNull(subtitle) %>">
+					<div class="entry-subtitle">
+						<p><%= HtmlUtil.escape(subtitle) %></p>
 					</div>
 				</c:if>
 
@@ -175,7 +175,7 @@ AssetEntry assetEntry = (AssetEntry)request.getAttribute("view_entry_content.jsp
 						<%
 						String entryContentId = "blogs-entry-content-" + entry.getEntryId();
 
-						boolean inlineEditEnabled = BlogsEntryPermission.contains(permissionChecker, entry, ActionKeys.UPDATE) && BrowserSnifferUtil.isRtf(request) && !WorkflowDefinitionLinkLocalServiceUtil.hasWorkflowDefinitionLink(themeDisplay.getCompanyId(), scopeGroupId, BlogsEntry.class.getName()) && Validator.equals(GetterUtil.getString(SessionClicks.get(request, "liferay_toggle_controls", "")), "visible");
+						boolean inlineEditEnabled = PropsValues.EDITOR_INLINE_EDITING_ENABLED && BlogsEntryPermission.contains(permissionChecker, entry, ActionKeys.UPDATE) && BrowserSnifferUtil.isRtf(request) && !WorkflowDefinitionLinkLocalServiceUtil.hasWorkflowDefinitionLink(themeDisplay.getCompanyId(), scopeGroupId, BlogsEntry.class.getName()) && Validator.equals(GetterUtil.getString(SessionClicks.get(request, "liferay_toggle_controls", "visible")), "visible");
 						%>
 
 						<div id="<%= entryContentId %>" <%= inlineEditEnabled ? "class=\"lfr-editable\" contenteditable=\"true\" spellcheck=\"false\"" : StringPool.BLANK %>>

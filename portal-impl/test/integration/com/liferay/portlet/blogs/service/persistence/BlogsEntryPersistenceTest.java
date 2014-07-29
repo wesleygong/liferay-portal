@@ -14,15 +14,17 @@
 
 package com.liferay.portlet.blogs.service.persistence;
 
-import com.liferay.portal.kernel.bean.PortalBeanLocatorUtil;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.template.TemplateException;
 import com.liferay.portal.kernel.template.TemplateManagerUtil;
+import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.util.IntegerWrapper;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
@@ -30,8 +32,9 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.ModelListener;
-import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.TransactionalTestRule;
+import com.liferay.portal.test.runners.LiferayIntegrationJUnitTestRunner;
+import com.liferay.portal.tools.DBUpgrader;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portal.util.test.RandomTestUtil;
 
@@ -59,23 +62,24 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author Brian Wing Shun Chan
+ * @generated
  */
-@RunWith(LiferayPersistenceIntegrationJUnitTestRunner.class)
+@RunWith(LiferayIntegrationJUnitTestRunner.class)
 public class BlogsEntryPersistenceTest {
+	@ClassRule
+	public static TransactionalTestRule transactionalTestRule = new TransactionalTestRule(Propagation.REQUIRED);
+
 	@BeforeClass
 	public static void setupClass() throws TemplateException {
+		try {
+			DBUpgrader.upgrade();
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+		}
+
 		TemplateManagerUtil.init();
-
-		PropsValues.SPRING_HIBERNATE_SESSION_DELEGATED = false;
 	}
-
-	public static void tearDownClass() {
-		PropsValues.SPRING_HIBERNATE_SESSION_DELEGATED = true;
-	}
-
-	@ClassRule
-	public static TransactionalTestRule transactionalTestRule = new TransactionalTestRule();
 
 	@Before
 	public void setUp() {
@@ -150,7 +154,7 @@ public class BlogsEntryPersistenceTest {
 
 		newBlogsEntry.setTitle(RandomTestUtil.randomString());
 
-		newBlogsEntry.setDeckTitle(RandomTestUtil.randomString());
+		newBlogsEntry.setSubtitle(RandomTestUtil.randomString());
 
 		newBlogsEntry.setUrlTitle(RandomTestUtil.randomString());
 
@@ -204,8 +208,8 @@ public class BlogsEntryPersistenceTest {
 			Time.getShortTimestamp(newBlogsEntry.getModifiedDate()));
 		Assert.assertEquals(existingBlogsEntry.getTitle(),
 			newBlogsEntry.getTitle());
-		Assert.assertEquals(existingBlogsEntry.getDeckTitle(),
-			newBlogsEntry.getDeckTitle());
+		Assert.assertEquals(existingBlogsEntry.getSubtitle(),
+			newBlogsEntry.getSubtitle());
 		Assert.assertEquals(existingBlogsEntry.getUrlTitle(),
 			newBlogsEntry.getUrlTitle());
 		Assert.assertEquals(existingBlogsEntry.getDescription(),
@@ -307,58 +311,6 @@ public class BlogsEntryPersistenceTest {
 	}
 
 	@Test
-	public void testCountByC_U() {
-		try {
-			_persistence.countByC_U(RandomTestUtil.nextLong(),
-				RandomTestUtil.nextLong());
-
-			_persistence.countByC_U(0L, 0L);
-		}
-		catch (Exception e) {
-			Assert.fail(e.getMessage());
-		}
-	}
-
-	@Test
-	public void testCountByC_LtD() {
-		try {
-			_persistence.countByC_LtD(RandomTestUtil.nextLong(),
-				RandomTestUtil.nextDate());
-
-			_persistence.countByC_LtD(0L, RandomTestUtil.nextDate());
-		}
-		catch (Exception e) {
-			Assert.fail(e.getMessage());
-		}
-	}
-
-	@Test
-	public void testCountByC_NotS() {
-		try {
-			_persistence.countByC_NotS(RandomTestUtil.nextLong(),
-				RandomTestUtil.nextInt());
-
-			_persistence.countByC_NotS(0L, 0);
-		}
-		catch (Exception e) {
-			Assert.fail(e.getMessage());
-		}
-	}
-
-	@Test
-	public void testCountByC_S() {
-		try {
-			_persistence.countByC_S(RandomTestUtil.nextLong(),
-				RandomTestUtil.nextInt());
-
-			_persistence.countByC_S(0L, 0);
-		}
-		catch (Exception e) {
-			Assert.fail(e.getMessage());
-		}
-	}
-
-	@Test
 	public void testCountByG_UT() {
 		try {
 			_persistence.countByG_UT(RandomTestUtil.nextLong(), StringPool.BLANK);
@@ -412,64 +364,64 @@ public class BlogsEntryPersistenceTest {
 	}
 
 	@Test
+	public void testCountByC_U() {
+		try {
+			_persistence.countByC_U(RandomTestUtil.nextLong(),
+				RandomTestUtil.nextLong());
+
+			_persistence.countByC_U(0L, 0L);
+		}
+		catch (Exception e) {
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testCountByC_LtD() {
+		try {
+			_persistence.countByC_LtD(RandomTestUtil.nextLong(),
+				RandomTestUtil.nextDate());
+
+			_persistence.countByC_LtD(0L, RandomTestUtil.nextDate());
+		}
+		catch (Exception e) {
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testCountByC_NotS() {
+		try {
+			_persistence.countByC_NotS(RandomTestUtil.nextLong(),
+				RandomTestUtil.nextInt());
+
+			_persistence.countByC_NotS(0L, 0);
+		}
+		catch (Exception e) {
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testCountByC_S() {
+		try {
+			_persistence.countByC_S(RandomTestUtil.nextLong(),
+				RandomTestUtil.nextInt());
+
+			_persistence.countByC_S(0L, 0);
+		}
+		catch (Exception e) {
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
 	public void testCountByLtD_S() {
 		try {
 			_persistence.countByLtD_S(RandomTestUtil.nextDate(),
 				RandomTestUtil.nextInt());
 
 			_persistence.countByLtD_S(RandomTestUtil.nextDate(), 0);
-		}
-		catch (Exception e) {
-			Assert.fail(e.getMessage());
-		}
-	}
-
-	@Test
-	public void testCountByC_U_NotS() {
-		try {
-			_persistence.countByC_U_NotS(RandomTestUtil.nextLong(),
-				RandomTestUtil.nextLong(), RandomTestUtil.nextInt());
-
-			_persistence.countByC_U_NotS(0L, 0L, 0);
-		}
-		catch (Exception e) {
-			Assert.fail(e.getMessage());
-		}
-	}
-
-	@Test
-	public void testCountByC_U_S() {
-		try {
-			_persistence.countByC_U_S(RandomTestUtil.nextLong(),
-				RandomTestUtil.nextLong(), RandomTestUtil.nextInt());
-
-			_persistence.countByC_U_S(0L, 0L, 0);
-		}
-		catch (Exception e) {
-			Assert.fail(e.getMessage());
-		}
-	}
-
-	@Test
-	public void testCountByC_LtD_NotS() {
-		try {
-			_persistence.countByC_LtD_NotS(RandomTestUtil.nextLong(),
-				RandomTestUtil.nextDate(), RandomTestUtil.nextInt());
-
-			_persistence.countByC_LtD_NotS(0L, RandomTestUtil.nextDate(), 0);
-		}
-		catch (Exception e) {
-			Assert.fail(e.getMessage());
-		}
-	}
-
-	@Test
-	public void testCountByC_LtD_S() {
-		try {
-			_persistence.countByC_LtD_S(RandomTestUtil.nextLong(),
-				RandomTestUtil.nextDate(), RandomTestUtil.nextInt());
-
-			_persistence.countByC_LtD_S(0L, RandomTestUtil.nextDate(), 0);
 		}
 		catch (Exception e) {
 			Assert.fail(e.getMessage());
@@ -535,6 +487,58 @@ public class BlogsEntryPersistenceTest {
 				RandomTestUtil.nextDate(), RandomTestUtil.nextInt());
 
 			_persistence.countByG_LtD_S(0L, RandomTestUtil.nextDate(), 0);
+		}
+		catch (Exception e) {
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testCountByC_U_NotS() {
+		try {
+			_persistence.countByC_U_NotS(RandomTestUtil.nextLong(),
+				RandomTestUtil.nextLong(), RandomTestUtil.nextInt());
+
+			_persistence.countByC_U_NotS(0L, 0L, 0);
+		}
+		catch (Exception e) {
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testCountByC_U_S() {
+		try {
+			_persistence.countByC_U_S(RandomTestUtil.nextLong(),
+				RandomTestUtil.nextLong(), RandomTestUtil.nextInt());
+
+			_persistence.countByC_U_S(0L, 0L, 0);
+		}
+		catch (Exception e) {
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testCountByC_LtD_NotS() {
+		try {
+			_persistence.countByC_LtD_NotS(RandomTestUtil.nextLong(),
+				RandomTestUtil.nextDate(), RandomTestUtil.nextInt());
+
+			_persistence.countByC_LtD_NotS(0L, RandomTestUtil.nextDate(), 0);
+		}
+		catch (Exception e) {
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testCountByC_LtD_S() {
+		try {
+			_persistence.countByC_LtD_S(RandomTestUtil.nextLong(),
+				RandomTestUtil.nextDate(), RandomTestUtil.nextInt());
+
+			_persistence.countByC_LtD_S(0L, RandomTestUtil.nextDate(), 0);
 		}
 		catch (Exception e) {
 			Assert.fail(e.getMessage());
@@ -618,7 +622,7 @@ public class BlogsEntryPersistenceTest {
 		return OrderByComparatorFactoryUtil.create("BlogsEntry", "uuid", true,
 			"entryId", true, "groupId", true, "companyId", true, "userId",
 			true, "userName", true, "createDate", true, "modifiedDate", true,
-			"title", true, "deckTitle", true, "urlTitle", true, "description",
+			"title", true, "subtitle", true, "urlTitle", true, "description",
 			true, "content", true, "displayDate", true, "allowPingbacks", true,
 			"allowTrackbacks", true, "trackbacks", true, "smallImage", true,
 			"smallImageId", true, "smallImageURL", true, "status", true,
@@ -865,7 +869,7 @@ public class BlogsEntryPersistenceTest {
 
 		blogsEntry.setTitle(RandomTestUtil.randomString());
 
-		blogsEntry.setDeckTitle(RandomTestUtil.randomString());
+		blogsEntry.setSubtitle(RandomTestUtil.randomString());
 
 		blogsEntry.setUrlTitle(RandomTestUtil.randomString());
 
@@ -900,7 +904,8 @@ public class BlogsEntryPersistenceTest {
 		return blogsEntry;
 	}
 
+	private static Log _log = LogFactoryUtil.getLog(BlogsEntryPersistenceTest.class);
 	private List<BlogsEntry> _blogsEntries = new ArrayList<BlogsEntry>();
 	private ModelListener<BlogsEntry>[] _modelListeners;
-	private BlogsEntryPersistence _persistence = (BlogsEntryPersistence)PortalBeanLocatorUtil.locate(BlogsEntryPersistence.class.getName());
+	private BlogsEntryPersistence _persistence = BlogsEntryUtil.getPersistence();
 }
