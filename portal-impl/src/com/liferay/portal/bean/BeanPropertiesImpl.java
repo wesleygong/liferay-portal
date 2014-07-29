@@ -608,8 +608,8 @@ public class BeanPropertiesImpl implements BeanProperties {
 	}
 
 	@Override
-	public void setPropertyForcedSilent(Object bean, String param, Object value) {
-			BeanUtil.setPropertyForcedSilent(bean, param, value);
+	public void setPropertySilent(Object bean, String param, Object value) {
+		BeanUtil.setPropertyForcedSilent(bean, param, value);
 	}
 
 	protected Date getDate(String param, HttpServletRequest request) {

@@ -247,8 +247,10 @@ public class BeanPropertiesUtil {
 		getBeanProperties().setProperty(bean, param, value);
 	}
 
-	public static void setPropertyForcedSilent(Object bean, String param, Object value) {
-		getBeanProperties().setPropertyForcedSilent(bean, param, value);
+	public static void setPropertySilent(
+		Object bean, String param, Object value) {
+
+		getBeanProperties().setPropertySilent(bean, param, value);
 	}
 
 	public void setBeanProperties(BeanProperties beanProperties) {
