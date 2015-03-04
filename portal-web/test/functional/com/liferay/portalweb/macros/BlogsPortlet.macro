@@ -1,0 +1,339 @@
+<definition>
+	<command name="configureDisplaySettingsPG">
+		<execute function="SelectFrame" locator1="PGBlogsConfiguration#CONFIGURATION_IFRAME" />
+
+		<if>
+			<isset var="maximumItemsToDisplay" />
+			<then>
+				<execute function="Select" locator1="PGBlogsConfiguration#DISPLAY_SETTINGS_MAXIMUM_ITEMS_TO_DISPLAY_SELECT" value1="${maximumItemsToDisplay}" />
+			</then>
+		</if>
+
+		<if>
+			<isset var="displayTemplate" />
+			<then>
+				<execute function="Select" locator1="PGBlogsConfiguration#DISPLAY_SETTINGS_DISPLAY_TEMPLATE_SELECT" value1="${displayTemplate}" />
+			</then>
+		</if>
+
+		<if>
+			<equals arg1="${enableDisplaySettingsRelatedAssets}" arg2="true" />
+			<then>
+				<execute function="Check" locator1="PGBlogsConfiguration#DISPLAY_SETTINGS_ENABLE_RELATED_ASSET_CHECKBOX" />
+			</then>
+			<elseif>
+				<equals arg1="${enableDisplaySettingsRelatedAssets}" arg2="false" />
+				<then>
+					<execute function="Uncheck" locator1="PGBlogsConfiguration#DISPLAY_SETTINGS_ENABLE_RELATED_ASSET_CHECKBOX" />
+				</then>
+			</elseif>
+		</if>
+
+		<if>
+			<equals arg1="${enableDisplaySettingsComments}" arg2="true" />
+			<then>
+				<execute function="Check" locator1="PGBlogsConfiguration#DISPLAY_SETTINGS_ENABLE_COMMENTS_CHECKBOX" />
+			</then>
+			<elseif>
+				<equals arg1="${enableDisplaySettingsComments}" arg2="false" />
+				<then>
+					<execute function="Uncheck" locator1="PGBlogsConfiguration#DISPLAY_SETTINGS_ENABLE_COMMENTS_CHECKBOX" />
+				</then>
+			</elseif>
+		</if>
+
+		<if>
+			<equals arg1="${enableDisplaySettingsSocialBookmarks}" arg2="true" />
+			<then>
+				<execute function="Check" locator1="PGBlogsConfiguration#DISPLAY_SETTINGS_ENABLE_SOCIAL_BOOKMARKS_CHECKBOX" />
+			</then>
+			<elseif>
+				<equals arg1="${enableDisplaySettingsSocialBookmarks}" arg2="false" />
+				<then>
+					<execute function="Uncheck" locator1="PGBlogsConfiguration#DISPLAY_SETTINGS_ENABLE_SOCIAL_BOOKMARKS_CHECKBOX" />
+				</then>
+			</elseif>
+		</if>
+
+		<execute function="AssertClick" locator1="PGBlogsConfiguration#SAVE_BUTTON" value1="Save" />
+		<execute function="AssertTextEquals" locator1="PGBlogsConfiguration#SUCCESS_MESSAGE" value1="You have successfully updated the setup." />
+		<execute function="SelectFrame" value1="relative=top" />
+	</command>
+
+	<command name="configureRSSPG">
+		<execute function="SelectFrame" locator1="PGBlogsConfiguration#CONFIGURATION_IFRAME" />
+
+		<if>
+			<condition function="IsElementNotPresent" locator1="PGBlogsConfigurationSetupRSS#ENABLE_RSS_SUBSCRIPTION_CHECKBOX" />
+			<then>
+				<execute function="AssertClick" locator1="PGBlogsConfigurationSetupRSS#NAVIGATION_SETUP_RSS" value1="RSS" />
+			</then>
+		</if>
+
+		<if>
+			<equals arg1="${enableRSSSubscriptionCheckbox}" arg2="true" />
+			<then>
+				<execute function="Check" locator1="PGBlogsConfigurationSetupRSS#ENABLE_RSS_SUBSCRIPTION_CHECKBOX" />
+			</then>
+			<elseif>
+				<equals arg1="${enableRSSSubscriptionCheckbox}" arg2="false" />
+				<then>
+					<execute function="Uncheck" locator1="PGBlogsConfigurationSetupRSS#ENABLE_RSS_SUBSCRIPTION_CHECKBOX" />
+				</then>
+			</elseif>
+		</if>
+
+		<if>
+			<isset var="maximumItemsToDisplay" />
+			<then>
+				<execute function="Select" locator1="PGBlogsConfigurationSetupRSS#MAXIMUM_ITEMS_TO_DISPLAY_SELECT" value1="${maximumItemsToDisplay}" />
+			</then>
+		</if>
+
+		<if>
+			<isset var="displayStyle" />
+			<then>
+				<execute function="Select" locator1="PGBlogsConfigurationSetupRSS#RSS_DISPLAY_STYLE_SELECT" value1="${displayStyle}" />
+			</then>
+		</if>
+
+		<if>
+			<isset var="format" />
+			<then>
+				<execute function="Select" locator1="PGBlogsConfigurationSetupRSS#FORMAT_SELECT" value1="${format}" />
+			</then>
+		</if>
+
+		<execute function="AssertClick" locator1="PGBlogsConfigurationSetupRSS#SAVE_BUTTON" value1="Save" />
+		<execute function="AssertTextEquals" locator1="PGBlogsConfigurationSetupRSS#SUCCESS_MESSAGE" value1="You have successfully updated the setup." />
+		<execute function="SelectFrame" value1="relative=top" />
+	</command>
+
+	<command name="configureScopeCP">
+		<execute macro="Page#gotoContentCP">
+			<var name="portletName" value="Blogs" />
+		</execute>
+
+		<var name="key_contentScopeName" value="${contentScopeName}" />
+
+		<execute function="Click" locator1="Home#CONTENT_SCOPE_SELECTOR" />
+		<execute function="AssertClick" locator1="Home#CONTENT_SCOPE_SELECTOR_MENULIST_ITEM" value1="${contentScopeName}" />
+		<execute function="AssertTextEquals" locator1="Home#CONTENT_SCOPE_SELECTOR" value1="${contentScopeName}" />
+	</command>
+
+	<command name="configureScopePG">
+		<if>
+			<equals arg1="${soPage}" arg2="true" />
+			<then>
+				<execute macro="SOPortlet#gotoPortletOptions">
+					<var name="portletName" value="Blogs" />
+					<var name="portletOption" value="Configuration" />
+				</execute>
+			</then>
+			<else>
+				<execute macro="Portlet#gotoPortletOptions">
+					<var name="portletOption" value="Configuration" />
+				</execute>
+			</else>
+		</if>
+
+		<execute function="SelectFrame" locator1="BasePortletConfiguration#CONFIGURATION_IFRAME" />
+
+		<execute function="AssertClick" locator1="PGBlogsConfigurationScope#NAVIGATION_SCOPE" value1="Scope" />
+
+		<var name="key_scopeSelection" value="${scopeSelection}" />
+
+		<execute function="Click#pauseClickAt" locator1="PGBlogsConfigurationScope#SCOPE_MENULIST" />
+		<execute function="AssertClick#assertPartialTextClickAt" locator1="PGBlogsConfigurationScope#SCOPE_MENULIST_SELECTION" value1="${scopeSelection}" />
+
+		<execute function="AssertTextEquals" locator1="PGBlogsConfigurationScope#SUCCESS_MESSAGE" value1="You have successfully updated the setup." />
+		<execute function="AssertTextEquals" locator1="PGBlogsConfigurationScope#SCOPE_MENULIST" value1="${scopeSelection}" />
+	</command>
+
+	<command name="subscribePG">
+		<execute function="AssertClick" locator1="PGBlogs#SUBSCRIBE_LINK" value1="Subscribe" />
+		<execute function="AssertTextEquals" locator1="PGBlogs#SUCCESS_MESSAGE" value1="Your request completed successfully." />
+	</command>
+
+	<command name="tearDownConfigurationDisplaySettingsCP">
+		<execute macro="Page#gotoContentCP">
+			<var name="portletName" value="Blogs" />
+		</execute>
+
+		<execute function="Click" locator1="BasePortlet#OPTIONS_ICON" />
+		<execute function="AssertClick#assertTextClickAndWait" locator1="BasePortlet#OPTIONS_MENULIST_CONFIGURATION" value1="Configuration" />
+
+		<execute function="SelectFrame" locator1="CPBlogsConfiguration#CONFIGURATION_IFRAME" />
+		<execute function="Select" locator1="CPBlogsConfiguration#DISPLAY_SETTINGS_DISPLAY_TEMPLATE_SELECT" value1="Full Content" />
+		<execute function="AssertClick" locator1="CPBlogsConfiguration#SAVE_BUTTON" value1="Save" />
+
+		<execute function="AssertTextEquals" locator1="CPBlogsConfiguration#SUCCESS_MESSAGE" value1="You have successfully updated the setup." />
+	</command>
+
+	<command name="tearDownConfigurationDisplaySettingsPG">
+		<execute macro="Page#gotoPG">
+			<var name="pageName" value="${pageName}" />
+		</execute>
+
+		<if>
+			<equals arg1="${soPage}" arg2="true" />
+			<then>
+				<execute macro="SOPortlet#gotoPortletOptions">
+					<var name="portletName" value="Blogs" />
+					<var name="portletOption" value="Configuration" />
+				</execute>
+			</then>
+			<else>
+				<execute macro="Portlet#gotoPortletOptions">
+					<var name="portletOption" value="Configuration" />
+				</execute>
+			</else>
+		</if>
+
+		<execute function="SelectFrame" locator1="PGBlogsConfiguration#CONFIGURATION_IFRAME" />
+		<execute function="Select" locator1="PGBlogsConfiguration#DISPLAY_SETTINGS_DISPLAY_TEMPLATE_SELECT" value1="Full Content" />
+		<execute function="AssertClick" locator1="PGBlogsConfiguration#SAVE_BUTTON" value1="Save" />
+
+		<execute function="AssertElementPresent" locator1="PGBlogsConfiguration#SUCCESS_MESSAGE" value1="You have successfully updated the setup." />
+	</command>
+
+	<command name="tearDownConfigurationScopePG">
+		<execute macro="Page#gotoPG">
+			<var name="pageName" value="${pageName}" />
+		</execute>
+
+		<execute macro="BlogsPortlet#configureScopePG">
+			<var name="scopeSelection" value="Liferay" />
+		</execute>
+	</command>
+
+	<command name="tearDownSubscribePG">
+		<execute macro="Page#gotoPG">
+			<var name="pageName" value="${pageName}" />
+		</execute>
+
+		<execute function="AssertClick" locator1="PGBlogs#UNSUBSCRIBE_LINK" value1="Unsubscribe" />
+		<execute function="AssertTextEquals" locator1="PGBlogs#SUCCESS_MESSAGE" value1="Your request completed successfully." />
+	</command>
+
+	<command name="viewAsSiteMemberPG">
+		<execute function="AssertTextEquals" locator1="PGBlogs#PORTLET_TITLE" value1="Blogs" />
+		<execute function="AssertElementNotPresent" locator1="PGBlogs#ADD_ENTRY_BUTTON" value1="Add Blog Entry" />
+		<execute function="AssertElementNotPresent" locator1="PGBlogs#PERMISSIONS_BUTTON" value1="Permissions" />
+		<execute function="AssertTextEquals" locator1="PGBlogs#SUBSCRIBE_LINK" value1="Subscribe" />
+		<execute function="AssertTextEquals" locator1="PGBlogs#RSS_LINK" value1="RSS" />
+	</command>
+
+	<command name="viewDefaultConfigurationDisplaySettingsPG">
+		<execute function="SelectFrame" locator1="PGBlogsConfiguration#CONFIGURATION_IFRAME" />
+
+		<execute function="AssertTextEquals#assertValue" locator1="PGBlogsConfiguration#DISPLAY_SETTINGS_MAXIMUM_ITEMS_TO_DISPLAY_SELECT" value1="20" />
+		<execute function="AssertTextEquals#assertValue" locator1="PGBlogsConfiguration#DISPLAY_SETTINGS_DISPLAY_TEMPLATE_SELECT" value1="full-content" />
+		<execute function="AssertChecked" locator1="PGBlogsConfiguration#DISPLAY_SETTINGS_ENABLE_FLAGS_CHECKBOX" />
+		<execute function="AssertChecked" locator1="PGBlogsConfiguration#DISPLAY_SETTINGS_ENABLE_RELATED_ASSET_CHECKBOX" />
+		<execute function="AssertChecked" locator1="PGBlogsConfiguration#DISPLAY_SETTINGS_ENABLE_RATINGS_CHECKBOX" />
+		<execute function="AssertChecked" locator1="PGBlogsConfiguration#DISPLAY_SETTINGS_ENABLE_COMMENTS_CHECKBOX" />
+		<execute function="AssertChecked" locator1="PGBlogsConfiguration#DISPLAY_SETTINGS_ENABLE_COMMENT_RATINGS_CHECKBOX" />
+		<execute function="AssertChecked" locator1="PGBlogsConfiguration#DISPLAY_SETTINGS_ENABLE_SOCIAL_BOOKMARKS_CHECKBOX" />
+		<execute function="AssertTextEquals#assertValue" locator1="PGBlogsConfiguration#SOCIAL_BOOKMARKS_DISPLAY_STYLE_SELECT" value1="menu" />
+		<execute function="AssertTextEquals#assertValue" locator1="PGBlogsConfiguration#SOCIAL_BOOKMARKS_DISPLAY_POSITION_SELECT" value1="bottom" />
+		<execute function="AssertChecked" locator1="PGBlogsConfiguration#SOCIAL_BOOKMARKS_TWITTER_CHECKBOX" />
+		<execute function="AssertChecked" locator1="PGBlogsConfiguration#SOCIAL_BOOKMARKS_FACEBOOK_CHECKBOX" />
+		<execute function="AssertChecked" locator1="PGBlogsConfiguration#SOCIAL_BOOKMARKS_GOOGLE_PLUS_CHECKBOX" />
+		<execute function="SelectFrame" value1="relative=top" />
+	</command>
+
+	<command name="viewDefaultConfigurationRSSPG">
+		<execute function="SelectFrame" locator1="PGBlogsConfiguration#CONFIGURATION_IFRAME" />
+
+		<if>
+			<condition function="IsElementNotPresent" locator1="PGBlogsConfigurationSetupRSS#ENABLE_RSS_SUBSCRIPTION_CHECKBOX" />
+			<then>
+				<execute function="AssertClick" locator1="PGBlogsConfigurationSetupRSS#NAVIGATION_SETUP_RSS" value1="RSS" />
+			</then>
+		</if>
+
+		<execute function="AssertChecked" locator1="PGBlogsConfigurationSetupRSS#ENABLE_RSS_SUBSCRIPTION_CHECKBOX" />
+		<execute function="AssertTextEquals#assertValue" locator1="PGBlogsConfigurationSetupRSS#MAXIMUM_ITEMS_TO_DISPLAY_SELECT" value1="20" />
+		<execute function="AssertTextEquals#assertValue" locator1="PGBlogsConfigurationSetupRSS#RSS_DISPLAY_STYLE_SELECT" value1="full-content" />
+		<execute function="AssertTextEquals#assertValue" locator1="PGBlogsConfigurationSetupRSS#FORMAT_SELECT" value1="atom_1.0" />
+		<execute function="SelectFrame" value1="relative=top" />
+	</command>
+
+	<command name="viewNoPermissionCP">
+		<execute function="AssertTextEquals" locator1="CPBlogs#PORTLET_TITLE" value1="Blogs" />
+		<execute function="AssertElementPresent" locator1="CPBlogs#NAVBAR_CONTAINER" />
+		<execute function="AssertTextEquals" locator1="CPBlogs#INFO_MESSAGE" value1="No entries were found." />
+	</command>
+
+	<command name="viewNoPermissionPG">
+		<execute function="AssertTextEquals" locator1="PGBlogs#PORTLET_TITLE" value1="Blogs" />
+		<execute function="AssertElementNotPresent" locator1="PGBlogs#ADD_ENTRY_BUTTON" value1="Add Blog Entry" />
+		<execute function="AssertElementNotPresent" locator1="PGBlogs#PERMISSIONS_BUTTON" value1="Permissions" />
+		<execute function="AssertElementNotPresent" locator1="PGBlogs#SUBSCRIBE_LINK" />
+		<execute function="AssertTextEquals" locator1="PGBlogs#RSS_LINK" value1="RSS" />
+	</command>
+
+	<command name="viewNoSubscribePG">
+		<execute function="AssertElementNotPresent" locator1="PGBlogs#SUBSCRIBE_LINK" />
+	</command>
+
+	<command name="viewPermissionsPG">
+		<execute function="AssertTextEquals" locator1="PGBlogs#PERMISSIONS_BUTTON" value1="Permissions" />
+	</command>
+
+	<command name="viewPG">
+		<execute function="AssertTextEquals" locator1="PGBlogs#PORTLET_TITLE" value1="Blogs" />
+		<execute function="AssertTextEquals" locator1="PGBlogs#ADD_ENTRY_BUTTON" value1="Add Blog Entry" />
+		<execute function="AssertTextEquals" locator1="PGBlogs#PERMISSIONS_BUTTON" value1="Permissions" />
+		<execute function="AssertTextEquals" locator1="PGBlogs#SUBSCRIBE_LINK" value1="Subscribe" />
+		<execute function="AssertTextEquals" locator1="PGBlogs#RSS_LINK" value1="RSS" />
+	</command>
+
+	<command name="viewScopeCP">
+		<execute macro="Page#gotoContentCP">
+			<var name="portletName" value="Blogs" />
+		</execute>
+
+		<var name="key_entryTitle" value="${entryTitle}" />
+
+		<execute function="AssertTextEquals" locator1="CPBlogs#ENTRY_TABLE_TITLE" value1="${entryTitle}" />
+		<execute function="AssertTextEquals" locator1="CPBlogs#ENTRY_TABLE_AUTHOR" value1="${entryAuthor}" />
+	</command>
+
+	<command name="viewScopeDefaultNoEntryCP">
+		<execute macro="Page#gotoContentCP">
+			<var name="portletName" value="Blogs" />
+		</execute>
+
+		<execute function="AssertTextEquals" locator1="Home#CONTENT_SCOPE_SELECTOR" value1="${contentScopeName}" />
+
+		<execute function="AssertTextEquals" locator1="CPBlogs#INFO_MESSAGE" value1="No entries were found." />
+	</command>
+
+	<command name="viewScopePG">
+		<if>
+			<equals arg1="${soPage}" arg2="true" />
+			<then>
+				<execute macro="SOPortlet#gotoPortletOptions">
+					<var name="portletName" value="Blogs" />
+					<var name="portletOption" value="Configuration" />
+				</execute>
+			</then>
+			<else>
+				<execute macro="Portlet#gotoPortletOptions">
+					<var name="portletOption" value="Configuration" />
+				</execute>
+			</else>
+		</if>
+
+		<execute function="SelectFrame" locator1="BasePortletConfiguration#CONFIGURATION_IFRAME" />
+
+		<execute function="AssertClick" locator1="PGBlogsConfigurationScope#NAVIGATION_SCOPE" value1="Scope" />
+		<execute function="AssertTextEquals" locator1="PGBlogsConfigurationScope#SCOPE_MENULIST" value1="${scopeSelection}" />
+	</command>
+
+	<command name="viewSubscribePG">
+		<execute function="AssertTextEquals" locator1="PGBlogs#SUBSCRIBE_LINK" value1="Subscribe" />
+	</command>
+</definition>

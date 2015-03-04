@@ -150,23 +150,23 @@ public class ReleaseInfo {
 
 	private static final String _CODE_NAME = "Wilberforce";
 
-	private static final String _DATE = "December 17, 2014";
+	private static final String _DATE = "February 17, 2015";
 
 	private static final String _NAME = "Liferay Portal Community Edition";
 
 	private static final int _PARENT_BUILD_NUMBER = _BUILD_NUMBER;
 
 	private static final String _RELEASE_INFO_PREFIX = System.getProperty(
-		"liferay.release.info.prefix" , StringPool.BLANK);
+		"liferay.release.info.prefix", StringPool.BLANK);
 
 	private static final String _RELEASE_INFO_SUFFIX = System.getProperty(
-		"liferay.release.info.suffix" , StringPool.BLANK);
+		"liferay.release.info.suffix", StringPool.BLANK);
 
 	private static final String _VENDOR = "Liferay, Inc.";
 
 	private static final String _VERSION = "7.0.0";
 
-	private static final String _VERSION_DISPLAY_NAME = "7.0.0 CE M3";
+	private static final String _VERSION_DISPLAY_NAME = "7.0.0 CE M4";
 
 	private static String _releaseInfo;
 	private static String _serverInfo;

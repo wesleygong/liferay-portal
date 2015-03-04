@@ -56,11 +56,13 @@ request.setAttribute("view_entry_content.jsp-entry", entry);
 request.setAttribute("view_entry_content.jsp-assetEntry", assetEntry);
 %>
 
-<liferay-ui:header
-	backURL="<%= redirect %>"
-	localizeTitle="<%= false %>"
-	title="<%= entry.getTitle() %>"
-/>
+<c:if test="<%= portletId.equals(PortletKeys.BLOGS_ADMIN) %>">
+	<liferay-ui:header
+		backURL="<%= redirect %>"
+		localizeTitle="<%= false %>"
+		title="<%= entry.getTitle() %>"
+	/>
+</c:if>
 
 <portlet:actionURL var="editEntryURL">
 	<portlet:param name="struts_action" value="/blogs/edit_entry" />
@@ -73,7 +75,7 @@ request.setAttribute("view_entry_content.jsp-assetEntry", assetEntry);
 	<liferay-util:include page="/html/portlet/blogs/view_entry_content.jsp" />
 </aui:form>
 
-<c:if test="<%= PropsValues.BLOGS_ENTRY_PREVIOUS_AND_NEXT_NAVIGATION_ENABLED %>">
+<c:if test="<%= !portletId.equals(PortletKeys.BLOGS_ADMIN) && PropsValues.BLOGS_ENTRY_PREVIOUS_AND_NEXT_NAVIGATION_ENABLED %>">
 
 	<%
 	BlogsEntry[] prevAndNext = BlogsEntryLocalServiceUtil.getEntriesPrevAndNext(entryId);
@@ -85,8 +87,8 @@ request.setAttribute("view_entry_content.jsp-assetEntry", assetEntry);
 	<c:if test="<%= (previousEntry != null) || (nextEntry != null) %>">
 		<aui:container cssClass="entry-navigation">
 			<aui:row>
-				<aui:col cssClass="previous-entry" md="6" sm="6">
-					<c:if test="<%= previousEntry != null %>">
+				<c:if test="<%= previousEntry != null %>">
+					<aui:col cssClass='<%= "previous-entry " + ((nextEntry != null) ? "has-next-entry" : StringPool.BLANK) %>' md="6" sm="6">
 						<h2><liferay-ui:message key="previous-entry" /></h2>
 
 						<div class="previous-entry-content">
@@ -96,46 +98,49 @@ request.setAttribute("view_entry_content.jsp-assetEntry", assetEntry);
 								<portlet:param name="entryId" value="<%= String.valueOf(previousEntry.getEntryId()) %>" />
 							</portlet:renderURL>
 
-							<%
-							String smallImageURL = previousEntry.getSmallImageURL(themeDisplay);
-							%>
+							<a href="<%= previousEntryURL %>" title="<%= previousEntry.getTitle() %>">
 
-							<c:if test="<%= Validator.isNotNull(smallImageURL) %>">
-								<div class="small-image visible-lg-block visible-md-block" style="background-image: url(<%= HtmlUtil.escape(smallImageURL) %>)"></div>
-							</c:if>
+								<%
+								String smallImageURL = previousEntry.getSmallImageURL(themeDisplay);
+								%>
 
-							<div class="entry-content">
-								<h3><a href="<%= previousEntryURL %>" title="<%= previousEntry.getTitle() %>"><%= previousEntry.getTitle() %></a></h3>
+								<c:if test="<%= Validator.isNotNull(smallImageURL) %>">
+									<span class="small-image visible-lg-block visible-md-block" style="background-image: url(<%= HtmlUtil.escape(smallImageURL) %>)"></span>
+								</c:if>
 
-								<p class="entry-content-body visible-lg-block">
-									<c:choose>
-										<c:when test="<%= Validator.isNotNull(previousEntry.getSubtitle()) %>">
-											<%= StringUtil.shorten(previousEntry.getSubtitle(), 100) %>
-										</c:when>
-										<c:otherwise>
-											<%= StringUtil.shorten(HtmlUtil.stripHtml(previousEntry.getContent()), 100) %>
-										</c:otherwise>
-									</c:choose>
-								</p>
+								<span class="entry-content">
+									<h3><%= previousEntry.getTitle() %></h3>
 
-								<liferay-ui:user-display
-									userId="<%= previousEntry.getUserId() %>"
-									userName="<%= previousEntry.getUserName() %>"
-								>
+									<span class="entry-content-body visible-lg-block">
+										<c:choose>
+											<c:when test="<%= Validator.isNotNull(previousEntry.getSubtitle()) %>">
+												<%= StringUtil.shorten(previousEntry.getSubtitle(), 100) %>
+											</c:when>
+											<c:otherwise>
+												<%= StringUtil.shorten(HtmlUtil.stripHtml(previousEntry.getContent()), 100) %>
+											</c:otherwise>
+										</c:choose>
+									</span>
+								</span>
+							</a>
 
-									<%
-									Date createDate = previousEntry.getCreateDate();
-									%>
+							<liferay-ui:user-display
+								userId="<%= previousEntry.getUserId() %>"
+								userName="<%= previousEntry.getUserName() %>"
+							>
 
-									<liferay-ui:message arguments="<%= LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - createDate.getTime(), true) %>" key="x-ago" translateArguments="<%= false %>" />
-								</liferay-ui:user-display>
-							</div>
+								<%
+								Date createDate = previousEntry.getCreateDate();
+								%>
+
+								<liferay-ui:message arguments="<%= LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - createDate.getTime(), true) %>" key="x-ago" translateArguments="<%= false %>" />
+							</liferay-ui:user-display>
 						</div>
-					</c:if>
-				</aui:col>
+					</aui:col>
+				</c:if>
 
-				<aui:col cssClass="next-entry" md="6" sm="6">
-					<c:if test="<%= nextEntry != null %>">
+				<c:if test="<%= nextEntry != null %>">
+					<aui:col cssClass='<%= "next-entry " + ((previousEntry != null) ? "has-previous-entry" : StringPool.BLANK) %>' md="6" sm="6">
 						<h2><liferay-ui:message key="next-entry" /></h2>
 
 						<div class="next-entry-content">
@@ -145,43 +150,46 @@ request.setAttribute("view_entry_content.jsp-assetEntry", assetEntry);
 								<portlet:param name="entryId" value="<%= String.valueOf(nextEntry.getEntryId()) %>" />
 							</portlet:renderURL>
 
-							<%
-							String smallImageURL = nextEntry.getSmallImageURL(themeDisplay);
-							%>
+							<a href="<%= nextEntryURL %>" title="<%= nextEntry.getTitle() %>">
 
-							<c:if test="<%= Validator.isNotNull(smallImageURL) %>">
-								<div class="small-image visible-lg-block visible-md-block" style="background-image: url(<%= HtmlUtil.escape(smallImageURL) %>)"></div>
-							</c:if>
+								<%
+								String smallImageURL = nextEntry.getSmallImageURL(themeDisplay);
+								%>
 
-							<div class="entry-content">
-								<h3><a href="<%= nextEntryURL %>" title="<%= nextEntry.getTitle() %>"><%= nextEntry.getTitle() %></a></h3>
+								<c:if test="<%= Validator.isNotNull(smallImageURL) %>">
+									<span class="small-image visible-lg-block visible-md-block" style="background-image: url(<%= HtmlUtil.escape(smallImageURL) %>)"></span>
+								</c:if>
 
-								<p class="entry-content-body visible-lg-block">
-									<c:choose>
-										<c:when test="<%= Validator.isNotNull(nextEntry.getSubtitle()) %>">
-											<%= StringUtil.shorten(nextEntry.getSubtitle(), 100) %>
-										</c:when>
-										<c:otherwise>
-											<%= StringUtil.shorten(HtmlUtil.stripHtml(nextEntry.getContent()), 100) %>
-										</c:otherwise>
-									</c:choose>
-								</p>
+								<span class="entry-content">
+									<h3><%= nextEntry.getTitle() %></h3>
 
-								<liferay-ui:user-display
-									userId="<%= nextEntry.getUserId() %>"
-									userName="<%= nextEntry.getUserName() %>"
-								>
+									<span class="entry-content-body visible-lg-block">
+										<c:choose>
+											<c:when test="<%= Validator.isNotNull(nextEntry.getSubtitle()) %>">
+												<%= StringUtil.shorten(nextEntry.getSubtitle(), 100) %>
+											</c:when>
+											<c:otherwise>
+												<%= StringUtil.shorten(HtmlUtil.stripHtml(nextEntry.getContent()), 100) %>
+											</c:otherwise>
+										</c:choose>
+									</span>
+								</span>
+							</a>
 
-									<%
-									Date createDate = nextEntry.getCreateDate();
-									%>
+							<liferay-ui:user-display
+								userId="<%= nextEntry.getUserId() %>"
+								userName="<%= nextEntry.getUserName() %>"
+							>
 
-									<liferay-ui:message arguments="<%= LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - createDate.getTime(), true) %>" key="x-ago" translateArguments="<%= false %>" />
-								</liferay-ui:user-display>
-							</div>
+								<%
+								Date createDate = nextEntry.getCreateDate();
+								%>
+
+								<liferay-ui:message arguments="<%= LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - createDate.getTime(), true) %>" key="x-ago" translateArguments="<%= false %>" />
+							</liferay-ui:user-display>
 						</div>
-					</c:if>
-				</aui:col>
+					</aui:col>
+				</c:if>
 			</aui:row>
 		</aui:container>
 	</c:if>

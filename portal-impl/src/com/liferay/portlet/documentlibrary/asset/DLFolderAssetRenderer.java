@@ -99,7 +99,7 @@ public class DLFolderAssetRenderer
 
 			int count = DLAppServiceUtil.getFoldersFileEntriesCount(
 				_folder.getRepositoryId(),
-				ListUtil.fromArray(new Long[]{_folder.getFolderId()}),
+				ListUtil.fromArray(new Long[] {_folder.getFolderId()}),
 				WorkflowConstants.STATUS_APPROVED);
 
 			if (count > 0) {
@@ -162,10 +162,9 @@ public class DLFolderAssetRenderer
 
 		int foldersCount = DLAppServiceUtil.getFoldersCount(
 			_folder.getRepositoryId(), _folder.getFolderId());
-		int entriesCount =
-			DLAppServiceUtil.getFileEntriesAndFileShortcutsCount(
-				_folder.getRepositoryId(), _folder.getFolderId(),
-				WorkflowConstants.STATUS_APPROVED);
+		int entriesCount = DLAppServiceUtil.getFileEntriesAndFileShortcutsCount(
+			_folder.getRepositoryId(), _folder.getFolderId(),
+			WorkflowConstants.STATUS_APPROVED);
 
 		if ((entriesCount > 0) || (foldersCount > 0)) {
 			return themeDisplay.getPathThemeImages() +

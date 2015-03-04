@@ -51,7 +51,10 @@ import org.osgi.service.component.annotations.Modified;
  * @author Wesley Gong
  * @author Daeyoung Song
  */
-@Component(immediate = true, service = AutoLogin.class)
+@Component(
+	configurationPid = "com.liferay.portal.sso.cas.configuration.CASConfiguration",
+	immediate = true, service = AutoLogin.class
+)
 public class CASAutoLogin extends BaseAutoLogin {
 
 	@Activate
@@ -128,11 +131,11 @@ public class CASAutoLogin extends BaseAutoLogin {
 			return null;
 		}
 
+		User user = null;
+
 		String authType = PrefsPropsUtil.getString(
 			companyId, PropsKeys.COMPANY_SECURITY_AUTH_TYPE,
 			PropsValues.COMPANY_SECURITY_AUTH_TYPE);
-
-		User user = null;
 
 		if (PrefsPropsUtil.getBoolean(
 				companyId, PropsKeys.CAS_IMPORT_FROM_LDAP,

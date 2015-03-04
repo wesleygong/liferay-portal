@@ -32,6 +32,8 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.PrefsPropsUtil;
+import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.ReflectionUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.Account;
@@ -65,6 +67,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.portlet.PortletPreferences;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -427,6 +431,23 @@ public class CompanyLocalServiceTest {
 		VirtualHostLocalServiceUtil.getVirtualHost(company.getWebId());
 	}
 
+	@Test
+	public void testDeleteCompanyWithLDAPPasswordPolicyEnabled()
+		throws Exception {
+
+		Company company = addCompany();
+
+		PortletPreferences portletPreferences = PrefsPropsUtil.getPreferences(
+			company.getCompanyId(), true);
+
+		portletPreferences.setValue(
+			PropsKeys.LDAP_PASSWORD_POLICY_ENABLED, "true");
+
+		portletPreferences.store();
+
+		CompanyLocalServiceUtil.deleteCompany(company);
+	}
+
 	@Test(expected = RequiredCompanyException.class)
 	public void testDeleteDefaultCompany() throws Exception {
 		long companyId = PortalInstances.getDefaultCompanyId();
@@ -473,7 +494,7 @@ public class CompanyLocalServiceTest {
 	@Test
 	public void testUpdateInvalidVirtualHostNames() throws Exception {
 		testUpdateVirtualHostNames(
-			new String[] {StringPool.BLANK, "localhost", ".abc",}, true);
+			new String[] {StringPool.BLANK, "localhost", ".abc"}, true);
 	}
 
 	@Test

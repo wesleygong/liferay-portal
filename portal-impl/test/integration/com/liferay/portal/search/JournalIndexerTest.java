@@ -159,7 +159,7 @@ public class JournalIndexerTest {
 			"Apple Architectural Tablet", true);
 
 		Assert.assertEquals(
-			initialSearchCount  + 2,
+			initialSearchCount + 2,
 			searchCount(_group.getGroupId(), searchContext));
 
 		content = DDMStructureTestUtil.getSampleStructuredContent(
@@ -208,7 +208,7 @@ public class JournalIndexerTest {
 			_group.getGroupId(), folder.getFolderId(), "title", content, true);
 
 		Assert.assertEquals(
-			initialSearchCount  + 1,
+			initialSearchCount + 1,
 			searchCount(
 				_group.getGroupId(), false, WorkflowConstants.STATUS_ANY,
 				searchContext));
@@ -707,6 +707,9 @@ public class JournalIndexerTest {
 			initialSearchCount1 + 1,
 			searchCount(_group.getGroupId(), searchContext1));
 
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(_group.getGroupId());
+
 		if (moveToTrash) {
 			JournalFolderLocalServiceUtil.moveFolderToTrash(
 				TestPropsValues.getUserId(), folder1.getFolderId());
@@ -714,9 +717,6 @@ public class JournalIndexerTest {
 			Assert.assertEquals(
 				initialSearchCount1,
 				searchCount(_group.getGroupId(), searchContext1));
-
-			ServiceContext serviceContext =
-				ServiceContextTestUtil.getServiceContext(_group.getGroupId());
 
 			article = JournalArticleLocalServiceUtil.getArticle(
 				article.getId());
@@ -728,7 +728,7 @@ public class JournalIndexerTest {
 		else {
 			JournalArticleLocalServiceUtil.moveArticle(
 				_group.getGroupId(), article.getArticleId(),
-				folder2.getFolderId());
+				folder2.getFolderId(), serviceContext);
 		}
 
 		Assert.assertEquals(

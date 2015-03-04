@@ -20,7 +20,7 @@ feature or API will be dropped in an upcoming version.
 replaces an old API, in spite of the old API being kept in Liferay Portal for
 backwards compatibility.
 
-*This document has been reviewed through commit `6e73e36`.*
+*This document has been reviewed through commit `7763533`.*
 
 ## Breaking Changes Contribution Guidelines
 
@@ -272,7 +272,7 @@ protected Summary doGetSummary(Document document, Locale locale, String snippet,
 
 With:
 ```
-protected Summary doGetSummary(Document document, Locale locale, String snippet, PortletURL portletURL, PortletRequest portletRequest, PortletResponse portletResponse)
+protected Summary doGetSummary(Document document, Locale locale, String snippet, PortletRequest portletRequest, PortletResponse portletResponse)
 ```
 
 and replace:
@@ -979,7 +979,7 @@ IDs.
 
 ------------------------------------------------------------------------------
 
-### Moved the `AssetPublisherUtil` class and removed it from the public API 
+### Moved the `AssetPublisherUtil` Class and Removed It from the Public API
 - **Date:** 2015-Feb-11
 - **JIRA Ticket:** LPS-52744
 
@@ -1004,5 +1004,89 @@ class.
 
 This change has been made as part of the modularization efforts to decouple the
 different parts of the portal.
+
+---------------------------------------
+
+### Removed Operations That Used the `Fields` Class from the `StorageAdapter` Interface
+- **Date:** 2015-Feb-11
+- **JIRA Ticket:** LPS-53021
+
+#### What changed?
+
+All operations that used the `Fields` class have been removed from the
+`StorageAdapter` interface.
+
+#### Who is affected?
+
+This affects developers who have written code that directly calls these 
+operations. 
+
+#### How should I update my code?
+
+You should update your code to use the `DDMFormValues` class instead of the
+`Fields` class.
+
+#### Why was this change made?
+
+This change has been made due to the deprecation of the `Fields` class. 
+
+---------------------------------------
+
+### DLProcessor needs to implement a new method getType()
+- **Date:** 2015-Feb-17
+- **JIRA Ticket:** LPS-53574
+
+#### What changed?
+
+DLProcessor has a new method getType()
+
+#### Who is affected?
+
+All developers who have created DLProcessor
+
+#### How should I update my code?
+
+You need to implement the method in the DLProcessor and return the type of
+Processor. You can check the class DLProcessorConstants to see the types.
+class.
+
+#### Why was this change made?
+
+Before we were forcing developers to extend one of the existing DLProcessors and
+we were checking the instance of the class to determine what type of processor
+was.
+
+With the new change developers don't need to extend any particular class to
+create their own DLProcessor.
+
+---------------------------------------
+
+### DDM Template search operation need to pass resourceClassNameId parameter
+- **Date:** 2015-Mar-03
+- **JIRA Ticket:** LPS-52990
+
+#### What changed?
+
+DDM Template `search` and `searchCount` operations have a new parameter called
+resourceClassNameid
+
+#### Who is affected?
+
+All developers who have direct calls to DDMTemplateService or 
+DDMTemplateLocalService
+
+#### How should I update my code?
+
+You need to add the resourceClassNameId parameter to your calls. The 
+resourceClassNameId represents the resource that owns the permission for the
+DDMTemplate. For example, if the template is a WCM Template resourceClassNameId 
+points to JournalArticle classNameId, if it's a DDL Template it points to
+DDLRecordSet classNameId, if it's a ADT template it points to 
+PortletDisplayTemplate classNameId
+
+#### Why was this change made?
+
+This change was made in order to implement model resource permissions to 
+DDM Templates, such as VIEW, DELETE, PERMISSIONS, UPDATE.
 
 ---------------------------------------

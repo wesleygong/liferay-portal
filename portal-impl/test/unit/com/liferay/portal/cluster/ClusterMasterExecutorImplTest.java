@@ -17,11 +17,9 @@ package com.liferay.portal.cluster;
 import com.liferay.portal.kernel.cluster.ClusterEventListener;
 import com.liferay.portal.kernel.cluster.ClusterExecutor;
 import com.liferay.portal.kernel.cluster.ClusterMasterTokenTransitionListener;
-import com.liferay.portal.kernel.cluster.ClusterMessageType;
 import com.liferay.portal.kernel.cluster.ClusterNode;
 import com.liferay.portal.kernel.cluster.ClusterNodeResponse;
 import com.liferay.portal.kernel.cluster.ClusterRequest;
-import com.liferay.portal.kernel.cluster.ClusterResponseCallback;
 import com.liferay.portal.kernel.cluster.FutureClusterResponses;
 import com.liferay.portal.kernel.concurrent.NoticeableFuture;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -347,7 +345,8 @@ public class ClusterMasterExecutorImplTest {
 		// Test 2, execute with exception
 
 		try {
-			clusterMasterExecutorImpl.executeOnMaster(null);
+			clusterMasterExecutorImpl.executeOnMaster(
+				new MethodHandler(new MethodKey()));
 
 			Assert.fail();
 		}
@@ -650,39 +649,21 @@ public class ClusterMasterExecutorImplTest {
 				new FutureClusterResponses(clusterNodeIds);
 
 			for (String clusterNodeId : clusterNodeIds) {
-				ClusterNodeResponse clusterNodeResponse =
-					new ClusterNodeResponse();
-
-				clusterNodeResponse.setClusterMessageType(
-					ClusterMessageType.EXECUTE);
-				clusterNodeResponse.setMulticast(clusterRequest.isMulticast());
-				clusterNodeResponse.setUuid(clusterRequest.getUuid());
-				clusterNodeResponse.setClusterNode(
-					_clusterNodes.get(clusterNodeId));
+				MethodHandler methodHandler =
+					(MethodHandler)clusterRequest.getPayload();
 
 				try {
-					MethodHandler methodHandler =
-						clusterRequest.getMethodHandler();
-
-					clusterNodeResponse.setResult(methodHandler.invoke());
+					futureClusterResponses.addClusterNodeResponse(
+						ClusterNodeResponse.createResultClusterNodeResponse(
+							_clusterNodes.get(clusterNodeId),
+							clusterRequest.getUuid(), methodHandler.invoke()));
 				}
 				catch (Exception e) {
 					throw new RuntimeException(e);
 				}
-
-				futureClusterResponses.addClusterNodeResponse(
-					clusterNodeResponse);
 			}
 
 			return futureClusterResponses;
-		}
-
-		@Override
-		public FutureClusterResponses execute(
-			ClusterRequest clusterRequest,
-			ClusterResponseCallback clusterResponseCallback) {
-
-			return null;
 		}
 
 		@Override

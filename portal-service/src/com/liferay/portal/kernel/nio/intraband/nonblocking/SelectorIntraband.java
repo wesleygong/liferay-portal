@@ -211,15 +211,16 @@ public class SelectorIntraband extends BaseIntraband {
 	protected void registerChannels() {
 		FutureTask<RegistrationReference> registerFuturetask = null;
 
-		while ((registerFuturetask = registerQueue.poll()) != null) {
-			registerFuturetask.run();
+		synchronized (selector) {
+			while ((registerFuturetask = registerQueue.poll()) != null) {
+				registerFuturetask.run();
+			}
 		}
 	}
 
-	protected static final ThreadFactory threadFactory =
-		new NamedThreadFactory(
-			SelectorIntraband.class + ".threadFactory", Thread.NORM_PRIORITY,
-			SelectorIntraband.class.getClassLoader());
+	protected static final ThreadFactory threadFactory = new NamedThreadFactory(
+		SelectorIntraband.class + ".threadFactory", Thread.NORM_PRIORITY,
+		SelectorIntraband.class.getClassLoader());
 
 	protected final Thread pollingThread = threadFactory.newThread(
 		new PollingJob());

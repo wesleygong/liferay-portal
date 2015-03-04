@@ -49,7 +49,7 @@ import com.liferay.wiki.exception.NoSuchPageResourceException;
 import com.liferay.wiki.exception.NodeChangeException;
 import com.liferay.wiki.model.WikiNode;
 import com.liferay.wiki.model.WikiPage;
-import com.liferay.wiki.util.WikiTestUtil;
+import com.liferay.wiki.util.test.WikiTestUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -272,7 +272,7 @@ public class WikiPageLocalServiceTest {
 
 		WikiPageLocalServiceUtil.renamePage(
 			TestPropsValues.getUserId(), _node.getNodeId(),
-			"DuplicatedTitlePage", "RenamedPage",  serviceContext);
+			"DuplicatedTitlePage", "RenamedPage", serviceContext);
 
 		WikiTestUtil.addPage(
 			TestPropsValues.getUserId(), _group.getGroupId(),
@@ -316,7 +316,7 @@ public class WikiPageLocalServiceTest {
 
 		WikiPageLocalServiceUtil.renamePage(
 			TestPropsValues.getUserId(), _node.getNodeId(), "InitialTitlePage",
-			"RenamedPage",  serviceContext);
+			"RenamedPage", serviceContext);
 
 		try {
 			WikiPageLocalServiceUtil.changeNode(

@@ -73,6 +73,10 @@ public class PoshiRunnerContext {
 		return _rootElements.get("action#" + className);
 	}
 
+	public static String getFilePath(String fileName) {
+		return _filePaths.get(fileName);
+	}
+
 	public static Element getFunctionCommandElement(String classCommandName) {
 		return _commandElements.get("function#" + classCommandName);
 	}
@@ -162,7 +166,7 @@ public class PoshiRunnerContext {
 			String locator = locatorElement.getText();
 
 			if (locatorKey.equals("EXTEND_ACTION_PATH")) {
-				for (String extendFilePath : _filePaths) {
+				for (String extendFilePath : _filePathsArray) {
 					if (extendFilePath.endsWith("/" + locator + ".path")) {
 						extendFilePath = _BASE_DIR + "/" + extendFilePath;
 
@@ -191,9 +195,9 @@ public class PoshiRunnerContext {
 
 		directoryScanner.scan();
 
-		_filePaths = directoryScanner.getIncludedFiles();
+		_filePathsArray = directoryScanner.getIncludedFiles();
 
-		for (String filePath : _filePaths) {
+		for (String filePath : _filePathsArray) {
 			filePath = _BASE_DIR + "/" + filePath;
 
 			String className = PoshiRunnerGetterUtil.getClassNameFromFilePath(
@@ -201,29 +205,13 @@ public class PoshiRunnerContext {
 			String classType = PoshiRunnerGetterUtil.getClassTypeFromFilePath(
 				filePath);
 
+			_filePaths.put(className + "." + classType, filePath);
+
 			if (classType.equals("action") || classType.equals("function") ||
 				classType.equals("macro") || classType.equals("testcase")) {
 
 				Element rootElement =
 					PoshiRunnerGetterUtil.getRootElementFromFilePath(filePath);
-
-				if (classType.equals("function")) {
-					String xml = rootElement.asXML();
-
-					for (int i = 1;; i++) {
-						if (xml.contains("${locator" + i + "}")) {
-							continue;
-						}
-
-						if (i > 1) {
-							i--;
-						}
-
-						_functionLocatorCounts.put(className, i);
-
-						break;
-					}
-				}
 
 				_rootElements.put(classType + "#" + className, rootElement);
 
@@ -253,6 +241,31 @@ public class PoshiRunnerContext {
 
 					_commandElements.put(
 						classType + "#" + classCommandName, commandElement);
+				}
+
+				if (classType.equals("function")) {
+					Element defaultCommandElement = getFunctionCommandElement(
+						className + "#" +
+							rootElement.attributeValue("default"));
+
+					_commandElements.put(
+						classType + "#" + className, defaultCommandElement);
+
+					String xml = rootElement.asXML();
+
+					for (int i = 1;; i++) {
+						if (xml.contains("${locator" + i + "}")) {
+							continue;
+						}
+
+						if (i > 1) {
+							i--;
+						}
+
+						_functionLocatorCounts.put(className, i);
+
+						break;
+					}
 				}
 			}
 			else if (classType.equals("path")) {
@@ -305,7 +318,8 @@ public class PoshiRunnerContext {
 		new HashMap<>();
 	private static final Map<String, Element> _commandElements =
 		new HashMap<>();
-	private static String[] _filePaths;
+	private static final Map<String, String> _filePaths = new HashMap<>();
+	private static String[] _filePathsArray;
 	private static final Map<String, Integer> _functionLocatorCounts =
 		new HashMap<>();
 	private static final Map<String, String> _pathLocators = new HashMap<>();

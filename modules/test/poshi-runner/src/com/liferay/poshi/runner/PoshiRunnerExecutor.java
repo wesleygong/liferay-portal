@@ -16,6 +16,7 @@ package com.liferay.poshi.runner;
 
 import com.liferay.poshi.runner.selenium.LiferaySelenium;
 import com.liferay.poshi.runner.selenium.SeleniumUtil;
+import com.liferay.poshi.runner.util.GetterUtil;
 
 import java.lang.reflect.Method;
 
@@ -45,6 +46,23 @@ public class PoshiRunnerExecutor {
 			}
 
 			return true;
+		}
+		else if (elementName.equals("condition")) {
+			if (element.attributeValue("action") != null) {
+				runActionElement(element);
+
+				return (boolean)_returnObject;
+			}
+			else if (element.attributeValue("function") != null) {
+				runFunctionElement(element);
+
+				return (boolean)_returnObject;
+			}
+			else if (element.attributeValue("selenium") != null) {
+				runSeleniumElement(element);
+
+				return (boolean)_returnObject;
+			}
 		}
 		else if (elementName.equals("contains")) {
 			String string = PoshiRunnerVariablesUtil.replaceCommandVars(
@@ -107,6 +125,9 @@ public class PoshiRunnerExecutor {
 		for (Element childElement : childElements) {
 			String childElementName = childElement.getName();
 
+			PoshiRunnerStackTraceUtil.pushStackTrace(
+				childElement.attributeValue("line-number"));
+
 			if (childElementName.equals("echo") ||
 				childElementName.equals("description")) {
 
@@ -126,7 +147,12 @@ public class PoshiRunnerExecutor {
 					runMacroElement(childElement);
 				}
 				else if (childElement.attributeValue("selenium") != null) {
-					runSeleniumElement(childElement);
+					try {
+						runSeleniumElement(childElement);
+					}
+					catch (Exception e) {
+						throw new PoshiRunnerException(e);
+					}
 				}
 			}
 			else if (childElementName.equals("if")) {
@@ -136,18 +162,30 @@ public class PoshiRunnerExecutor {
 				String message = childElement.attributeValue("message");
 
 				if (message != null) {
-					throw new Exception(
-						PoshiRunnerVariablesUtil.replaceCommandVars(message));
+					throw new PoshiRunnerException(
+						"BUILD FAILED: " +
+							PoshiRunnerVariablesUtil.replaceCommandVars(
+								message));
 				}
 
-				throw new Exception();
+				throw new PoshiRunnerException();
 			}
 			else if (childElementName.equals("for")) {
 				runForElement(childElement);
 			}
 			else if (childElementName.equals("var")) {
-				runVarElement(childElement);
+				try {
+					runVarElement(childElement);
+				}
+				catch (Exception e) {
+					throw new PoshiRunnerException(e);
+				}
 			}
+			else if (childElementName.equals("while")) {
+				runWhileElement(childElement);
+			}
+
+			PoshiRunnerStackTraceUtil.popStackTrace();
 		}
 	}
 
@@ -189,6 +227,8 @@ public class PoshiRunnerExecutor {
 				locator = PoshiRunnerContext.getPathLocator(
 					pathClassName + "#" + locatorKey);
 
+				locator = PoshiRunnerVariablesUtil.replaceExecuteVars(locator);
+
 				PoshiRunnerVariablesUtil.putIntoExecuteMap(
 					"locator" + (i + 1), locator);
 			}
@@ -201,12 +241,18 @@ public class PoshiRunnerExecutor {
 
 		PoshiRunnerVariablesUtil.pushCommandMap();
 
+		PoshiRunnerStackTraceUtil.pushFilePath(
+			actionClassCommandName, "action",
+			executeElement.attributeValue("line-number"));
+
 		List<Element> caseElements = PoshiRunnerContext.getActionCaseElements(
 			actionClassCommandName);
 
 		runCaseElements(caseElements, locatorCount);
 
 		PoshiRunnerVariablesUtil.popCommandMap();
+
+		PoshiRunnerStackTraceUtil.popFilePath();
 	}
 
 	public static void runCaseElements(
@@ -221,7 +267,7 @@ public class PoshiRunnerExecutor {
 				String expected = null;
 
 				String[] arguments =
-					new String[]{"locator", "locator-key", "value"};
+					new String[] {"locator", "locator-key", "value"};
 
 				for (int i = 0; i < locatorCount; i++) {
 					for (String argument : arguments) {
@@ -288,11 +334,23 @@ public class PoshiRunnerExecutor {
 	public static void runFunctionElement(Element executeElement)
 		throws Exception {
 
+		List<Element> executeVarElements = executeElement.elements("var");
+
+		for (Element executeVarElement : executeVarElements) {
+			String name = executeVarElement.attributeValue("name");
+			String value = executeVarElement.attributeValue("value");
+
+			PoshiRunnerVariablesUtil.putIntoExecuteMap(name, value);
+		}
+
 		String classCommandName = executeElement.attributeValue("function");
 
-		String className =
-			PoshiRunnerGetterUtil.getClassNameFromClassCommandName(
+		String className = classCommandName;
+
+		if (classCommandName.contains("#")) {
+			className = PoshiRunnerGetterUtil.getClassNameFromClassCommandName(
 				classCommandName);
+		}
 
 		int locatorCount = PoshiRunnerContext.getFunctionLocatorCount(
 			className);
@@ -312,11 +370,15 @@ public class PoshiRunnerExecutor {
 							locator);
 
 					String locatorKey =
-						PoshiRunnerGetterUtil.
-							getCommandNameFromClassCommandName(locator);
+						PoshiRunnerVariablesUtil.replaceCommandVars(
+							PoshiRunnerGetterUtil.
+								getCommandNameFromClassCommandName(locator));
 
 					locator = PoshiRunnerContext.getPathLocator(
 						pathClassName + "#" + locatorKey);
+
+					locator = PoshiRunnerVariablesUtil.replaceExecuteVars(
+						locator);
 				}
 
 				PoshiRunnerVariablesUtil.putIntoExecuteMap(
@@ -338,12 +400,18 @@ public class PoshiRunnerExecutor {
 
 		PoshiRunnerVariablesUtil.pushCommandMap();
 
+		PoshiRunnerStackTraceUtil.pushFilePath(
+			classCommandName, "function",
+			executeElement.attributeValue("line-number"));
+
 		Element commandElement = PoshiRunnerContext.getFunctionCommandElement(
 			classCommandName);
 
 		parseElement(commandElement);
 
 		PoshiRunnerVariablesUtil.popCommandMap();
+
+		PoshiRunnerStackTraceUtil.popFilePath();
 	}
 
 	public static void runIfElement(Element element) throws Exception {
@@ -416,19 +484,25 @@ public class PoshiRunnerExecutor {
 
 		PoshiRunnerVariablesUtil.pushCommandMap();
 
+		PoshiRunnerStackTraceUtil.pushFilePath(
+			classCommandName, "macro",
+			executeElement.attributeValue("line-number"));
+
 		Element commandElement = PoshiRunnerContext.getMacroCommandElement(
 			classCommandName);
 
 		parseElement(commandElement);
 
 		PoshiRunnerVariablesUtil.popCommandMap();
+
+		PoshiRunnerStackTraceUtil.popFilePath();
 	}
 
 	public static void runSeleniumElement(Element executeElement)
 		throws Exception {
 
 		List<String> arguments = new ArrayList<>();
-		List<Class> parameterClasses = new ArrayList<>();
+		List<Class<?>> parameterClasses = new ArrayList<>();
 
 		String selenium = executeElement.attributeValue("selenium");
 
@@ -464,6 +538,10 @@ public class PoshiRunnerExecutor {
 				else if (i == 1) {
 					argument = PoshiRunnerVariablesUtil.getValueFromCommandMap(
 						"value1");
+
+					if (selenium.equals("clickAt")) {
+						argument = "";
+					}
 				}
 				else if (i == 2) {
 					argument = PoshiRunnerVariablesUtil.getValueFromCommandMap(
@@ -476,14 +554,17 @@ public class PoshiRunnerExecutor {
 			parameterClasses.add(String.class);
 		}
 
-		Class clazz = _liferaySelenium.getClass();
+		LiferaySelenium liferaySelenium = SeleniumUtil.getSelenium();
+
+		Class<?> clazz = liferaySelenium.getClass();
 
 		Method method = clazz.getMethod(
 			selenium,
 			parameterClasses.toArray(new Class[parameterClasses.size()]));
 
-		method.invoke(
-			_liferaySelenium, arguments.toArray(new String[arguments.size()]));
+		_returnObject = method.invoke(
+			liferaySelenium,
+			(Object[])arguments.toArray(new String[arguments.size()]));
 	}
 
 	public static void runVarElement(Element element) throws Exception {
@@ -491,7 +572,12 @@ public class PoshiRunnerExecutor {
 		String varValue = element.attributeValue("value");
 
 		if (varValue == null) {
-			varValue = element.elementText("var");
+			if (element.attributeValue("method") != null) {
+				varValue = PoshiRunnerGetterUtil.getVarMethodValue(element);
+			}
+			else {
+				varValue = element.elementText("var");
+			}
 		}
 
 		varValue = PoshiRunnerVariablesUtil.replaceCommandVars(varValue);
@@ -499,7 +585,28 @@ public class PoshiRunnerExecutor {
 		PoshiRunnerVariablesUtil.putIntoCommandMap(varName, varValue);
 	}
 
-	private static final LiferaySelenium _liferaySelenium =
-		SeleniumUtil.getSelenium();
+	public static void runWhileElement(Element element) throws Exception {
+		int maxIterations = 15;
+
+		if (element.attributeValue("max-iterations") != null) {
+			maxIterations = GetterUtil.getInteger(
+				element.attributeValue("max-iterations"));
+		}
+
+		List<Element> whileChildElements = element.elements();
+
+		Element conditionElement = whileChildElements.get(0);
+		Element thenElement = element.element("then");
+
+		for (int i = 0; i < maxIterations; i++) {
+			if (!evaluateConditionalElement(conditionElement)) {
+				break;
+			}
+
+			parseElement(thenElement);
+		}
+	}
+
+	private static Object _returnObject;
 
 }

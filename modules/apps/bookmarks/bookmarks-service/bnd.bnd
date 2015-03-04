@@ -12,15 +12,9 @@ Export-Package:\
 	com.liferay.bookmarks.search,\
 	com.liferay.bookmarks.service.configuration.configurator,\
 	com.liferay.bookmarks.service.permission,\
-	com.liferay.bookmarks.settings,\
 	com.liferay.bookmarks.social,\
 	com.liferay.bookmarks.trash,\
 	com.liferay.bookmarks.util
-Import-Package:\
-	!aQute.bnd.ant,\
-	!aQute.bnd.differ,\
-	!org.incava.util.diff,\
-	*
 Include-Resource:\
 	classes,\
 	custom-sql/default.xml=classes/META-INF/custom-sql/default.xml,\

@@ -142,9 +142,14 @@ public class DLFileEntryTrashHandlerTest extends BaseTrashHandlerTestCase {
 			long groupId, long folderId, boolean approved)
 		throws Exception {
 
-		FileEntry fileEntry = DLAppTestUtil.addFileEntry(
-			groupId, folderId, RandomTestUtil.randomString() + ".txt",
-			getSearchKeywords(), approved);
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(
+				group.getGroupId(), TestPropsValues.getUserId());
+
+		FileEntry fileEntry = DLAppTestUtil.addFileEntryWithWorkflow(
+			TestPropsValues.getUserId(), groupId, folderId,
+			RandomTestUtil.randomString() + ".txt", getSearchKeywords(),
+			approved, serviceContext);
 
 		return (DLFileEntry)fileEntry.getModel();
 	}
@@ -218,9 +223,10 @@ public class DLFileEntryTrashHandlerTest extends BaseTrashHandlerTestCase {
 			Group group, long parentBaseModelId, ServiceContext serviceContext)
 		throws Exception {
 
-		Folder folder = DLAppTestUtil.addFolder(
+		Folder folder = DLAppServiceUtil.addFolder(
 			group.getGroupId(), parentBaseModelId,
-			RandomTestUtil.randomString(_FOLDER_NAME_MAX_LENGTH));
+			RandomTestUtil.randomString(_FOLDER_NAME_MAX_LENGTH),
+			RandomTestUtil.randomString(), serviceContext);
 
 		return (DLFolder)folder.getModel();
 	}

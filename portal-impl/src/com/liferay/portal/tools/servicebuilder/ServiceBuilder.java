@@ -2860,7 +2860,7 @@ public class ServiceBuilder {
 
 		context.put("entity", entity);
 		context.put("methods", methods);
-		context.put("sessionTypeName",_getSessionTypeName(sessionType));
+		context.put("sessionTypeName", _getSessionTypeName(sessionType));
 		context.put("referenceList", _mergeReferenceList(entity));
 
 		context = _putDeprecatedKeys(context, javaClass);
@@ -4937,10 +4937,8 @@ public class ServiceBuilder {
 					finderColumnElement.attributeValue("case-sensitive"), true);
 				String finderColComparator = GetterUtil.getString(
 					finderColumnElement.attributeValue("comparator"), "=");
-				String finderColArrayableOperator =
-					GetterUtil.getString(
-						finderColumnElement.attributeValue(
-							"arrayable-operator"));
+				String finderColArrayableOperator = GetterUtil.getString(
+					finderColumnElement.attributeValue("arrayable-operator"));
 
 				EntityColumn col = Entity.getColumn(finderColName, columnList);
 

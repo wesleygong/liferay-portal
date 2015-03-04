@@ -18,64 +18,53 @@
 
 <%
 PortletPreferences companyPortletPreferences = PrefsPropsUtil.getPreferences(company.getCompanyId());
+
+CompanyPortletRatingsDefinitionDisplayContext companyPortletRatingsDefinitionDisplayContext = new CompanyPortletRatingsDefinitionDisplayContext(companyPortletPreferences, request);
 %>
 
 <liferay-ui:error-marker key="errorSection" value="ratings" />
 
 <h3><liferay-ui:message key="ratings" /></h3>
 
-<div class="alert alert-info">
-	<p><liferay-ui:message key="changing-ratings-type-could-lead-to-inaccurate-information" /></p>
-</div>
+<p><liferay-ui:message key="select-the-default-ratings-type-for-the-following-applications" /></p>
 
-<p><liferay-ui:message key="select-the-ratings-type-for-the-following-portlets" /></p>
-
-<aui:fieldset>
+<aui:fieldset id="ratingsSettingsContainer">
 
 	<%
-	String[] portletIds = PortletRatingsDefinitionUtil.getPortletIds();
+	Map<String, Map<String, RatingsType>> companyRatingsTypeMaps = companyPortletRatingsDefinitionDisplayContext.getCompanyRatingsTypeMaps();
 
-	for (String portletId : portletIds) {
+	for (String portletId : companyRatingsTypeMaps.keySet()) {
 		Portlet portlet = PortletLocalServiceUtil.getPortletById(portletId);
 	%>
 
 		<p>
-			<%= PortalUtil.getPortletTitle(portlet, application, locale) %>
+			<strong><%= PortalUtil.getPortletTitle(portlet, application, locale) %></strong>
 		</p>
 
 		<%
-		String[] classNames = PortletRatingsDefinitionUtil.getClassNames(portletId);
+		Map<String, RatingsType> ratingsTypeMap = companyRatingsTypeMaps.get(portletId);
+
+		Set<String> classNames = ratingsTypeMap.keySet();
 
 		for (String className : classNames) {
+			String propertyKey = RatingsDataTransformerUtil.getPropertyKey(className);
+
+			RatingsType ratingsType = ratingsTypeMap.get(className);
 		%>
 
-			<c:if test="<%= classNames.length > 1 %>">
-				<p><%= ResourceActionsUtil.getModelResource(locale, className) %></p>
-			</c:if>
+			<aui:select label="<%= (classNames.size() > 1) ? ResourceActionsUtil.getModelResource(locale, className) : StringPool.BLANK %>" name='<%= "settings--" + propertyKey + "--" %>'>
 
-			<%
-			String propertyKey = className + StringPool.UNDERLINE + "RatingsType";
+				<%
+				for (RatingsType curRatingsType : RatingsType.values()) {
+				%>
 
-			PortletRatingsDefinition.RatingsType defaultRatingsType = PortletRatingsDefinitionUtil.getDefaultRatingsType(portletId, className);
+					<aui:option label="<%= LanguageUtil.get(request, curRatingsType.getValue()) %>" selected="<%= Validator.equals(ratingsType, curRatingsType) %>" value="<%= curRatingsType.getValue() %>" />
 
-			String ratingsTypeString = PrefsParamUtil.getString(companyPortletPreferences, request, propertyKey, defaultRatingsType.toString());
-			%>
+				<%
+				}
+				%>
 
-			<div class="row-fields">
-				<aui:select label='<%= (classNames.length > 1) ? ResourceActionsUtil.getModelResource(locale, className) : "" %>' name='<%= "settings--" + propertyKey + "--" %>'>
-
-					<%
-					for (PortletRatingsDefinition.RatingsType curRatingsType : PortletRatingsDefinition.RatingsType.values()) {
-					%>
-
-						<aui:option label="<%= LanguageUtil.get(request, curRatingsType.getValue()) %>" selected="<%= ratingsTypeString.equals(curRatingsType.getValue()) %>" value="<%= curRatingsType.getValue() %>" />
-
-					<%
-					}
-					%>
-
-				</aui:select>
-			</div>
+			</aui:select>
 
 	<%
 		}
@@ -83,3 +72,30 @@ PortletPreferences companyPortletPreferences = PrefsPropsUtil.getPreferences(com
 	%>
 
 </aui:fieldset>
+
+<aui:script use="aui-base">
+	var ratingsSettingsContainer = A.one('#<portlet:namespace />ratingsSettingsContainer');
+
+	var ratingsTypeChanged = false;
+
+	ratingsSettingsContainer.delegate(
+		'change',
+		function(event) {
+			ratingsTypeChanged = true;
+		},
+		'select'
+	);
+
+	var form = A.one('#<portlet:namespace />fm');
+
+	form.on(
+		'submit',
+		function(event) {
+			if (ratingsTypeChanged && !confirm('<%= UnicodeLanguageUtil.get(request, "existing-ratings-data-values-will-be-adapted-to-match-the-new-ratings-type-even-though-it-may-not-be-accurate") %>')) {
+				event.preventDefault();
+
+				event.stopImmediatePropagation();
+			}
+		}
+	);
+</aui:script>

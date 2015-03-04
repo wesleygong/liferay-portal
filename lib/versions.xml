@@ -1003,6 +1003,32 @@
 				</licenses>
 			</library>
 			<library>
+				<file-name>lib/development/velocity.jar</file-name>
+				<version>1.6.4</version>
+				<project-name>Velocity</project-name>
+				<project-url>http://velocity.apache.org</project-url>
+				<licenses>
+					<license>
+						<license-name>Apache License 2.0</license-name>
+						<license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
+						<copyright-notice>Copyright (c) 2000-2007 The Apache Software Foundation</copyright-notice>
+					</license>
+				</licenses>
+			</library>
+			<library>
+				<file-name>lib/development/velocity-tools.jar</file-name>
+				<version>1.4</version>
+				<project-name>Velocity</project-name>
+				<project-url>http://velocity.apache.org</project-url>
+				<licenses>
+					<license>
+						<license-name>Apache License 2.0</license-name>
+						<license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
+						<copyright-notice>Copyright (c) 2000-2007 The Apache Software Foundation</copyright-notice>
+					</license>
+				</licenses>
+			</library>
+			<library>
 				<file-name>lib/development/xmltask.jar</file-name>
 				<version>1.16</version>
 				<project-name>XMLTask</project-name>
@@ -1235,7 +1261,7 @@
 			</library>
 			<library>
 				<file-name>lib/portal/bnd.jar</file-name>
-				<version>2.3.0.20140225-161137</version>
+				<version>2.4.1</version>
 				<project-name>Bnd</project-name>
 				<project-url>http://www.aqute.biz/Bnd</project-url>
 				<licenses>
@@ -1244,9 +1270,6 @@
 						<license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
 					</license>
 				</licenses>
-				<comments>
-					Built from 5748e2f785f478f57df3034abcd0bbb918d467fe.
-				</comments>
 			</library>
 			<library>
 				<file-name>lib/portal/bobo-browse.jar</file-name>
@@ -1826,18 +1849,6 @@
 				<version>5.0.5</version>
 				<project-name>Fastutil</project-name>
 				<project-url>http://fastutil.dsi.unimi.it</project-url>
-				<licenses>
-					<license>
-						<license-name>Apache License 2.0</license-name>
-						<license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
-					</license>
-				</licenses>
-			</library>
-			<library>
-				<file-name>lib/portal/felix-fileinstall.jar</file-name>
-				<version>3.1.10</version>
-				<project-name>Apache Felix</project-name>
-				<project-url>http://felix.apache.org</project-url>
 				<licenses>
 					<license>
 						<license-name>Apache License 2.0</license-name>
@@ -2498,7 +2509,7 @@
 					</license>
 				</licenses>
 				<comments>
-					See the Ant target "build-ruby-gems-jar" in portal-impl/build.xml.
+					See modules/util/ruby-gem.
 				</comments>
 			</library>
 			<library>
@@ -3746,32 +3757,6 @@
 						<license-name>Apache License 2.0</license-name>
 						<license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
 						<copyright-notice>Copyright (c) 2012 Vaadin Ltd</copyright-notice>
-					</license>
-				</licenses>
-			</library>
-			<library>
-				<file-name>lib/portal/velocity.jar</file-name>
-				<version>1.6.4</version>
-				<project-name>Velocity</project-name>
-				<project-url>http://velocity.apache.org</project-url>
-				<licenses>
-					<license>
-						<license-name>Apache License 2.0</license-name>
-						<license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
-						<copyright-notice>Copyright (c) 2000-2007 The Apache Software Foundation</copyright-notice>
-					</license>
-				</licenses>
-			</library>
-			<library>
-				<file-name>lib/portal/velocity-tools.jar</file-name>
-				<version>1.4</version>
-				<project-name>Velocity</project-name>
-				<project-url>http://velocity.apache.org</project-url>
-				<licenses>
-					<license>
-						<license-name>Apache License 2.0</license-name>
-						<license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
-						<copyright-notice>Copyright (c) 2000-2007 The Apache Software Foundation</copyright-notice>
 					</license>
 				</licenses>
 			</library>

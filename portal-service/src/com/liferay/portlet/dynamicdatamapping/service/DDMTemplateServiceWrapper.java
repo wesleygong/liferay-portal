@@ -39,8 +39,8 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 	* @param classNameId the primary key of the class name for template's
 	related model
 	* @param classPK the primary key of the template's related entity
-	* @param sourceClassNameId the primary key of the class name for
-	template's source model
+	* @param resourceClassNameId the primary key of the class name for
+	template's resource model
 	* @param nameMap the template's locales and localized names
 	* @param descriptionMap the template's locales and localized descriptions
 	* @param type the template's type. For more information, see {@link
@@ -61,7 +61,7 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 	*/
 	@Override
 	public com.liferay.portlet.dynamicdatamapping.model.DDMTemplate addTemplate(
-		long groupId, long classNameId, long classPK, long sourceClassNameId,
+		long groupId, long classNameId, long classPK, long resourceClassNameId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
 		java.lang.String type, java.lang.String mode,
@@ -69,7 +69,7 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _ddmTemplateService.addTemplate(groupId, classNameId, classPK,
-			sourceClassNameId, nameMap, descriptionMap, type, mode, language,
+			resourceClassNameId, nameMap, descriptionMap, type, mode, language,
 			script, serviceContext);
 	}
 
@@ -80,8 +80,8 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 	* @param classNameId the primary key of the class name for template's
 	related model
 	* @param classPK the primary key of the template's related entity
-	* @param sourceClassNameId the primary key of the class name for
-	template's source model
+	* @param resourceClassNameId the primary key of the class name for
+	template's resource model
 	* @param templateKey the unique string identifying the template
 	(optionally <code>null</code>)
 	* @param nameMap the template's locales and localized names
@@ -110,7 +110,7 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 	*/
 	@Override
 	public com.liferay.portlet.dynamicdatamapping.model.DDMTemplate addTemplate(
-		long groupId, long classNameId, long classPK, long sourceClassNameId,
+		long groupId, long classNameId, long classPK, long resourceClassNameId,
 		java.lang.String templateKey,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
@@ -121,7 +121,7 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _ddmTemplateService.addTemplate(groupId, classNameId, classPK,
-			sourceClassNameId, templateKey, nameMap, descriptionMap, type,
+			resourceClassNameId, templateKey, nameMap, descriptionMap, type,
 			mode, language, script, cacheable, smallImage, smallImageURL,
 			smallImageFile, serviceContext);
 	}
@@ -170,8 +170,8 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 	* @param classNameId the primary key of the class name for template's
 	related model
 	* @param oldClassPK the primary key of the old template's related entity
-	* @param sourceClassNameId the primary key of the class name for
-	template's source model
+	* @param resourceClassNameId the primary key of the class name for
+	template's resource model
 	* @param newClassPK the primary key of the new template's related entity
 	* @param type the template's type. For more information, see {@link
 	com.liferay.portlet.dynamicdatamapping.model.DDMTemplateConstants}.
@@ -185,12 +185,12 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 	*/
 	@Override
 	public java.util.List<com.liferay.portlet.dynamicdatamapping.model.DDMTemplate> copyTemplates(
-		long classNameId, long oldClassPK, long sourceClassNameId,
+		long classNameId, long oldClassPK, long resourceClassNameId,
 		long newClassPK, java.lang.String type,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _ddmTemplateService.copyTemplates(classNameId, oldClassPK,
-			sourceClassNameId, newClassPK, type, serviceContext);
+			resourceClassNameId, newClassPK, type, serviceContext);
 	}
 
 	/**
@@ -449,6 +449,8 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 	* @param classNameId the primary key of the class name for template's
 	related model
 	* @param classPK the primary key of the template's related entity
+	* @param resourceClassNameId the primary key of the class name for
+	template's resource model
 	* @param keywords the keywords (space separated), which may occur in the
 	template's name or description (optionally <code>null</code>)
 	* @param type the template's type (optionally <code>null</code>). For more
@@ -467,11 +469,12 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 	@Override
 	public java.util.List<com.liferay.portlet.dynamicdatamapping.model.DDMTemplate> search(
 		long companyId, long groupId, long classNameId, long classPK,
-		java.lang.String keywords, java.lang.String type,
-		java.lang.String mode, int start, int end,
+		long resourceClassNameId, java.lang.String keywords,
+		java.lang.String type, java.lang.String mode, int start, int end,
 		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.portlet.dynamicdatamapping.model.DDMTemplate> orderByComparator) {
 		return _ddmTemplateService.search(companyId, groupId, classNameId,
-			classPK, keywords, type, mode, start, end, orderByComparator);
+			classPK, resourceClassNameId, keywords, type, mode, start, end,
+			orderByComparator);
 	}
 
 	/**
@@ -494,6 +497,8 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 	* @param classNameId the primary key of the class name for template's
 	related model
 	* @param classPK the primary key of the template's related entity
+	* @param resourceClassNameId the primary key of the class name for
+	template's resource model
 	* @param name the name keywords (optionally <code>null</code>)
 	* @param description the description keywords (optionally
 	<code>null</code>)
@@ -518,13 +523,14 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 	@Override
 	public java.util.List<com.liferay.portlet.dynamicdatamapping.model.DDMTemplate> search(
 		long companyId, long groupId, long classNameId, long classPK,
-		java.lang.String name, java.lang.String description,
-		java.lang.String type, java.lang.String mode,
-		java.lang.String language, boolean andOperator, int start, int end,
+		long resourceClassNameId, java.lang.String name,
+		java.lang.String description, java.lang.String type,
+		java.lang.String mode, java.lang.String language, boolean andOperator,
+		int start, int end,
 		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.portlet.dynamicdatamapping.model.DDMTemplate> orderByComparator) {
 		return _ddmTemplateService.search(companyId, groupId, classNameId,
-			classPK, name, description, type, mode, language, andOperator,
-			start, end, orderByComparator);
+			classPK, resourceClassNameId, name, description, type, mode,
+			language, andOperator, start, end, orderByComparator);
 	}
 
 	/**
@@ -547,6 +553,8 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 	* @param classNameIds the primary keys of the entity's instances the
 	templates are related to
 	* @param classPKs the primary keys of the template's related entities
+	* @param resourceClassNameId the primary key of the class name for
+	template's resource model
 	* @param keywords the keywords (space separated), which may occur in the
 	template's name or description (optionally <code>null</code>)
 	* @param type the template's type (optionally <code>null</code>). For more
@@ -565,11 +573,12 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 	@Override
 	public java.util.List<com.liferay.portlet.dynamicdatamapping.model.DDMTemplate> search(
 		long companyId, long[] groupIds, long[] classNameIds, long[] classPKs,
-		java.lang.String keywords, java.lang.String type,
-		java.lang.String mode, int start, int end,
+		long resourceClassNameId, java.lang.String keywords,
+		java.lang.String type, java.lang.String mode, int start, int end,
 		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.portlet.dynamicdatamapping.model.DDMTemplate> orderByComparator) {
 		return _ddmTemplateService.search(companyId, groupIds, classNameIds,
-			classPKs, keywords, type, mode, start, end, orderByComparator);
+			classPKs, resourceClassNameId, keywords, type, mode, start, end,
+			orderByComparator);
 	}
 
 	/**
@@ -592,6 +601,8 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 	* @param classNameIds the primary keys of the entity's instances the
 	templates are related to
 	* @param classPKs the primary keys of the template's related entities
+	* @param resourceClassNameId the primary key of the class name for
+	template's resource model
 	* @param name the name keywords (optionally <code>null</code>)
 	* @param description the description keywords (optionally
 	<code>null</code>)
@@ -616,13 +627,14 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 	@Override
 	public java.util.List<com.liferay.portlet.dynamicdatamapping.model.DDMTemplate> search(
 		long companyId, long[] groupIds, long[] classNameIds, long[] classPKs,
-		java.lang.String name, java.lang.String description,
-		java.lang.String type, java.lang.String mode,
-		java.lang.String language, boolean andOperator, int start, int end,
+		long resourceClassNameId, java.lang.String name,
+		java.lang.String description, java.lang.String type,
+		java.lang.String mode, java.lang.String language, boolean andOperator,
+		int start, int end,
 		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.portlet.dynamicdatamapping.model.DDMTemplate> orderByComparator) {
 		return _ddmTemplateService.search(companyId, groupIds, classNameIds,
-			classPKs, name, description, type, mode, language, andOperator,
-			start, end, orderByComparator);
+			classPKs, resourceClassNameId, name, description, type, mode,
+			language, andOperator, start, end, orderByComparator);
 	}
 
 	/**
@@ -635,6 +647,8 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 	* @param classNameId the primary key of the class name for template's
 	related model
 	* @param classPK the primary key of the template's related entity
+	* @param resourceClassNameId the primary key of the class name for
+	template's resource model
 	* @param keywords the keywords (space separated), which may occur in the
 	template's name or description (optionally <code>null</code>)
 	* @param type the template's type (optionally <code>null</code>). For more
@@ -647,10 +661,10 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 	*/
 	@Override
 	public int searchCount(long companyId, long groupId, long classNameId,
-		long classPK, java.lang.String keywords, java.lang.String type,
-		java.lang.String mode) {
+		long classPK, long resourceClassNameId, java.lang.String keywords,
+		java.lang.String type, java.lang.String mode) {
 		return _ddmTemplateService.searchCount(companyId, groupId, classNameId,
-			classPK, keywords, type, mode);
+			classPK, resourceClassNameId, keywords, type, mode);
 	}
 
 	/**
@@ -662,6 +676,8 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 	* @param classNameId the primary key of the class name for template's
 	related model
 	* @param classPK the primary key of the template's related entity
+	* @param resourceClassNameId the primary key of the class name for
+	template's resource model
 	* @param name the name keywords (optionally <code>null</code>)
 	* @param description the description keywords (optionally
 	<code>null</code>)
@@ -680,11 +696,12 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 	*/
 	@Override
 	public int searchCount(long companyId, long groupId, long classNameId,
-		long classPK, java.lang.String name, java.lang.String description,
-		java.lang.String type, java.lang.String mode,
-		java.lang.String language, boolean andOperator) {
+		long classPK, long resourceClassNameId, java.lang.String name,
+		java.lang.String description, java.lang.String type,
+		java.lang.String mode, java.lang.String language, boolean andOperator) {
 		return _ddmTemplateService.searchCount(companyId, groupId, classNameId,
-			classPK, name, description, type, mode, language, andOperator);
+			classPK, resourceClassNameId, name, description, type, mode,
+			language, andOperator);
 	}
 
 	/**
@@ -697,6 +714,8 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 	* @param classNameIds the primary keys of the entity's instances the
 	templates are related to
 	* @param classPKs the primary keys of the template's related entities
+	* @param resourceClassNameId the primary key of the class name for
+	template's resource model
 	* @param keywords the keywords (space separated), which may occur in the
 	template's name or description (optionally <code>null</code>)
 	* @param type the template's type (optionally <code>null</code>). For more
@@ -709,10 +728,10 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 	*/
 	@Override
 	public int searchCount(long companyId, long[] groupIds,
-		long[] classNameIds, long[] classPKs, java.lang.String keywords,
-		java.lang.String type, java.lang.String mode) {
+		long[] classNameIds, long[] classPKs, long resourceClassNameId,
+		java.lang.String keywords, java.lang.String type, java.lang.String mode) {
 		return _ddmTemplateService.searchCount(companyId, groupIds,
-			classNameIds, classPKs, keywords, type, mode);
+			classNameIds, classPKs, resourceClassNameId, keywords, type, mode);
 	}
 
 	/**
@@ -724,6 +743,8 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 	* @param classNameIds the primary keys of the entity's instances the
 	templates are related to
 	* @param classPKs the primary keys of the template's related entities
+	* @param resourceClassNameId the primary key of the class name for
+	template's resource model
 	* @param name the name keywords (optionally <code>null</code>)
 	* @param description the description keywords (optionally
 	<code>null</code>)
@@ -742,12 +763,13 @@ public class DDMTemplateServiceWrapper implements DDMTemplateService,
 	*/
 	@Override
 	public int searchCount(long companyId, long[] groupIds,
-		long[] classNameIds, long[] classPKs, java.lang.String name,
-		java.lang.String description, java.lang.String type,
-		java.lang.String mode, java.lang.String language, boolean andOperator) {
+		long[] classNameIds, long[] classPKs, long resourceClassNameId,
+		java.lang.String name, java.lang.String description,
+		java.lang.String type, java.lang.String mode,
+		java.lang.String language, boolean andOperator) {
 		return _ddmTemplateService.searchCount(companyId, groupIds,
-			classNameIds, classPKs, name, description, type, mode, language,
-			andOperator);
+			classNameIds, classPKs, resourceClassNameId, name, description,
+			type, mode, language, andOperator);
 	}
 
 	/**

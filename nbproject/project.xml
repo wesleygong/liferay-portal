@@ -331,6 +331,8 @@
 				<classpath mode="compile">lib/development/spring-instrument-tomcat.jar</classpath>
 				<classpath mode="compile">lib/development/spring-test.jar</classpath>
 				<classpath mode="compile">lib/development/tomcat-coyote.jar</classpath>
+				<classpath mode="compile">lib/development/velocity.jar</classpath>
+				<classpath mode="compile">lib/development/velocity-tools.jar</classpath>
 				<classpath mode="compile">lib/development/xmltask.jar</classpath>
 				<classpath mode="compile">lib/global/portlet.jar</classpath>
 				<classpath mode="compile">lib/portal/abdera.jar</classpath>
@@ -365,6 +367,8 @@
 				<classpath mode="compile">lib/portal/chemistry-opencmis-commons-api.jar</classpath>
 				<classpath mode="compile">lib/portal/chemistry-opencmis-commons-impl.jar</classpath>
 				<classpath mode="compile">lib/portal/closure-compiler.jar</classpath>
+				<classpath mode="compile">lib/portal/com.liferay.ruby.gems.jar</classpath>
+				<classpath mode="compile">lib/portal/com.liferay.sass.compiler.jar</classpath>
 				<classpath mode="compile">lib/portal/commons-beanutils.jar</classpath>
 				<classpath mode="compile">lib/portal/commons-codec.jar</classpath>
 				<classpath mode="compile">lib/portal/commons-collections.jar</classpath>
@@ -396,7 +400,6 @@
 				<classpath mode="compile">lib/portal/ehcache.jar</classpath>
 				<classpath mode="compile">lib/portal/ehcache-jgroupsreplication.jar</classpath>
 				<classpath mode="compile">lib/portal/fastutil.jar</classpath>
-				<classpath mode="compile">lib/portal/felix-fileinstall.jar</classpath>
 				<classpath mode="compile">lib/portal/fontbox.jar</classpath>
 				<classpath mode="compile">lib/portal/freshcookies-security.jar</classpath>
 				<classpath mode="compile">lib/portal/gif89.jar</classpath>
@@ -501,7 +504,6 @@
 				<classpath mode="compile">lib/portal/rhino.jar</classpath>
 				<classpath mode="compile">lib/portal/ridl.jar</classpath>
 				<classpath mode="compile">lib/portal/rome.jar</classpath>
-				<classpath mode="compile">lib/portal/ruby-gems.jar</classpath>
 				<classpath mode="compile">lib/portal/saaj-api.jar</classpath>
 				<classpath mode="compile">lib/portal/saaj-impl.jar</classpath>
 				<classpath mode="compile">lib/portal/scala-library.jar</classpath>
@@ -542,8 +544,6 @@
 				<classpath mode="compile">lib/portal/unoil.jar</classpath>
 				<classpath mode="compile">lib/portal/urlrewritefilter.jar</classpath>
 				<classpath mode="compile">lib/portal/vaadin.jar</classpath>
-				<classpath mode="compile">lib/portal/velocity-tools.jar</classpath>
-				<classpath mode="compile">lib/portal/velocity.jar</classpath>
 				<classpath mode="compile">lib/portal/vorbis-java-core.jar</classpath>
 				<classpath mode="compile">lib/portal/vorbis-java-tika.jar</classpath>
 				<classpath mode="compile">lib/portal/wsdl4j.jar</classpath>

@@ -191,39 +191,27 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 		_errorMessagesMap.put(fileName, errorMessages);
 	}
 
-	protected static String stripLine(
-		String s, char startDelimeter, char endDelimeter) {
-
-		boolean insideDelimeters = false;
-		int level = 0;
+	protected static String stripQuotes(String s, char delimeter) {
+		boolean insideQuotes = false;
 
 		StringBundler sb = new StringBundler();
 
 		for (int i = 0; i < s.length(); i++) {
 			char c = s.charAt(i);
 
-			if (insideDelimeters) {
-				if (c == endDelimeter) {
-					if (level > 0) {
-						level -= 1;
-					}
-					else {
-						if ((c > 1) &&
-							(s.charAt(i - 1) == CharPool.BACK_SLASH) &&
-							(s.charAt(i - 2) != CharPool.BACK_SLASH)) {
+			if (insideQuotes) {
+				if (c == delimeter) {
+					if ((c > 1) && (s.charAt(i - 1) == CharPool.BACK_SLASH) &&
+						(s.charAt(i - 2) != CharPool.BACK_SLASH)) {
 
-							continue;
-						}
-
-						insideDelimeters = false;
+						continue;
 					}
-				}
-				else if (c == startDelimeter) {
-					level += 1;
+
+					insideQuotes = false;
 				}
 			}
-			else if (c == startDelimeter) {
-				insideDelimeters = true;
+			else if (c == delimeter) {
+				insideQuotes = true;
 			}
 			else {
 				sb.append(c);
@@ -231,10 +219,6 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 		}
 
 		return sb.toString();
-	}
-
-	protected static String stripQuotes(String s, char delimeter) {
-		return stripLine(s, delimeter, delimeter);
 	}
 
 	protected void checkEmptyCollection(
@@ -1387,7 +1371,15 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 
 			String currentAttributeAndValue = sb.toString();
 
-			String newLine = formatTagAttributeType(
+			String newLine = sortHTMLAttributes(
+				line, value, currentAttributeAndValue);
+
+			if (!newLine.equals(line)) {
+				return sortAttributes(
+					fileName, newLine, lineCount, allowApostropheDelimeter);
+			}
+
+			newLine = formatTagAttributeType(
 				line, tag, currentAttributeAndValue);
 
 			if (!newLine.equals(line)) {
@@ -1435,6 +1427,12 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 				previousAttributeAndValue = currentAttributeAndValue;
 			}
 		}
+	}
+
+	protected String sortHTMLAttributes(
+		String line, String value, String attributeAndValue) {
+
+		return line;
 	}
 
 	protected String stripRedundantParentheses(String s) {

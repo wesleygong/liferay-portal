@@ -96,8 +96,8 @@ public class DDMTemplateLocalServiceImpl
 	 * @param  classNameId the primary key of the class name for the template's
 	 *         related model
 	 * @param  classPK the primary key of the template's related entity
-	 * @param  sourceClassNameId the primary key of the class name for
-	 *         template's source model
+	 * @param  resourceClassNameId the primary key of the class name for
+	 *         template's resource model
 	 * @param  nameMap the template's locales and localized names
 	 * @param  descriptionMap the template's locales and localized descriptions
 	 * @param  type the template's type. For more information, see {@link
@@ -117,13 +117,13 @@ public class DDMTemplateLocalServiceImpl
 	@Override
 	public DDMTemplate addTemplate(
 			long userId, long groupId, long classNameId, long classPK,
-			long sourceClassNameId, Map<Locale, String> nameMap,
+			long resourceClassNameId, Map<Locale, String> nameMap,
 			Map<Locale, String> descriptionMap, String type, String mode,
 			String language, String script, ServiceContext serviceContext)
 		throws PortalException {
 
 		return addTemplate(
-			userId, groupId, classNameId, classPK, sourceClassNameId, null,
+			userId, groupId, classNameId, classPK, resourceClassNameId, null,
 			nameMap, descriptionMap, type, mode, language, script, false, false,
 			null, null, serviceContext);
 	}
@@ -136,8 +136,8 @@ public class DDMTemplateLocalServiceImpl
 	 * @param  classNameId the primary key of the class name for the template's
 	 *         related model
 	 * @param  classPK the primary key of the template's related entity
-	 * @param  sourceClassNameId the primary key of the class name for
-	 *         template's source model
+	 * @param  resourceClassNameId the primary key of the class name for
+	 *         template's resource model
 	 * @param  templateKey the unique string identifying the template
 	 *         (optionally <code>null</code>)
 	 * @param  nameMap the template's locales and localized names
@@ -165,7 +165,7 @@ public class DDMTemplateLocalServiceImpl
 	@Override
 	public DDMTemplate addTemplate(
 			long userId, long groupId, long classNameId, long classPK,
-			long sourceClassNameId, String templateKey,
+			long resourceClassNameId, String templateKey,
 			Map<Locale, String> nameMap, Map<Locale, String> descriptionMap,
 			String type, String mode, String language, String script,
 			boolean cacheable, boolean smallImage, String smallImageURL,
@@ -217,7 +217,7 @@ public class DDMTemplateLocalServiceImpl
 		template.setModifiedDate(serviceContext.getModifiedDate(now));
 		template.setClassNameId(classNameId);
 		template.setClassPK(classPK);
-		template.setSourceClassNameId(sourceClassNameId);
+		template.setResourceClassNameId(resourceClassNameId);
 		template.setTemplateKey(templateKey);
 		template.setVersion(DDMTemplateConstants.VERSION_DEFAULT);
 		template.setNameMap(nameMap);
@@ -913,6 +913,8 @@ public class DDMTemplateLocalServiceImpl
 	 * @param  classNameId the primary key of the class name for the template's
 	 *         related model
 	 * @param  classPK the primary key of the template's related entity
+	 * @param  resourceClassNameId the primary key of the class name for
+	 *         template's resource model
 	 * @param  keywords the keywords (space separated), which may occur in the
 	 *         template's name or description (optionally <code>null</code>)
 	 * @param  type the template's type (optionally <code>null</code>). For more
@@ -931,12 +933,12 @@ public class DDMTemplateLocalServiceImpl
 	@Override
 	public List<DDMTemplate> search(
 		long companyId, long groupId, long classNameId, long classPK,
-		String keywords, String type, String mode, int start, int end,
-		OrderByComparator<DDMTemplate> orderByComparator) {
+		long resourceClassNameId, String keywords, String type, String mode,
+		int start, int end, OrderByComparator<DDMTemplate> orderByComparator) {
 
 		return ddmTemplateFinder.findByKeywords(
-			companyId, groupId, classNameId, classPK, keywords, type, mode,
-			start, end, orderByComparator);
+			companyId, groupId, classNameId, classPK, resourceClassNameId,
+			keywords, type, mode, start, end, orderByComparator);
 	}
 
 	/**
@@ -959,6 +961,8 @@ public class DDMTemplateLocalServiceImpl
 	 * @param  classNameId the primary key of the class name for the template's
 	 *         related model
 	 * @param  classPK the primary key of the template's related entity
+	 * @param  resourceClassNameId the primary key of the class name for
+	 *         template's resource model
 	 * @param  name the name keywords (optionally <code>null</code>)
 	 * @param  description the description keywords (optionally
 	 *         <code>null</code>)
@@ -983,13 +987,14 @@ public class DDMTemplateLocalServiceImpl
 	@Override
 	public List<DDMTemplate> search(
 		long companyId, long groupId, long classNameId, long classPK,
-		String name, String description, String type, String mode,
-		String language, boolean andOperator, int start, int end,
+		long resourceClassNameId, String name, String description, String type,
+		String mode, String language, boolean andOperator, int start, int end,
 		OrderByComparator<DDMTemplate> orderByComparator) {
 
-		return ddmTemplateFinder.findByC_G_C_C_N_D_T_M_L(
-			companyId, groupId, classNameId, classPK, name, description, type,
-			mode, language, andOperator, start, end, orderByComparator);
+		return ddmTemplateFinder.findByC_G_C_C_R_N_D_T_M_L(
+			companyId, groupId, classNameId, classPK, resourceClassNameId, name,
+			description, type, mode, language, andOperator, start, end,
+			orderByComparator);
 	}
 
 	/**
@@ -1012,6 +1017,8 @@ public class DDMTemplateLocalServiceImpl
 	 * @param  classNameIds the primary keys of the entity's instances the
 	 *         templates are related to
 	 * @param  classPKs the primary keys of the template's related entities
+	 * @param  resourceClassNameId the primary key of the class name for
+	 *         template's resource model
 	 * @param  keywords the keywords (space separated), which may occur in the
 	 *         template's name or description (optionally <code>null</code>)
 	 * @param  type the template's type (optionally <code>null</code>). For more
@@ -1030,12 +1037,12 @@ public class DDMTemplateLocalServiceImpl
 	@Override
 	public List<DDMTemplate> search(
 		long companyId, long[] groupIds, long[] classNameIds, long[] classPKs,
-		String keywords, String type, String mode, int start, int end,
-		OrderByComparator<DDMTemplate> orderByComparator) {
+		long resourceClassNameId, String keywords, String type, String mode,
+		int start, int end, OrderByComparator<DDMTemplate> orderByComparator) {
 
 		return ddmTemplateFinder.findByKeywords(
-			companyId, groupIds, classNameIds, classPKs, keywords, type, mode,
-			start, end, orderByComparator);
+			companyId, groupIds, classNameIds, classPKs, resourceClassNameId,
+			keywords, type, mode, start, end, orderByComparator);
 	}
 
 	/**
@@ -1058,6 +1065,8 @@ public class DDMTemplateLocalServiceImpl
 	 * @param  classNameIds the primary keys of the entity's instances the
 	 *         templates are related to
 	 * @param  classPKs the primary keys of the template's related entities
+	 * @param  resourceClassNameId the primary key of the class name for
+	 *         template's resource model
 	 * @param  name the name keywords (optionally <code>null</code>)
 	 * @param  description the description keywords (optionally
 	 *         <code>null</code>)
@@ -1082,13 +1091,14 @@ public class DDMTemplateLocalServiceImpl
 	@Override
 	public List<DDMTemplate> search(
 		long companyId, long[] groupIds, long[] classNameIds, long[] classPKs,
-		String name, String description, String type, String mode,
-		String language, boolean andOperator, int start, int end,
+		long resourceClassNameId, String name, String description, String type,
+		String mode, String language, boolean andOperator, int start, int end,
 		OrderByComparator<DDMTemplate> orderByComparator) {
 
-		return ddmTemplateFinder.findByC_G_C_C_N_D_T_M_L(
-			companyId, groupIds, classNameIds, classPKs, name, description,
-			type, mode, language, andOperator, start, end, orderByComparator);
+		return ddmTemplateFinder.findByC_G_C_C_R_N_D_T_M_L(
+			companyId, groupIds, classNameIds, classPKs, resourceClassNameId,
+			name, description, type, mode, language, andOperator, start, end,
+			orderByComparator);
 	}
 
 	/**
@@ -1101,6 +1111,8 @@ public class DDMTemplateLocalServiceImpl
 	 * @param  classNameId the primary key of the class name for the template's
 	 *         related model
 	 * @param  classPK the primary key of the template's related entity
+	 * @param  resourceClassNameId the primary key of the class name for
+	 *         template's resource model
 	 * @param  keywords the keywords (space separated), which may occur in the
 	 *         template's name or description (optionally <code>null</code>)
 	 * @param  type the template's type (optionally <code>null</code>). For more
@@ -1114,10 +1126,11 @@ public class DDMTemplateLocalServiceImpl
 	@Override
 	public int searchCount(
 		long companyId, long groupId, long classNameId, long classPK,
-		String keywords, String type, String mode) {
+		long resourceClassNameId, String keywords, String type, String mode) {
 
 		return ddmTemplateFinder.countByKeywords(
-			companyId, groupId, classNameId, classPK, keywords, type, mode);
+			companyId, groupId, classNameId, classPK, resourceClassNameId,
+			keywords, type, mode);
 	}
 
 	/**
@@ -1129,6 +1142,8 @@ public class DDMTemplateLocalServiceImpl
 	 * @param  classNameId the primary key of the class name for the template's
 	 *         related model
 	 * @param  classPK the primary key of the template's related entity
+	 * @param  resourceClassNameId the primary key of the class name for
+	 *         template's resource model
 	 * @param  name the name keywords (optionally <code>null</code>)
 	 * @param  description the description keywords (optionally
 	 *         <code>null</code>)
@@ -1148,12 +1163,12 @@ public class DDMTemplateLocalServiceImpl
 	@Override
 	public int searchCount(
 		long companyId, long groupId, long classNameId, long classPK,
-		String name, String description, String type, String mode,
-		String language, boolean andOperator) {
+		long resourceClassNameId, String name, String description, String type,
+		String mode, String language, boolean andOperator) {
 
-		return ddmTemplateFinder.countByC_G_C_C_N_D_T_M_L(
-			companyId, groupId, classNameId, classPK, name, description, type,
-			mode, language, andOperator);
+		return ddmTemplateFinder.countByC_G_C_C_R_N_D_T_M_L(
+			companyId, groupId, classNameId, classPK, resourceClassNameId, name,
+			description, type, mode, language, andOperator);
 	}
 
 	/**
@@ -1166,6 +1181,8 @@ public class DDMTemplateLocalServiceImpl
 	 * @param  classNameIds the primary keys of the entity's instance the
 	 *         templates are related to
 	 * @param  classPKs the primary keys of the template's related entities
+	 * @param  resourceClassNameId the primary key of the class name for
+	 *         template's resource model
 	 * @param  keywords the keywords (space separated), which may occur in the
 	 *         template's name or description (optionally <code>null</code>)
 	 * @param  type the template's type (optionally <code>null</code>). For more
@@ -1179,10 +1196,11 @@ public class DDMTemplateLocalServiceImpl
 	@Override
 	public int searchCount(
 		long companyId, long[] groupIds, long[] classNameIds, long[] classPKs,
-		String keywords, String type, String mode) {
+		long resourceClassNameId, String keywords, String type, String mode) {
 
 		return ddmTemplateFinder.countByKeywords(
-			companyId, groupIds, classNameIds, classPKs, keywords, type, mode);
+			companyId, groupIds, classNameIds, classPKs, resourceClassNameId,
+			keywords, type, mode);
 	}
 
 	/**
@@ -1194,6 +1212,8 @@ public class DDMTemplateLocalServiceImpl
 	 * @param  classNameIds the primary keys of the entity's instance the
 	 *         templates are related to
 	 * @param  classPKs the primary keys of the template's related entities
+	 * @param  resourceClassNameId the primary key of the class name for
+	 *         template's resource model
 	 * @param  name the name keywords (optionally <code>null</code>)
 	 * @param  description the description keywords (optionally
 	 *         <code>null</code>)
@@ -1213,12 +1233,12 @@ public class DDMTemplateLocalServiceImpl
 	@Override
 	public int searchCount(
 		long companyId, long[] groupIds, long[] classNameIds, long[] classPKs,
-		String name, String description, String type, String mode,
-		String language, boolean andOperator) {
+		long resourceClassNameId, String name, String description, String type,
+		String mode, String language, boolean andOperator) {
 
-		return ddmTemplateFinder.countByC_G_C_C_N_D_T_M_L(
-			companyId, groupIds, classNameIds, classPKs, name, description,
-			type, mode, language, andOperator);
+		return ddmTemplateFinder.countByC_G_C_C_R_N_D_T_M_L(
+			companyId, groupIds, classNameIds, classPKs, resourceClassNameId,
+			name, description, type, mode, language, andOperator);
 	}
 
 	/**
@@ -1394,7 +1414,7 @@ public class DDMTemplateLocalServiceImpl
 
 		return addTemplate(
 			userId, template.getGroupId(), template.getClassNameId(), classPK,
-			template.getSourceClassNameId(), null, nameMap, descriptionMap,
+			template.getResourceClassNameId(), null, nameMap, descriptionMap,
 			template.getType(), template.getMode(), template.getLanguage(),
 			template.getScript(), template.isCacheable(),
 			template.isSmallImage(), template.getSmallImageURL(),

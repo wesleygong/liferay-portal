@@ -88,7 +88,7 @@ public class BaseHandler implements Handler<Void> {
 				executorService.execute(_event);
 			}
 			else if (syncFile.getVersion() == null) {
-				SyncFileService.deleteSyncFile(syncFile);
+				SyncFileService.deleteSyncFile(syncFile, false);
 			}
 		}
 		else if ((e instanceof ConnectTimeoutException) ||
@@ -121,7 +121,8 @@ public class BaseHandler implements Handler<Void> {
 
 			String message = e.getMessage();
 
-			if (message.equals("Connection reset") ||
+			if (message.equals("Broken pipe") ||
+				message.equals("Connection reset") ||
 				message.equals("The target server failed to respond")) {
 
 				retryServerConnection(SyncAccount.UI_EVENT_NONE);
@@ -186,6 +187,12 @@ public class BaseHandler implements Handler<Void> {
 		throws Exception {
 	}
 
+	protected SyncFile getLocalSyncFile() {
+		SyncFile localSyncFile = (SyncFile)getParameterValue("syncFile");
+
+		return SyncFileService.fetchSyncFile(localSyncFile.getSyncFileId());
+	}
+
 	protected Map<String, Object> getParameters() {
 		return _event.getParameters();
 	}
@@ -202,7 +209,7 @@ public class BaseHandler implements Handler<Void> {
 		SyncSite syncSite = (SyncSite)getParameterValue("syncSite");
 
 		if (syncSite == null) {
-			SyncFile syncFile = (SyncFile) getParameterValue("syncFile");
+			SyncFile syncFile = (SyncFile)getParameterValue("syncFile");
 
 			syncSite = SyncSiteService.fetchSyncSite(
 				syncFile.getRepositoryId(), getSyncAccountId());
