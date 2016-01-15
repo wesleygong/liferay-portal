@@ -80,10 +80,18 @@ public class DeleteThreadPortletConfigurationIcon
 				portletRequest, MBPortletKeys.MESSAGE_BOARDS_ADMIN,
 				themeDisplay.getPlid(), PortletRequest.RENDER_PHASE);
 
-			parentCategoryURL.setParameter(
-				"mvcRenderCommandName", "/message_boards/view");
-			parentCategoryURL.setParameter(
-				"mbCategoryId", String.valueOf(getCategoryId(category)));
+			long categoryId = getCategoryId(category);
+
+			if (categoryId == MBCategoryConstants.DEFAULT_PARENT_CATEGORY_ID) {
+				parentCategoryURL.setParameter(
+					"mvcRenderCommandName", "/message_boards/view");
+			}
+			else {
+				parentCategoryURL.setParameter(
+					"mvcRenderCommandName", "/message_boards/view_category");
+				parentCategoryURL.setParameter(
+					"mbCategoryId", String.valueOf(categoryId));
+			}
 
 			deleteURL.setParameter("redirect", parentCategoryURL.toString());
 

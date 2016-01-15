@@ -106,8 +106,7 @@ MBThread thread = (MBThread)request.getAttribute("edit_message.jsp-thread");
 
 					<c:if test="<%= showRecentPosts %>">
 						<portlet:renderURL var="recentPostsURL">
-							<portlet:param name="mvcRenderCommandName" value="/message_boards/view" />
-							<portlet:param name="topLink" value="recent-posts" />
+							<portlet:param name="mvcRenderCommandName" value="/message_boards/view_recent_posts" />
 							<portlet:param name="groupThreadsUserId" value="<%= String.valueOf(messageUser.getUserId()) %>" />
 						</portlet:renderURL>
 
@@ -158,22 +157,26 @@ MBThread thread = (MBThread)request.getAttribute("edit_message.jsp-thread");
 					</c:if>
 				</c:if>
 
-				<c:if test="<%= enableRatings %>">
-					<div>
-						<liferay-ui:ratings
-							className="<%= MBMessage.class.getName() %>"
-							classPK="<%= message.getMessageId() %>"
-						/>
-					</div>
-				</c:if>
+				<c:if test="<%= enableFlags || enableRatings %>">
+					<div class="social-interaction">
+						<c:if test="<%= enableRatings %>">
+							<div>
+								<liferay-ui:ratings
+									className="<%= MBMessage.class.getName() %>"
+									classPK="<%= message.getMessageId() %>"
+								/>
+							</div>
+						</c:if>
 
-				<c:if test="<%= enableFlags %>">
-					<liferay-ui:flags
-						className="<%= MBMessage.class.getName() %>"
-						classPK="<%= message.getMessageId() %>"
-						contentTitle="<%= message.getSubject() %>"
-						reportedUserId="<%= message.getUserId() %>"
-					/>
+						<c:if test="<%= enableFlags %>">
+							<liferay-ui:flags
+								className="<%= MBMessage.class.getName() %>"
+								classPK="<%= message.getMessageId() %>"
+								contentTitle="<%= message.getSubject() %>"
+								reportedUserId="<%= message.getUserId() %>"
+							/>
+						</c:if>
+					</div>
 				</c:if>
 			</div>
 
@@ -299,8 +302,13 @@ MBThread thread = (MBThread)request.getAttribute("edit_message.jsp-thread");
 								<%
 								PortletURL categoryURL = renderResponse.createRenderURL();
 
-								categoryURL.setParameter("mvcRenderCommandName", "/message_boards/view");
-								categoryURL.setParameter("mbCategoryId", String.valueOf(message.getCategoryId()));
+								if (message.getCategoryId() == MBCategoryConstants.DEFAULT_PARENT_CATEGORY_ID) {
+									categoryURL.setParameter("mvcRenderCommandName", "/message_boards/view");
+								}
+								else {
+									categoryURL.setParameter("mvcRenderCommandName", "/message_boards/view_category");
+									categoryURL.setParameter("mbCategoryId", String.valueOf(message.getCategoryId()));
+								}
 								%>
 
 								<portlet:actionURL name="/message_boards/edit_message" var="deleteURL">
@@ -416,8 +424,9 @@ MBThread thread = (MBThread)request.getAttribute("edit_message.jsp-thread");
 								%>
 
 								<liferay-ui:icon
-									iconCssClass="<%= assetRenderer.getIconCssClass() %>"
+									icon="<%= assetRenderer.getIconCssClass() %>"
 									label="<%= true %>"
+									markupView="lexicon"
 									message="<%= sb.toString() %>"
 									url="<%= PortletFileRepositoryUtil.getDownloadPortletFileEntryURL(themeDisplay, fileEntry, StringPool.BLANK) %>"
 								/>
