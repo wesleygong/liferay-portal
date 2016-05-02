@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.portlet.FriendlyURLMapper;
 import com.liferay.portal.kernel.portlet.FriendlyURLMapperTracker;
 import com.liferay.portal.kernel.portlet.Route;
 import com.liferay.portal.kernel.portlet.Router;
+import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.Document;
@@ -147,7 +148,12 @@ public class FriendlyURLMapperTrackerImpl implements FriendlyURLMapperTracker {
 
 					ClassLoader classLoader = clazz.getClassLoader();
 
-					xml = StringUtil.read(classLoader, friendlyURLRoutes);
+					xml = StringUtil.read(
+						classLoader, _stripParams(friendlyURLRoutes));
+
+					String queryString = friendlyURLRoutes.substring(friendlyURLRoutes.indexOf("?") + 1);
+
+					xml = _interpolateQueryParameters(xml, queryString);
 				}
 
 				friendlyURLMapper.setRouter(newFriendlyURLRouter(xml));
@@ -175,6 +181,32 @@ public class FriendlyURLMapperTrackerImpl implements FriendlyURLMapperTracker {
 			Registry registry = RegistryUtil.getRegistry();
 
 			registry.ungetService(serviceReference);
+		}
+
+		private String _interpolateQueryParameters(
+                String xml, String queryString) {
+
+			Map<String, String[]> parameterMap = HttpUtil.getParameterMap(
+				queryString);
+
+			if (parameterMap == null) {
+				return xml;
+			}
+
+			for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+				String name = entry.getKey();
+				String[] values = entry.getValue();
+
+				if (values.length == 0) {
+					continue;
+				}
+
+				String value = values[0];
+
+				xml = StringUtil.replace(xml, "@" + name + "@", value);
+			}
+
+			return xml;
 		}
 
 		protected Router newFriendlyURLRouter(String xml) throws Exception {
@@ -236,6 +268,14 @@ public class FriendlyURLMapperTrackerImpl implements FriendlyURLMapperTracker {
 			}
 
 			return router;
+		}
+
+		private String _stripParams(String uri) {
+			if (uri.contains("?")) {
+				return uri.substring(0, uri.indexOf("?"));
+			}
+
+			return uri;
 		}
 
 	}
