@@ -21,6 +21,8 @@ import com.liferay.portal.kernel.portlet.FriendlyURLMapper;
 import com.liferay.portal.kernel.portlet.FriendlyURLMapperTracker;
 import com.liferay.portal.kernel.portlet.Route;
 import com.liferay.portal.kernel.portlet.Router;
+import com.liferay.portal.kernel.util.HttpUtil;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.Document;
@@ -147,7 +149,7 @@ public class FriendlyURLMapperTrackerImpl implements FriendlyURLMapperTracker {
 
 					ClassLoader classLoader = clazz.getClassLoader();
 
-					xml = StringUtil.read(classLoader, friendlyURLRoutes);
+					xml = getContent(friendlyURLRoutes, classLoader);
 				}
 
 				friendlyURLMapper.setRouter(newFriendlyURLRouter(xml));
@@ -175,6 +177,46 @@ public class FriendlyURLMapperTrackerImpl implements FriendlyURLMapperTracker {
 			Registry registry = RegistryUtil.getRegistry();
 
 			registry.ungetService(serviceReference);
+		}
+
+		protected String getContent (
+			String friendlyURLRoutes, ClassLoader classLoader)
+				throws Exception {
+
+			String friendlyURLRoutesFileName = friendlyURLRoutes;
+
+			if (friendlyURLRoutesFileName.contains(StringPool.QUESTION)) {
+				friendlyURLRoutesFileName = friendlyURLRoutesFileName.substring(
+					0, friendlyURLRoutesFileName.indexOf(StringPool.QUESTION));
+			}
+
+			String xml = StringUtil.read(
+				classLoader, friendlyURLRoutesFileName);
+
+			String queryString = friendlyURLRoutes.substring(
+				friendlyURLRoutes.indexOf(StringPool.QUESTION) + 1);
+
+			Map<String, String[]> parameterMap = HttpUtil.getParameterMap(
+				queryString);
+
+			if (parameterMap == null) {
+				return xml;
+			}
+
+			for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+				String name = entry.getKey();
+				String[] values = entry.getValue();
+
+				if (values.length == 0) {
+					continue;
+				}
+
+				String value = values[0];
+
+				xml = StringUtil.replace(xml, "@" + name + "@", value);
+			}
+
+			return xml;
 		}
 
 		protected Router newFriendlyURLRouter(String xml) throws Exception {
