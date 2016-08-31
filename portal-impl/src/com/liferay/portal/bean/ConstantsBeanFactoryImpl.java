@@ -117,23 +117,25 @@ public class ConstantsBeanFactoryImpl implements ConstantsBeanFactory {
 		Field[] fields = constantsClass.getFields();
 
 		for (Field field : fields) {
-			if (Modifier.isStatic(field.getModifiers())) {
-				Type fieldType = Type.getType(field.getType());
-
-				methodVisitor = classWriter.visitMethod(
-					Opcodes.ACC_PUBLIC, "get" + field.getName(),
-					"()" + fieldType.getDescriptor(), null, null);
-
-				methodVisitor.visitCode();
-				methodVisitor.visitFieldInsn(
-					Opcodes.GETSTATIC, constantsClassBinaryName,
-					field.getName(), fieldType.getDescriptor());
-
-				methodVisitor.visitInsn(fieldType.getOpcode(Opcodes.IRETURN));
-
-				methodVisitor.visitMaxs(fieldType.getSize(), 1);
-				methodVisitor.visitEnd();
+			if (!Modifier.isStatic(field.getModifiers())) {
+				continue;
 			}
+
+			Type fieldType = Type.getType(field.getType());
+
+			methodVisitor = classWriter.visitMethod(
+				Opcodes.ACC_PUBLIC, "get" + field.getName(),
+				"()" + fieldType.getDescriptor(), null, null);
+
+			methodVisitor.visitCode();
+			methodVisitor.visitFieldInsn(
+				Opcodes.GETSTATIC, constantsClassBinaryName, field.getName(),
+				fieldType.getDescriptor());
+
+			methodVisitor.visitInsn(fieldType.getOpcode(Opcodes.IRETURN));
+
+			methodVisitor.visitMaxs(fieldType.getSize(), 1);
+			methodVisitor.visitEnd();
 		}
 
 		classWriter.visitEnd();
