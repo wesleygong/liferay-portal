@@ -443,8 +443,14 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 
 		sb = new StringBundler(new String[] {sb.toString()}, 4);
 
-		sb.append(controllerPath);
-		sb.append(StringPool.SLASH);
+		if (viewPath.contains("..")) {
+			viewPath = StringUtil.replace(viewPath, "../", "");
+		}
+		else {
+			sb.append(controllerPath);
+			sb.append(StringPool.SLASH);
+		}
+
 		sb.append(viewPath);
 		sb.append(".jsp");
 
