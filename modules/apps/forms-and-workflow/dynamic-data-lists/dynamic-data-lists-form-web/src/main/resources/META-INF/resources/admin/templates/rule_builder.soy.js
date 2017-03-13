@@ -21,25 +21,25 @@ ddl.rule_list = function(opt_data, opt_ignored) {
   var output = '';
   if (opt_data.rules.length > 0) {
     output += '<ul class="ddl-form-body-content form-builder-rule-builder-rules-list tabular-list-group">';
-    var ruleList217 = opt_data.rules;
-    var ruleListLen217 = ruleList217.length;
-    for (var ruleIndex217 = 0; ruleIndex217 < ruleListLen217; ruleIndex217++) {
-      var ruleData217 = ruleList217[ruleIndex217];
+    var ruleList219 = opt_data.rules;
+    var ruleListLen219 = ruleList219.length;
+    for (var ruleIndex219 = 0; ruleIndex219 < ruleListLen219; ruleIndex219++) {
+      var ruleData219 = ruleList219[ruleIndex219];
       output += '<li class="list-group-item"><div class="clamp-horizontal list-group-item-content"><p class="form-builder-rule-builder-rule-description text-default"><b>If </b>';
-      var conditionList195 = ruleData217.conditions;
-      var conditionListLen195 = conditionList195.length;
-      for (var conditionIndex195 = 0; conditionIndex195 < conditionListLen195; conditionIndex195++) {
-        var conditionData195 = conditionList195[conditionIndex195];
-        output += ddl.condition({operandType: conditionData195.operands[0].type, operandValue: conditionData195.operands[0].label}) + '<b class="text-lowercase"><em> ' + soy.$$escapeHtml(opt_data.strings[conditionData195.operator]) + ' </em></b>' + ddl.condition({operandType: conditionData195.operands[1].type, operandValue: conditionData195.operands[1].label != null ? conditionData195.operands[1].label : conditionData195.operands[1].value}) + ((! (conditionIndex195 == conditionListLen195 - 1)) ? '<br /><b> ' + soy.$$escapeHtml(conditionData195.logicOperator) + ' </b>' : '');
+      var conditionList197 = ruleData219.conditions;
+      var conditionListLen197 = conditionList197.length;
+      for (var conditionIndex197 = 0; conditionIndex197 < conditionListLen197; conditionIndex197++) {
+        var conditionData197 = conditionList197[conditionIndex197];
+        output += ddl.condition({operandType: conditionData197.operands[0].type, operandValue: conditionData197.operands[0].label}) + '<b class="text-lowercase"><em> ' + soy.$$escapeHtml(opt_data.strings[conditionData197.operator]) + ' </em></b>' + ((conditionData197.operands[1].visible) ? ddl.condition({operandType: conditionData197.operands[1].type, operandValue: conditionData197.operands[1].label != null ? conditionData197.operands[1].label : conditionData197.operands[1].value}) : '') + ((! (conditionIndex197 == conditionListLen197 - 1)) ? '<br /><b> ' + soy.$$escapeHtml(conditionData197.logicOperator) + ' </b>' : '');
       }
       output += '<br />';
-      var actionList203 = ruleData217.actions;
-      var actionListLen203 = actionList203.length;
-      for (var actionIndex203 = 0; actionIndex203 < actionListLen203; actionIndex203++) {
-        var actionData203 = actionList203[actionIndex203];
-        output += ddl.action({action: actionData203}) + ((! (actionIndex203 == actionListLen203 - 1)) ? ', <br /><b> and </b>' : '');
+      var actionList205 = ruleData219.actions;
+      var actionListLen205 = actionList205.length;
+      for (var actionIndex205 = 0; actionIndex205 < actionListLen205; actionIndex205++) {
+        var actionData205 = actionList205[actionIndex205];
+        output += ddl.action({action: actionData205}) + ((! (actionIndex205 == actionListLen205 - 1)) ? ', <br /><b> and </b>' : '');
       }
-      output += '</p></div><div class="list-group-item-field"><div class="card-col-field"><div class="dropdown"><a class="dropdown-toggle icon-monospaced" data-toggle="dropdown" href="#1">' + soy.$$filterNoAutoescape(opt_data.kebab) + '</a><ul class="dropdown-menu dropdown-menu-right"><li class="rule-card-edit" data-card-id="' + soy.$$escapeHtmlAttribute(ruleIndex217) + '"><a href="javascript:;">' + soy.$$escapeHtml(opt_data.strings.edit) + '</a></li><li class="rule-card-delete" data-card-id="' + soy.$$escapeHtmlAttribute(ruleIndex217) + '"><a href="javascript:;">' + soy.$$escapeHtml(opt_data.strings['delete']) + '</a></li></ul></div></div></div></li>';
+      output += '</p></div><div class="list-group-item-field"><div class="card-col-field"><div class="dropdown"><a class="dropdown-toggle icon-monospaced" data-toggle="dropdown" href="#1">' + soy.$$filterNoAutoescape(opt_data.kebab) + '</a><ul class="dropdown-menu dropdown-menu-right"><li class="rule-card-edit" data-card-id="' + soy.$$escapeHtmlAttribute(ruleIndex219) + '"><a href="javascript:;">' + soy.$$escapeHtml(opt_data.strings.edit) + '</a></li><li class="rule-card-delete" data-card-id="' + soy.$$escapeHtmlAttribute(ruleIndex219) + '"><a href="javascript:;">' + soy.$$escapeHtml(opt_data.strings['delete']) + '</a></li></ul></div></div></div></li>';
     }
     output += '</ul>';
   } else {

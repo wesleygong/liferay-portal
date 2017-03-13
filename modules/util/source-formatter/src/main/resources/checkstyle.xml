@@ -70,7 +70,6 @@
 			<message key="name.invalidPattern" value="Class, interface, enum or annotation ''{0}'' must match pattern ''{1}''" />
 		</module>
 		<module name="UnnecessaryParentheses" />
-		<module name="UpperEll" />
 		<module name="WhitespaceAfter">
 			<property name="tokens" value="COMMA, SEMI" />
 		</module>
@@ -155,6 +154,9 @@
 		</module>-->
 		<module name="com.liferay.source.formatter.checkstyle.checks.NotRequireThis">
 			<message key="variable.not.require.this" value="Reference to variable ''{0}'' does not need ''.this''" />
+		</module>
+		<module name="com.liferay.source.formatter.checkstyle.checks.NumberSuffix">
+			<message key="suffix.incorrect" value="Use uppercase ''{0}'' as suffix for the type ''{1}''" />
 		</module>
 		<module name="com.liferay.source.formatter.checkstyle.checks.OperatorOrder">
 			<message key="left.argument.literal.or.num" value="''{0}'' should be on the right hand side of the operator" />

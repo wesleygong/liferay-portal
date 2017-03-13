@@ -1237,6 +1237,10 @@ dependency to version 2.1.9.
 file as value of the `archivesBaseName` property of theme projects, if present.
 
 ### Changed
+- [LPS-66853]: Update the [Liferay Gradle Plugins Source Formatter] dependency
+to version 1.0.97.
+- [LPS-66853]: Update the [Liferay Source Formatter] dependency to version
+1.0.364.
 - [LPS-70634]: Update the [Liferay Gradle Plugins Gulp] dependency to version
 2.0.11.
 - [LPS-70634]: Update the [Liferay Gradle Plugins JS Module Config Generator]
@@ -1247,8 +1251,34 @@ version 2.3.8.
 ## 3.2.18 - 2017-03-09
 
 ### Changed
+- [LPS-66853]: Update the [Liferay Gradle Plugins Source Formatter] dependency
+to version 1.0.98.
+- [LPS-66853]: Update the [Liferay Source Formatter] dependency to version
+1.0.365.
 - [LPS-67688]: Update the [Liferay Gradle Plugins DB Support] dependency to
 version 1.0.2.
+
+## 3.2.19 - 2017-03-11
+
+### Changed
+- [LPS-71164]: Update the [Liferay Gradle Plugins Source Formatter] dependency
+to version 1.0.99.
+- [LPS-71164]: Update the [Liferay Source Formatter] dependency to version
+1.0.366.
+
+## 3.2.20 - 2017-03-13
+
+### Changed
+- [LPS-71164]: Update the [Liferay Gradle Plugins Source Formatter] dependency
+to version 1.0.100.
+- [LPS-71164]: Update the [Liferay Source Formatter] dependency to version
+1.0.367.
+- [LPS-71222]: Update the [Liferay Gradle Plugins Gulp] dependency to version
+2.0.12.
+- [LPS-71222]: Update the [Liferay Gradle Plugins JS Module Config Generator]
+dependency to version 2.1.11.
+- [LPS-71222]: Update the [Liferay Gradle Plugins JS Transpiler] dependency to
+version 2.3.9.
 
 [Gradle Bundle Plugin]: https://github.com/TomDmitriev/gradle-bundle-plugin
 [Liferay Ant BND]: https://github.com/liferay/liferay-portal/tree/master/modules/sdk/ant-bnd
@@ -1367,4 +1397,6 @@ version 1.0.2.
 [LPS-70941]: https://issues.liferay.com/browse/LPS-70941
 [LPS-71005]: https://issues.liferay.com/browse/LPS-71005
 [LPS-71048]: https://issues.liferay.com/browse/LPS-71048
+[LPS-71164]: https://issues.liferay.com/browse/LPS-71164
+[LPS-71222]: https://issues.liferay.com/browse/LPS-71222
 [LRDOCS-3023]: https://issues.liferay.com/browse/LRDOCS-3023

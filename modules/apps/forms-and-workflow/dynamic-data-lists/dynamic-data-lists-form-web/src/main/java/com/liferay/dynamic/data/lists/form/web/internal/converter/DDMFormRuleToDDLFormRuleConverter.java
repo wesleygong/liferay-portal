@@ -153,6 +153,7 @@ public class DDMFormRuleToDDLFormRuleConverter {
 			new HashMap<>();
 
 		static {
+			_functionToActionMap.put("calculate", "calculate");
 			_functionToActionMap.put("call", "auto-fill");
 			_functionToActionMap.put("jumpPage", "jump-to-page");
 			_functionToActionMap.put("setEnabled", "enable");
@@ -293,6 +294,7 @@ public class DDMFormRuleToDDLFormRuleConverter {
 			_functionNameOperatorMap.put("belongsTo", "belongs-to");
 			_functionNameOperatorMap.put("contains", "contains");
 			_functionNameOperatorMap.put("equals", "equals-to");
+			_functionNameOperatorMap.put("isEmpty", "is-empty");
 		}
 
 		private boolean _andOperator = true;

@@ -64,15 +64,15 @@ public class DDMFormTemplateContextFactoryHelperTest extends PowerMockito {
 
 		ddmForm.setDDMFormRules(ddmFormRules);
 
-		DDMFormField field1 = DDMFormTestUtil.createDDMFormField(
+		DDMFormField ddmFormField1 = DDMFormTestUtil.createDDMFormField(
 			"Field1", "Field1", "select", "string", false, false, false);
 
-		ddmForm.addDDMFormField(field1);
+		ddmForm.addDDMFormField(ddmFormField1);
 
-		DDMFormField field2 = DDMFormTestUtil.createDDMFormField(
+		DDMFormField ddmFormField2 = DDMFormTestUtil.createDDMFormField(
 			"Field2", "Field2", "select", "string", false, false, false);
 
-		ddmForm.addDDMFormField(field2);
+		ddmForm.addDDMFormField(ddmFormField2);
 
 		Map<String, Map<String, Object>> dataProviderSettings =
 			_ddmFormTemplateContextFactoryHelper.getDataProviderSettings(
@@ -81,7 +81,7 @@ public class DDMFormTemplateContextFactoryHelperTest extends PowerMockito {
 		Assert.assertNotNull(dataProviderSettings);
 
 		Map<String, Object> fieldDataProviderSettingsMap =
-			dataProviderSettings.get(field2.getName());
+			dataProviderSettings.get(ddmFormField2.getName());
 
 		Assert.assertNotNull(fieldDataProviderSettingsMap);
 
@@ -94,7 +94,7 @@ public class DDMFormTemplateContextFactoryHelperTest extends PowerMockito {
 
 		Map<String, String> inputParametersMap = new HashMap<>();
 
-		inputParametersMap.put("input", field1.getName());
+		inputParametersMap.put("input", ddmFormField1.getName());
 
 		Assert.assertEquals(
 			inputParametersMap,
@@ -107,13 +107,13 @@ public class DDMFormTemplateContextFactoryHelperTest extends PowerMockito {
 
 		DDMForm ddmForm = DDMFormTestUtil.createDDMForm();
 
-		DDMFormField field = DDMFormTestUtil.createDDMFormField(
+		DDMFormField ddmFormField = DDMFormTestUtil.createDDMFormField(
 			"Field1", "Field1", "select", "string", false, false, false);
 
-		field.setProperty("ddmDataProviderInstanceId", 1);
-		field.setProperty("ddmDataProviderInstanceOutput", "output");
+		ddmFormField.setProperty("ddmDataProviderInstanceId", 1);
+		ddmFormField.setProperty("ddmDataProviderInstanceOutput", "output");
 
-		ddmForm.addDDMFormField(field);
+		ddmForm.addDDMFormField(ddmFormField);
 
 		Map<String, Map<String, Object>> dataProviderSettings =
 			_ddmFormTemplateContextFactoryHelper.getDataProviderSettings(
@@ -122,7 +122,7 @@ public class DDMFormTemplateContextFactoryHelperTest extends PowerMockito {
 		Assert.assertNotNull(dataProviderSettings);
 
 		Map<String, Object> fieldDataProviderSettingsMap =
-			dataProviderSettings.get(field.getName());
+			dataProviderSettings.get(ddmFormField.getName());
 
 		Assert.assertNotNull(fieldDataProviderSettingsMap);
 

@@ -113,7 +113,6 @@ public class DDMFormFieldTemplateContextFactory {
 			ddmFormFieldTemplateContext,
 			_ddmFormRenderingContext.getProperty("dataProviderSettings"),
 			ddmFormFieldValue.getName());
-
 		setDDMFormFieldTemplateContextDir(ddmFormFieldTemplateContext);
 		setDDMFormFieldTemplateContextEvaluable(
 			ddmFormFieldTemplateContext, ddmFormFieldEvaluationResult,

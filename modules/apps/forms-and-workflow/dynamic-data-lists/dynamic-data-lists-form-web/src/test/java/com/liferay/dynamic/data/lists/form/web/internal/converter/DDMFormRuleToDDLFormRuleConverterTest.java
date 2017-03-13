@@ -70,10 +70,31 @@ public class DDMFormRuleToDDLFormRuleConverterTest
 	}
 
 	@Test
+	public void testCalculateAction() throws Exception {
+		assertConversion(
+			"ddm-form-rules-calculate-action.json",
+			"ddl-form-rules-calculate-action.json");
+	}
+
+	@Test
 	public void testComparisonOperatorsCondition() throws Exception {
 		assertConversion(
 			"ddm-form-rules-comparison-operators-condition.json",
 			"ddl-form-rules-comparison-operators-condition.json");
+	}
+
+	@Test
+	public void testIsEmptyCondition() throws Exception {
+		assertConversion(
+			"ddm-form-rules-is-empty-condition.json",
+			"ddl-form-rules-is-empty-condition.json");
+	}
+
+	@Test
+	public void testIsNotEmptyCondition() throws Exception {
+		assertConversion(
+			"ddm-form-rules-is-not-empty-condition.json",
+			"ddl-form-rules-is-not-empty-condition.json");
 	}
 
 	@Test
@@ -94,6 +115,8 @@ public class DDMFormRuleToDDLFormRuleConverterTest
 		List<DDLFormRule> actualDDLFormRules =
 			_ddmFormRulesToDDLFormRulesConverter.convert(
 				ListUtil.toList(ddmFormRules));
+
+		System.out.println(serialize(actualDDLFormRules));
 
 		JSONAssert.assertEquals(
 			read(toFileName), serialize(actualDDLFormRules), false);

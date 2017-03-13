@@ -5,6 +5,7 @@ AUI.add(
 
 		var MAP_ACTION_DESCRIPTIONS = {
 			'auto-fill': 'auto-fill',
+			calculate: 'calculate-field',
 			enable: 'enable-field',
 			'jump-to-page': 'jump-from-page-to-page',
 			require: 'require-field',
@@ -41,15 +42,18 @@ AUI.add(
 					strings: {
 						value: {
 							'auto-fill': Liferay.Language.get('autofill-x-from-data-provider-x'),
+							'calculate-field': Liferay.Language.get('calculate-field-x-as-x'),
 							contains: Liferay.Language.get('contains'),
 							delete: Liferay.Language.get('delete'),
 							edit: Liferay.Language.get('edit'),
 							emptyListText: Liferay.Language.get('there-are-no-rules-yet-click-on-plus-icon-below-to-add-the-first'),
 							'enable-field': Liferay.Language.get('enable-x'),
 							'equals-to': Liferay.Language.get('is-equal-to'),
+							'is-empty': Liferay.Language.get('is-empty'),
 							'jump-from-page-to-page': Liferay.Language.get('jump-from-x-to-x'),
 							'not-contains': Liferay.Language.get('does-not-contain'),
 							'not-equals-to': Liferay.Language.get('is-not-equal-to'),
+							'not-is-empty': Liferay.Language.get('is-not-empty'),
 							'require-field': Liferay.Language.get('require-x'),
 							ruleBuilder: Liferay.Language.get('rule-builder'),
 							'show-field': Liferay.Language.get('show-x')
@@ -278,6 +282,20 @@ AUI.add(
 										}
 									)
 								);
+							}
+							else if (type === 'calculate') {
+								data = [
+									badgeTemplate(
+										{
+											content: instance._getFieldLabel(action.target)
+										}
+									),
+									badgeTemplate(
+										{
+											content: action.expression
+										}
+									)
+								];
 							}
 							else {
 								data = [
