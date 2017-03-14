@@ -441,10 +441,20 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 			return sb.toString();
 		}
 
-		sb = new StringBundler(new String[] {sb.toString()}, 4);
+		sb = new StringBundler(new String[] {sb.toString()}, 2);
 
-		sb.append(controllerPath);
-		sb.append(StringPool.SLASH);
+
+		if (viewPath.contains(StringPool.DOUBLE_PERIOD)) {
+			sb.append(StringPool.SLASH);
+			viewPath = StringUtil.replace(
+				viewPath, StringPool.DOUBLE_PERIOD + StringPool.SLASH,
+				StringPool.BLANK);
+		}
+		else {
+			sb.append(controllerPath);
+			sb.append(StringPool.SLASH);
+		}
+
 		sb.append(viewPath);
 		sb.append(".jsp");
 
