@@ -98,12 +98,25 @@ public class AlloyPermission {
 			}
 		}
 
-		return permissionChecker.hasPermission(
-			groupId, name, primKey, actionId);
+		try {
+			return permissionChecker.hasPermission(
+				groupId, name, primKey, actionId);
+		}
+		catch (IllegalArgumentException iae) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(iae, iae);
+			}
+
+			return true;
+		}
 	}
 
 	public static boolean contains(
 		ThemeDisplay themeDisplay, BaseModel<?> baseModel, String action) {
+
+		if (baseModel == null) {
+			return false;
+		}
 
 		return contains(
 			PermissionThreadLocal.getPermissionChecker(),
