@@ -83,9 +83,10 @@ import com.liferay.portal.kernel.workflow.WorkflowHandlerRegistryUtil;
 import com.liferay.portal.spring.extender.service.ServiceReference;
 import com.liferay.social.kernel.model.SocialActivityConstants;
 import com.liferay.subscription.service.SubscriptionLocalService;
-import com.liferay.trash.kernel.exception.RestoreEntryException;
-import com.liferay.trash.kernel.exception.TrashEntryException;
-import com.liferay.trash.kernel.model.TrashEntry;
+import com.liferay.trash.exception.RestoreEntryException;
+import com.liferay.trash.exception.TrashEntryException;
+import com.liferay.trash.model.TrashEntry;
+import com.liferay.trash.service.TrashEntryLocalService;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -217,8 +218,14 @@ public class CalendarBookingLocalServiceImpl
 		else if (hasExclusiveCalendarBooking(calendar, startTime, endTime)) {
 			status = CalendarBookingWorkflowConstants.STATUS_DENIED;
 		}
-		else {
+		else if (isStagingCalendarBooking(calendarBooking)) {
+			status = CalendarBookingWorkflowConstants.STATUS_MASTER_STAGING;
+		}
+		else if (isMasterPending(calendarBooking)) {
 			status = CalendarBookingWorkflowConstants.STATUS_MASTER_PENDING;
+		}
+		else {
+			status = CalendarBookingWorkflowConstants.STATUS_PENDING;
 		}
 
 		calendarBooking.setStatus(status);
@@ -883,6 +890,18 @@ public class CalendarBookingLocalServiceImpl
 		}
 
 		return calendarBooking;
+	}
+
+	public boolean isStagingCalendarBooking(CalendarBooking calendarBooking)
+		throws PortalException {
+
+		if (!calendarBooking.isMasterBooking()) {
+			return isStagingCalendarBooking(
+				calendarBooking.getParentCalendarBooking());
+		}
+
+		return calendarLocalService.isStagingCalendar(
+			calendarBooking.getCalendar());
 	}
 
 	@Override
@@ -1939,6 +1958,25 @@ public class CalendarBookingLocalServiceImpl
 		return false;
 	}
 
+	protected boolean isMasterPending(CalendarBooking calendarBooking)
+		throws PortalException {
+
+		if (calendarBooking.isMasterBooking()) {
+			return false;
+		}
+
+		CalendarBooking parentCalendarBooking =
+			calendarBooking.getParentCalendarBooking();
+
+		if (parentCalendarBooking.isPending() ||
+			parentCalendarBooking.isDraft()) {
+
+			return true;
+		}
+
+		return false;
+	}
+
 	protected void sendNotification(
 		CalendarBooking calendarBooking,
 		NotificationTemplateType notificationTemplateType,
@@ -2208,6 +2246,9 @@ public class CalendarBookingLocalServiceImpl
 
 	@ServiceReference(type = SubscriptionLocalService.class)
 	protected SubscriptionLocalService subscriptionLocalService;
+
+	@ServiceReference(type = TrashEntryLocalService.class)
+	protected TrashEntryLocalService trashEntryLocalService;
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		CalendarBookingLocalServiceImpl.class);

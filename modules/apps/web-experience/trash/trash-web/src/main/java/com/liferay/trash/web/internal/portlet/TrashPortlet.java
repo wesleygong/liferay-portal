@@ -33,7 +33,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.trash.TrashHelper;
-import com.liferay.trash.exception.RestoreEntryException;
+import com.liferay.trash.kernel.exception.RestoreEntryException;
 import com.liferay.trash.model.TrashEntry;
 import com.liferay.trash.model.TrashEntryConstants;
 import com.liferay.trash.service.TrashEntryLocalService;
@@ -323,13 +323,16 @@ public class TrashPortlet extends MVCPortlet {
 
 			sendRedirect(actionRequest, actionResponse);
 
-			throw ree;
+			throw new com.liferay.trash.exception.RestoreEntryException(
+				ree.getType(), ree.getCause());
 		}
 	}
 
 	@Override
 	protected boolean isSessionErrorException(Throwable cause) {
-		if (cause instanceof RestoreEntryException ||
+		if (cause instanceof com.
+				liferay.trash.exception.RestoreEntryException ||
+			cause instanceof RestoreEntryException ||
 			cause instanceof TrashPermissionException) {
 
 			return true;

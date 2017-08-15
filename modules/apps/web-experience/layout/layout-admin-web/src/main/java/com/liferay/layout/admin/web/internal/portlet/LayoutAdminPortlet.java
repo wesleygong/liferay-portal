@@ -37,6 +37,7 @@ import com.liferay.portal.kernel.exception.LayoutParentLayoutIdException;
 import com.liferay.portal.kernel.exception.LayoutSetVirtualHostException;
 import com.liferay.portal.kernel.exception.LayoutTypeException;
 import com.liferay.portal.kernel.exception.NoSuchGroupException;
+import com.liferay.portal.kernel.exception.NoSuchLayoutException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.RequiredLayoutException;
 import com.liferay.portal.kernel.exception.SitemapChangeFrequencyException;
@@ -312,14 +313,18 @@ public class LayoutAdminPortlet extends MVCPortlet {
 			stagingGroupId, privateLayout, layout.getLayoutId(),
 			layout.getTypeSettingsProperties());
 
+		String portletResource = ParamUtil.getString(
+			uploadPortletRequest, "portletResource");
+
+		MultiSessionMessages.add(
+			actionRequest, portletResource + "layoutAdded", layout);
+
 		String redirect = portal.getLayoutFullURL(layout, themeDisplay);
 
 		if (layout.isTypeURL()) {
 			redirect = portal.getGroupFriendlyURL(
 				layout.getLayoutSet(), themeDisplay);
 		}
-
-		MultiSessionMessages.add(actionRequest, "layoutAdded", layout);
 
 		actionRequest.setAttribute(WebKeys.REDIRECT, redirect);
 	}
@@ -785,9 +790,11 @@ public class LayoutAdminPortlet extends MVCPortlet {
 
 		try {
 			getGroup(renderRequest);
+			getLayout(renderRequest);
 		}
 		catch (Exception e) {
 			if (e instanceof NoSuchGroupException ||
+				e instanceof NoSuchLayoutException ||
 				e instanceof PrincipalException) {
 
 				SessionErrors.add(renderRequest, e.getClass());
@@ -801,6 +808,22 @@ public class LayoutAdminPortlet extends MVCPortlet {
 				renderRequest, NoSuchGroupException.class.getName()) ||
 			SessionErrors.contains(
 				renderRequest, PrincipalException.getNestedClasses())) {
+
+			include("/error.jsp", renderRequest, renderResponse);
+		}
+		else if (SessionErrors.contains(
+					renderRequest, NoSuchLayoutException.class.getName())) {
+
+			PortletURL redirectURL = portal.getControlPanelPortletURL(
+				renderRequest, LayoutAdminPortletKeys.GROUP_PAGES,
+				PortletRequest.RENDER_PHASE);
+
+			redirectURL.setParameter("mvcPath", "/view.jsp");
+			redirectURL.setParameter(
+				"selPlid", String.valueOf(LayoutConstants.DEFAULT_PLID));
+
+			renderRequest.setAttribute(
+				WebKeys.REDIRECT, redirectURL.toString());
 
 			include("/error.jsp", renderRequest, renderResponse);
 		}
@@ -887,6 +910,17 @@ public class LayoutAdminPortlet extends MVCPortlet {
 		}
 
 		return new byte[0];
+	}
+
+	protected Layout getLayout(PortletRequest portletRequest) throws Exception {
+		long selPlid = ParamUtil.getLong(
+			portletRequest, "selPlid", LayoutConstants.DEFAULT_PLID);
+
+		if (selPlid != LayoutConstants.DEFAULT_PLID) {
+			return layoutLocalService.getLayout(selPlid);
+		}
+
+		return null;
 	}
 
 	protected long getNewPlid(Layout layout) {

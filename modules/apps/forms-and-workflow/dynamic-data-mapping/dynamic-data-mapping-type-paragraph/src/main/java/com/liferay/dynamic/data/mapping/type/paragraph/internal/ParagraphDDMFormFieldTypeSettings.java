@@ -32,7 +32,7 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 	paginationMode = com.liferay.dynamic.data.mapping.model.DDMFormLayout.TABBED_MODE,
 	value = {
 		@DDMFormLayoutPage(
-			title = "basic",
+			title = "%basic",
 			value = {
 				@DDMFormLayoutRow(
 					{
@@ -45,7 +45,7 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 			}
 		),
 		@DDMFormLayoutPage(
-			title = "properties",
+			title = "%properties",
 			value = {
 				@DDMFormLayoutRow(
 					{
@@ -66,6 +66,11 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 )
 public interface ParagraphDDMFormFieldTypeSettings
 	extends DefaultDDMFormFieldTypeSettings {
+
+	@DDMFormField(
+		predefinedValue = "", required = true, visibilityExpression = "FALSE"
+	)
+	public String dataType();
 
 	@DDMFormField(
 		label = "%title", properties = {"placeholder=%enter-a-title"},

@@ -14,12 +14,58 @@
 
 package com.liferay.vulcan.error;
 
+import com.liferay.vulcan.filter.QueryParamFilterType;
+
 /**
+ * Represents the errors that can occur while using Vulcan. Each error is a
+ * nested error subclass.
+ *
  * @author Alejandro Hernández
  * @author Jorge Ferrer
  */
 public class VulcanDeveloperError extends Error {
 
+	/**
+	 * Represents the error the developer should throw when a converter is
+	 * missing.
+	 */
+	public static class MustHaveConverter extends VulcanDeveloperError {
+
+		public MustHaveConverter(Class<?> modelClass) {
+			super(
+				"Model class " + modelClass.getName() +
+					" does not have a converter");
+		}
+
+	}
+
+	/**
+	 * Represents the error the developer should throw when a filter provider is
+	 * missing.
+	 */
+	public static class MustHaveFilterProvider extends VulcanDeveloperError {
+
+		public MustHaveFilterProvider(
+			QueryParamFilterType queryParamFilterType) {
+
+			super(
+				"Filter " + queryParamFilterType.toString() +
+					" does not have a provider");
+		}
+
+		public <Q extends QueryParamFilterType> MustHaveFilterProvider(
+			Class<Q> modelClass) {
+
+			super(
+				"Filter " + modelClass.getName() + " does not have a provider");
+		}
+
+	}
+
+	/**
+	 * Represents the error the developer should throw when a message mapper is
+	 * missing.
+	 */
 	public static class MustHaveMessageMapper extends VulcanDeveloperError {
 
 		public MustHaveMessageMapper(String mediaType, Class<?> modelClass) {
@@ -30,6 +76,10 @@ public class VulcanDeveloperError extends Error {
 
 	}
 
+	/**
+	 * Represents the error the developer should throw when a provider is
+	 * missing.
+	 */
 	public static class MustHaveProvider extends VulcanDeveloperError {
 
 		public MustHaveProvider(Class<?> modelClass) {
@@ -40,6 +90,10 @@ public class VulcanDeveloperError extends Error {
 
 	}
 
+	/**
+	 * Represents the error the developer should throw when a generic container
+	 * has an invalid generic type.
+	 */
 	public static class MustHaveValidGenericType extends VulcanDeveloperError {
 
 		public MustHaveValidGenericType(Class clazz) {
@@ -49,6 +103,26 @@ public class VulcanDeveloperError extends Error {
 
 	}
 
+	/**
+	 * Represents the error the developer should throw when a provider is
+	 * missing.
+	 */
+	public static class MustUseFilteredCollectionPage
+		extends VulcanDeveloperError {
+
+		public MustUseFilteredCollectionPage() {
+			super(
+				"QueryParamFilterType classes should not be used in " +
+					"RoutesBuilder#collectionPage methods, use " +
+						"RoutesBuilder#filteredCollectionPage instead");
+		}
+
+	}
+
+	/**
+	 * Represents the error the developer should throw when an URI cannot be
+	 * resolved.
+	 */
 	public static class UnresolvableURI extends VulcanDeveloperError {
 
 		public UnresolvableURI(Class<?> modelClass) {

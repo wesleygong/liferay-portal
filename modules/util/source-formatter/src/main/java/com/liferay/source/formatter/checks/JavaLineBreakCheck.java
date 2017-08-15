@@ -317,6 +317,26 @@ public class JavaLineBreakCheck extends LineBreakCheck {
 				"There should be a line break after '" + linePart + "'",
 				lineCount);
 		}
+
+		if (trimmedLine.matches("for \\(.*[^;{]")) {
+			x = trimmedLine.length();
+
+			while (true) {
+				x = trimmedLine.lastIndexOf(StringPool.SEMICOLON, x - 1);
+
+				if (x == -1) {
+					break;
+				}
+
+				if (!ToolsUtil.isInsideQuotes(trimmedLine, x)) {
+					addMessage(
+						fileName,
+						"There should be a line break after '" +
+							trimmedLine.substring(0, x + 1) + "'",
+						lineCount);
+				}
+			}
+		}
 	}
 
 	private String _fixArrayLineBreaks(String content) {
@@ -509,6 +529,37 @@ public class JavaLineBreakCheck extends LineBreakCheck {
 			}
 		}
 
+		matcher = _incorrectLineBreakInsideChainPattern3.matcher(content);
+
+		while (matcher.find()) {
+			if (getLevel(matcher.group(1)) <= 0) {
+				String methodName = matcher.group(2);
+
+				if (!methodName.equals("concat")) {
+					addMessage(
+						fileName,
+						"Chaining on method '" + methodName +
+							"' is allowed, but incorrect styling",
+						"chaining.markdown",
+						getLineCount(content, matcher.end(1)));
+				}
+			}
+		}
+
+		matcher = _incorrectLineBreakInsideChainPattern4.matcher(content);
+
+		while (matcher.find()) {
+			String s = matcher.group(2);
+
+			if (!s.matches("\\)+;?")) {
+				addMessage(
+					fileName,
+					"There should be a line break after '" + matcher.group(1) +
+						"'",
+					getLineCount(content, matcher.start()));
+			}
+		}
+
 		return content;
 	}
 
@@ -684,14 +735,18 @@ public class JavaLineBreakCheck extends LineBreakCheck {
 	}
 
 	private final Pattern _arrayPattern = Pattern.compile(
-		"(\n\t*.* =) ((new \\w*\\[\\] )?\\{)\n(\t*)(.+)\n\t*(\\};?)\n");
+		"(\n\t*.* =) ((new \\w*\\[\\] )?\\{)\n(\t*)([^\t\\{].*)\n\t*(\\};?)\n");
 	private final Pattern _classPattern = Pattern.compile(
 		"(\n(\t*)(private|protected|public) ((abstract|static) )*" +
-			"(class|enum|interface) ([\\s\\S]*?) \\{)\n(\\s*)(\\S)");
+			"(class|enum|interface) ([\\s\\S]*?)\\{)\n(\\s*)(\\S)");
 	private final Pattern _incorrectLineBreakInsideChainPattern1 =
 		Pattern.compile("\n(\t*)\\).*?\\((.+)");
 	private final Pattern _incorrectLineBreakInsideChainPattern2 =
 		Pattern.compile("\t\\)\\..*\\(\n");
+	private final Pattern _incorrectLineBreakInsideChainPattern3 =
+		Pattern.compile("\n(.*\\S)\\)\\.(.*)\\(\n");
+	private final Pattern _incorrectLineBreakInsideChainPattern4 =
+		Pattern.compile("\t(\\)\\.[^\\)\\(]+\\()(.+)\n");
 	private final Pattern _incorrectLineBreakPattern1 = Pattern.compile(
 		"\n(\t*)(.*\\) \\{)([\t ]*\\}\n)");
 	private final Pattern _incorrectLineBreakPattern2 = Pattern.compile(

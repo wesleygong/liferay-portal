@@ -142,10 +142,28 @@
 		};
 
 		Liferay.ThemeDisplay = {
+
+			<%
+			Group scopeGroup = themeDisplay.getScopeGroup();
+
+			Group liveGroup = StagingUtil.getLiveGroup(scopeGroup);
+			%>
+
 			<c:if test="<%= layout != null %>">
 				getLayoutId: function() {
 					return '<%= layout.getLayoutId() %>';
 				},
+
+				<%
+				Layout controlPanelLayout = themeDisplay.getControlPanelLayout();
+				%>
+
+				<c:if test="<%= controlPanelLayout.getGroupId() != scopeGroup.getGroupId() %>">
+					getLayoutRelativeControlPanelURL: function() {
+						return '<%= PortalUtil.getLayoutRelativeURL(new VirtualLayout(controlPanelLayout, scopeGroup), themeDisplay) %>';
+					},
+				</c:if>
+
 				getLayoutRelativeURL: function() {
 					return '<%= PortalUtil.getLayoutRelativeURL(layout, themeDisplay) %>';
 				},
@@ -220,13 +238,6 @@
 			getPortalURL: function() {
 				return '<%= themeDisplay.getPortalURL() %>';
 			},
-
-			<%
-			Group scopeGroup = themeDisplay.getScopeGroup();
-
-			Group liveGroup = StagingUtil.getLiveGroup(scopeGroup);
-			%>
-
 			getScopeGroupId: function() {
 				return '<%= scopeGroup.getGroupId() %>';
 			},
@@ -237,7 +248,7 @@
 				return '<%= PropsValues.SESSION_ENABLE_URL_WITH_SESSION_ID ? session.getId() : StringPool.BLANK %>';
 			},
 			getSiteAdminURL: function() {
-				return '<%= PortalUtil.getSiteAdminURL(themeDisplay.getCompany(), themeDisplay.getScopeGroup(), StringPool.BLANK, null) %>';
+				return '<%= PortalUtil.getSiteAdminURL(themeDisplay, StringPool.BLANK, null) %>';
 			},
 			getSiteGroupId: function() {
 				return '<%= themeDisplay.getSiteGroupId() %>';
@@ -411,31 +422,12 @@
 <script data-senna-track="temporary" type="text/javascript">
 	// <![CDATA[
 		<c:if test="<%= layoutTypePortlet != null %>">
-
-			<%
-			StringBundler sb = new StringBundler(portlets.size() * 2);
-
-			for (Portlet portlet : portlets) {
-				if (portlet.isActive() && portlet.isReady() && !portlet.isUndeployedPortlet()) {
-					sb.append(HtmlUtil.escapeJS(portlet.getPortletId()));
-					sb.append("', '");
-				}
-			}
-
-			if (sb.index() > 0) {
-				sb.setIndex(sb.index() - 1);
-			}
-			%>
-
 			<c:choose>
 				<c:when test="<%= layoutTypePortlet.hasStateMax() %>">
-					Liferay.Portlet.list = ['<%= HtmlUtil.escapeJS(layoutTypePortlet.getStateMaxPortletId()) %>'];
+					Liferay.Portlet.register('<%= HtmlUtil.escapeJS(layoutTypePortlet.getStateMaxPortletId()) %>');
 				</c:when>
 				<c:when test="<%= themeDisplay.isStatePopUp() %>">
-					Liferay.Portlet.list = ['<%= HtmlUtil.escapeJS(themeDisplay.getPpid()) %>'];
-				</c:when>
-				<c:when test="<%= (sb.index() > 0) && !layoutTypePortlet.hasStateMax() %>">
-					Liferay.Portlet.list = ['<%= sb.toString() %>'];
+					Liferay.Portlet.register('<%= HtmlUtil.escapeJS(themeDisplay.getPpid()) %>');
 				</c:when>
 			</c:choose>
 		</c:if>

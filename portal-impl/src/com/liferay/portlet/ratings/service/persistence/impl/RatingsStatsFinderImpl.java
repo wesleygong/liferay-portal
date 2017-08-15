@@ -35,8 +35,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author Shuyang Zhou
- * @author Brian Wing Shun Chan
+ * @author     Shuyang Zhou
+ * @author     Brian Wing Shun Chan
  * @deprecated As of 7.0.0, with no direct replacement
  */
 @Deprecated
@@ -61,7 +61,7 @@ public class RatingsStatsFinderImpl
 
 	@Override
 	public List<RatingsStats> findByC_C(long classNameId, List<Long> classPKs) {
-		Object[] finderArgs = new Object[] {
+		Object[] finderArgs = {
 			classNameId,
 			StringUtil.merge(classPKs.toArray(new Long[classPKs.size()]))
 		};

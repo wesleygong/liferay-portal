@@ -29,8 +29,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author Brian Wing Shun Chan
+ * @author     Brian Wing Shun Chan
+ * @deprecated As of 7.0.0, with no direct replacement
  */
+@Deprecated
 public class CaptchaUtil {
 
 	public static void check(HttpServletRequest request)

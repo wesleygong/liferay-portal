@@ -37,8 +37,9 @@
 		</if>
 	</tear-down>
 
-	<command name="AddAndViewStructureAndTemplateWithPermissions" priority="4">
-		<property name="testray.component.names" value="Roles,Permissions,Web Content Administration" />
+	<command name="AddAndViewStructureAndTemplateWithPermissions" priority="5">
+		<property name="portal.acceptance" value="pending" />
+		<property name="testray.component.names" value="Permissions,Roles,Training,Web Content Administration" />
 
 		<execute macro="ProductMenu#gotoControlPanelSites">
 			<var name="portlet" value="Sites" />
@@ -142,7 +143,9 @@
 			<var name="key_rowEntry" value="WC Template Name" />
 		</execute>
 
-		<execute function="AssertClick" locator1="MenuItem#PERMISSIONS" value1="Permissions" />
+		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Permissions">
+			<var name="key_menuItem" value="Permissions" />
+		</execute>
 
 		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
 
@@ -264,12 +267,107 @@
 		<execute macro="WebContentNavigator#gotoManageTemplates" />
 
 		<execute function="AssertTextNotPresent" value1="WC Template Name" />
+
+		<execute macro="User#logoutAndLoginPG">
+			<var name="userLoginEmailAddress" value="test@liferay.com" />
+			<var name="userLoginFullName" value="Test Test" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoControlPanelUsers">
+			<var name="portlet" value="Roles" />
+		</execute>
+
+		<execute macro="Role#definePermissionsCP">
+			<var name="permissionDefinitionKeys" value="SITE_ADMIN_CONTENT_WEB_CONTENT_RESOURCE_PERMISSIONS_WEB_CONTENT_FOLDER_ADD_SUBFOLDER_CHECKBOX,SITE_ADMIN_CONTENT_WEB_CONTENT_RESOURCE_PERMISSIONS_WEB_CONTENT_FOLDER_ADD_WEB_CONTENT_CHECKBOX,SITE_ADMIN_CONTENT_WEB_CONTENT_RESOURCE_PERMISSIONS_WEB_CONTENT_FOLDER_VIEW_CHECKBOX,SITE_ADMIN_CONTENT_WEB_CONTENT_RESOURCE_PERMISSIONS_WEB_CONTENT_ARTICLE_UPDATE_CHECKBOX" />
+			<var name="roleName" value="Regular Role Name" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSite">
+			<var name="site" value="Site Name" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSitesContent">
+			<var name="portlet" value="Web Content" />
+		</execute>
+
+		<execute macro="WebContentNavigator#gotoAddWithStructureCP">
+			<var name="structureName" value="WC Structure Name" />
+		</execute>
+
+		<execute macro="WebContent#addWithStructureCP">
+			<var name="structureName" value="WC Structure Name" />
+			<var name="webContentText" value="WC WebContent Text" />
+			<var name="webContentTitle" value="WC WebContent Title" />
+		</execute>
+
+		<execute macro="PortletEntry#publish" />
+
+		<execute macro="WebContent#viewTitle">
+			<var name="webContentTitle" value="WC WebContent Title" />
+		</execute>
+
+		<execute macro="WebContent#viewWithStructureCP">
+			<var name="webContentText" value="WC WebContent Text" />
+			<var name="webContentTitle" value="WC WebContent Title" />
+		</execute>
+
+		<execute macro="Navigator#openSiteURL">
+			<var name="siteName" value="Site Name" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSitesContent">
+			<var name="portlet" value="Web Content" />
+		</execute>
+
+		<execute macro="WebContentFolder#addCP">
+			<var name="folderDescription" value="WC Folder Description" />
+			<var name="folderName" value="WC Folder Name" />
+		</execute>
+
+		<execute macro="User#logoutPG" />
+
+		<execute macro="User#loginPG">
+			<var name="password" value="test" />
+			<var name="userEmailAddress" value="user1@liferay.com" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSite">
+			<var name="site" value="Site Name" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSitesContent">
+			<var name="portlet" value="Web Content" />
+		</execute>
+
+		<execute macro="WebContentNavigator#gotoEditCP">
+			<var name="webContentTitle" value="WC WebContent Title" />
+		</execute>
+
+		<execute macro="WebContent#editCP">
+			<var name="webContentTitle" value="WC WebContent Title" />
+			<var name="webContentTitleEdit" value="WC WebContent Title Edit" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSite">
+			<var name="site" value="Site Name" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSitesContent">
+			<var name="portlet" value="Web Content" />
+		</execute>
+
+		<execute macro="WebContentFolder#addSubfolderCP">
+			<var name="folderName" value="WC Folder Name" />
+			<var name="subfolderDescription" value="WC SubFolder Description" />
+			<var name="subfolderName" value="WC SubFolder Name" />
+		</execute>
 	</command>
 
-	<command name="AddAudioViaWebContent" priority="4">
+	<command name="AddAudioViaWebContent" priority="5">
 		<property name="custom.properties" value="editor.wysiwyg.portal-impl.portlet.ddm.text_html.ftl=ckeditor" />
+		<property name="portal.acceptance" value="pending" />
 		<property name="test.name.skip.portal.instance" value="WebcontentUsecase#AddAudioViaWebContent" />
-		<property name="testray.component.names" value="Web Content Administration" />
+		<property name="testray.component.names" value="Training,Web Content Administration" />
 
 		<execute macro="ProductMenu#gotoControlPanelConfiguration">
 			<var name="portlet" value="Server Administration" />
@@ -538,8 +636,9 @@
 		<execute function="AssertElementPresent" locator1="Button#CONVERT" />
 	</command>
 
-	<command name="AddExistingPageAsDisplayPageInSiteCP" priority="3">
-		<property name="testray.component.names" value="Web Content Administration" />
+	<command name="AddExistingPageAsDisplayPageInSiteCP" priority="5">
+		<property name="portal.acceptance" value="pending" />
+		<property name="testray.component.names" value="Training,Web Content Administration" />
 
 		<execute macro="ProductMenu#gotoControlPanelSites">
 			<var name="portlet" value="Sites" />
@@ -622,8 +721,9 @@
 		</execute>
 	</command>
 
-	<command name="AddImageToWebContentViaItemSelector" priority="4">
-		<property name="testray.component.names" value="Web Content Administration" />
+	<command name="AddImageToWebContentViaItemSelector" priority="5">
+		<property name="portal.acceptance" value="pending" />
+		<property name="testray.component.names" value="Training,Web Content Administration" />
 
 		<execute macro="Page#add">
 			<var name="pageName" value="Web Content Image Page" />
@@ -844,6 +944,47 @@
 		<execute function="AssertTextNotPresent" value1="Web Content Display" />
 
 		<execute function="AssertTextNotPresent" value1="WC WebContent Content" />
+	</command>
+
+	<command name="AddWebContentViaSourceEditor" priority="5">
+		<property name="portal.acceptance" value="pending" />
+		<property name="testray.component.names" value="Training,Web Content Administration" />
+
+		<execute macro="Page#add">
+			<var name="pageName" value="Test Page Name" />
+		</execute>
+
+		<execute macro="Portlet#addPG">
+			<var name="portletName" value="Web Content Display" />
+		</execute>
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Test Page Name" />
+		</execute>
+
+		<execute macro="WebContentNavigator#gotoAddPGViaWCD" />
+
+		<execute macro="WebContent#addCP">
+			<var name="webContentTitle" value="Basic S.P.A.C.E. Banner" />
+		</execute>
+
+		<execute macro="AlloyEditor#addSourceContent">
+			<var name="content"><![CDATA[
+<h2 class="text-center">Space Program Academy of Continuing Education</h2>
+
+<p class="text-center">Dare to Dream out of this world</p>
+]]></var>
+		</execute>
+
+		<execute macro="Button#clickPublish" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Test Page Name" />
+		</execute>
+
+		<execute macro="WebContent#viewPGViaWCD">
+			<var name="webContentContent" value="Space Program Academy of Continuing Education Dare to Dream out of this world" />
+		</execute>
 	</command>
 
 	<command name="AddWebContentViaWCDWithGlobalStructureAndLocalTemplate" priority="4">
@@ -1255,7 +1396,9 @@
 			<var name="pageName" value="Web Content Display Page" />
 		</execute>
 
-		<execute macro="WebContentNavigator#gotoEditPGViaWCD" />
+		<execute macro="WebContentNavigator#gotoEditPGViaWCD">
+			<var name="webContentTitle" value="WC WebContent Title" />
+		</execute>
 
 		<execute macro="WebContent#editPGViaWCD">
 			<var name="structureName" value="Global WC Structure Name" />
@@ -1266,8 +1409,9 @@
 		</execute>
 	</command>
 
-	<command name="EditContentWithTitleAndAllFieldsNull" priority="4">
-		<property name="testray.component.names" value="Web Content Administration" />
+	<command name="EditContentWithTitleAndAllFieldsNull" priority="5">
+		<property name="portal.acceptance" value="pending" />
+		<property name="testray.component.names" value="Training,Web Content Administration" />
 
 		<execute macro="Navigator#openURL" />
 
@@ -1914,82 +2058,6 @@
 
 		<execute macro="WebContent#viewTitle">
 			<var name="webContentTitle" value="WC WebContent Title" />
-		</execute>
-	</command>
-
-	<command name="ViewArticleEmailNotification" priority="4">
-		<property name="test.smtp.server.enabled" value="true" />
-		<property name="testray.component.names" value="Web Content Administration" />
-
-		<execute macro="ProductMenu#gotoControlPanelUsers">
-			<var name="portlet" value="Users and Organizations" />
-		</execute>
-
-		<execute macro="User#addCP">
-			<var name="userEmailAddress" value="userea@liferay.com" />
-			<var name="userFirstName" value="userfn" />
-			<var name="userLastName" value="userln" />
-			<var name="userScreenName" value="usersn" />
-		</execute>
-
-		<execute macro="ProductMenu#gotoControlPanelUsers">
-			<var name="portlet" value="Users and Organizations" />
-		</execute>
-
-		<execute macro="User#editPasswordCP">
-			<var name="password" value="password" />
-			<var name="userEmailAddress" value="userea@liferay.com" />
-			<var name="userScreenName" value="usersn" />
-		</execute>
-
-		<execute macro="ProductMenu#gotoControlPanelUsers">
-			<var name="portlet" value="Users and Organizations" />
-		</execute>
-
-		<execute macro="User#assignRegularRoleCP">
-			<var name="roleTitle" value="Administrator" />
-			<var name="userScreenName" value="usersn" />
-		</execute>
-
-		<execute macro="User#logoutAndLoginPG">
-			<var name="userLoginEmailAddress" value="userea@liferay.com" />
-			<var name="userLoginFullName" value="userfn userln" />
-		</execute>
-
-		<execute macro="Navigator#openURL" />
-
-		<execute macro="ProductMenu#gotoSitesContent">
-			<var name="portlet" value="Web Content" />
-		</execute>
-
-		<execute macro="WebContent#subscribeCP" />
-
-		<execute macro="User#logoutPG" />
-
-		<execute macro="User#loginUserPG">
-			<var name="password" value="test" />
-			<var name="userEmailAddress" value="test@liferay.com" />
-		</execute>
-
-		<execute macro="ProductMenu#gotoSitesContent">
-			<var name="portlet" value="Web Content" />
-		</execute>
-
-		<execute macro="WebContentNavigator#gotoAddCP" />
-
-		<execute macro="WebContent#addCP">
-			<var name="webContentContent" value="WC WebContent Content" />
-			<var name="webContentTitle" value="WC WebContent Title" />
-		</execute>
-
-		<execute macro="PortletEntry#publish" />
-
-		<execute macro="MockMock#viewMail">
-			<var name="asset" value="Web Content" />
-			<var name="content" value="WC WebContent Content" />
-			<var name="recipient" value="userfn userln" />
-			<var name="sender" value="Joe Bloggs" />
-			<var name="subject" value="WC WebContent Title" />
 		</execute>
 	</command>
 

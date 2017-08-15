@@ -277,6 +277,9 @@ public class FindSecurityBugsPlugin implements Plugin<Project> {
 		javaExec.systemProperty(
 			"findsecbugs.injection.customconfigfile.XssJspDetector",
 			"liferay-config/liferay-XssJspDetector.txt|XSS_JSP_PRINT");
+		javaExec.systemProperty(
+			"findsecbugs.injection.customconfigfile.XssServletDetector",
+			"liferay-config/liferay-XssServletDetector.txt|XSS_SERVLET");
 
 		javaExec.systemProperty("findsecbugs.taint.outputsummaries", "true");
 
@@ -418,11 +421,12 @@ public class FindSecurityBugsPlugin implements Plugin<Project> {
 		"fsb-include.xml";
 
 	/**
-	 * Copied from <code>com.liferay.gradle.plugins.internal.JspCDefaultsPlugin</code>.
+	 * Copied from
+	 * <code>com.liferay.gradle.plugins.internal.JspCDefaultsPlugin</code>.
 	 */
 	private static final String _UNZIP_JAR_TASK_NAME = "unzipJar";
 
-	private static final String _VERSION = "1.6.0.LIFERAY-PATCHED-3";
+	private static final String _VERSION = "1.6.0.LIFERAY-PATCHED-5";
 
 	private static final Transformer<File, Task> _reportsFileGetter =
 		new Transformer<File, Task>() {

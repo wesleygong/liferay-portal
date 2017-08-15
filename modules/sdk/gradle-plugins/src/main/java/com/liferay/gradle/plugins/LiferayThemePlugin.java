@@ -19,6 +19,8 @@ import com.liferay.gradle.plugins.gulp.ExecuteGulpTask;
 import com.liferay.gradle.plugins.gulp.GulpPlugin;
 import com.liferay.gradle.plugins.internal.util.FileUtil;
 import com.liferay.gradle.plugins.internal.util.GradleUtil;
+import com.liferay.gradle.plugins.lang.builder.BuildLangTask;
+import com.liferay.gradle.plugins.lang.builder.LangBuilderPlugin;
 import com.liferay.gradle.plugins.source.formatter.SourceFormatterPlugin;
 import com.liferay.gradle.util.Validator;
 
@@ -43,6 +45,7 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.UncheckedIOException;
 import org.gradle.api.artifacts.ConfigurablePublishArtifact;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.dsl.ArtifactHandler;
 import org.gradle.api.plugins.BasePlugin;
@@ -63,6 +66,7 @@ public class LiferayThemePlugin implements Plugin<Project> {
 	public void apply(Project project) {
 		GradleUtil.applyPlugin(project, BasePlugin.class);
 		GradleUtil.applyPlugin(project, GulpPlugin.class);
+		GradleUtil.applyPlugin(project, LangBuilderPlugin.class);
 		GradleUtil.applyPlugin(project, LiferayBasePlugin.class);
 		GradleUtil.applyPlugin(project, SourceFormatterPlugin.class);
 
@@ -82,6 +86,8 @@ public class LiferayThemePlugin implements Plugin<Project> {
 			project, liferayExtension);
 
 		_configureArtifacts(project);
+		_configureConfigurationDefault(project);
+		_configureTaskBuildLang(project);
 		_configureTaskClean(project);
 		_configureTaskDeploy(project);
 		_configureTasksExecuteGulp(createLiferayThemeJsonTask);
@@ -192,6 +198,23 @@ public class LiferayThemePlugin implements Plugin<Project> {
 				}
 
 			});
+	}
+
+	private void _configureConfigurationDefault(Project project) {
+		Configuration defaultConfiguration = GradleUtil.getConfiguration(
+			project, Dependency.DEFAULT_CONFIGURATION);
+
+		Configuration archivesConfiguration = GradleUtil.getConfiguration(
+			project, Dependency.ARCHIVES_CONFIGURATION);
+
+		defaultConfiguration.extendsFrom(archivesConfiguration);
+	}
+
+	private void _configureTaskBuildLang(Project project) {
+		BuildLangTask buildLangTask = (BuildLangTask)GradleUtil.getTask(
+			project, LangBuilderPlugin.BUILD_LANG_TASK_NAME);
+
+		buildLangTask.setLangDir("src/WEB-INF/src/content");
 	}
 
 	private void _configureTaskClean(Project project) {

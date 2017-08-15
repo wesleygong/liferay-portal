@@ -17,6 +17,7 @@
 <%@ include file="/init.jsp" %>
 
 <%
+DLMimeTypeDisplayContext dlMimeTypeDisplayContext = (DLMimeTypeDisplayContext)request.getAttribute(JournalItemSelectorWebKeys.DL_MIME_TYPE_DISPLAY_CONTEXT);
 JournalItemSelectorViewDisplayContext journalItemSelectorViewDisplayContext = (JournalItemSelectorViewDisplayContext)request.getAttribute(JournalItemSelectorWebKeys.JOURNAL_ITEM_SELECTOR_VIEW_DISPLAY_CONTEXT);
 
 int cur = ParamUtil.getInteger(request, SearchContainer.DEFAULT_CUR_PARAM, SearchContainer.DEFAULT_CUR);
@@ -44,6 +45,7 @@ if (journalArticle != null) {
 %>
 
 <liferay-item-selector:repository-entry-browser
+	dlMimeTypeDisplayContext="<%= dlMimeTypeDisplayContext %>"
 	emptyResultsMessage='<%= LanguageUtil.get(resourceBundle, "there-are-no-journal-images") %>'
 	itemSelectedEventName="<%= journalItemSelectorViewDisplayContext.getItemSelectedEventName() %>"
 	itemSelectorReturnTypeResolver="<%= journalItemSelectorViewDisplayContext.getItemSelectorReturnTypeResolver() %>"

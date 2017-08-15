@@ -4,7 +4,9 @@
 
 		<execute function="Click" locator1="AppManager#APP_ACTIONS" />
 
-		<execute function="AssertClickNoError" locator1="MenuItem#DEACTIVATE" value1="Deactivate" />
+		<execute function="AssertClickNoError" locator1="MenuItem#ANY_MENU_ITEM" value1="Deactivate">
+			<var name="key_menuItem" value="Deactivate" />
+		</execute>
 
 		<execute function="Confirm" value1="Are you sure you want to deactivate this?" />
 	</command>
@@ -27,7 +29,9 @@
 
 		<execute function="AssertClick" locator1="AppManager#APP_ACTIONS" value1="Actions" />
 
-		<execute function="AssertClickNoError" locator1="MenuItem#UNINSTALL" value1="Uninstall" />
+		<execute function="AssertClickNoError" locator1="MenuItem#ANY_MENU_ITEM" value1="Uninstall">
+			<var name="key_menuItem" value="Uninstall" />
+		</execute>
 
 		<execute function="Confirm" value1="Are you sure you want to uninstall this?" />
 
@@ -53,6 +57,13 @@
 				<execute function="AssertElementNotPresent" locator1="AppManager#APP_NAME" value1="${appName}" />
 			</then>
 		</while>
+	</command>
+
+	<command name="viewStatus">
+		<var name="key_appName" value="${appName}" />
+		<var name="key_appStatus" value="${appStatus}" />
+
+		<execute function="AssertTextEquals#assertPartialText" locator1="AppManager#APP_STATUS" value1="${appStatus}" />
 	</command>
 
 	<command name="viewUninstallAppCP">

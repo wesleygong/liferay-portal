@@ -1,43 +1,96 @@
-Feature:
+@component-name = "portal-acceptance"
+definition {
+	property portal.release = "true";
+	property portal.upstream = "true";
+	property testray.main.component.name = "Smoke";
 
-Background: This executes once per feature file
-	Given these properties
-		| portal.release              | true  |
-		| portal.upstream             | true  |
-		| testray.main.component.name | Smoke |
+	var userScreenName = "joeblogs";
 
-Set Up: This executes before each scenario
-	Given TestCase set Up Portal Instance
-	Then SignIn sign In
+	setUp {
+		TestCase.setUpPortalInstance();
 
-Tear Down: This executes after each scenario
-	Given PortalInstances tear Down CP
-		| testPortalInstance | TestPropsUtil#get('test.portal.instance') |
+		SignIn.signIn();
+	}
 
-Scenario: Add User
-Priority: 5
-	Given these variables
-		| userEmailAddress | userea@liferay.com |
-		| userFirstName    | userfn             |
-		| userLastName     | userln             |
-	And ProductMenu goto Control Panel Users
-		| portlet | Users and Organizations |
-	Then User add CP
-		| userEmailAddress | ${userEmailAddress} |
-		| userFirstName    | ${userFirstName}    |
-		| userLastName     | ${userLastName}     |
-		| userScreenName   | ${userScreenName}   |
-		| userScreenName   |                     |
+	tearDown {
+		PortalInstances.tearDownCP(
+			testPortalInstance = "TestPropsUtil.get('test.portal.instance')"
+		);
+	}
 
-Scenario: Smoke
-Description: Ensure that the super admin can add pages, add portlets, navigate to the product menu, use the WYSIWYG editor, and view alert messages.
-Priority: 5
-	Given these properties
-		| portal.smoke                   | true |
-		| test.assert.warning.exceptions | true |
-	And Smoke view Welcome Page
-	And Smoke run Smoke
-	And AssertElementPresent the value 'Welcome' at locator 'Home#PAGE'
-	And Click at locator 'Home#PAGE'
-	And Type the value 'Welcome'
-	Then AssertElementPresent assert Element Present the value 'Welcome' at locator 'Home#PAGE'
+	@priority = "5"
+	testAddUser {
+		var userEmailAddress = "userea@liferay.com";
+		var userFirstName = "userfn";
+		var userLastName = "userln";
+
+		ProductMenu.gotoControlPanelUsers(
+			portlet = "Users and Organizations"
+		);
+
+		for (breadcrumbName : "${breadcrumbListVisible}") {
+			var key_breadcrumbName = "${breadcrumbName}";
+			var breadcrumbNameUppercase = "StringUtil.upperCase('${breadcrumbName}')";
+
+			AssertTextEquals(locator1 = "Breadcrumb#BREADCRUMB_ENTRY", value1 = "${breadcrumbNameUppercase}");
+		}
+
+		User.addCP(
+			userEmailAddress = "${userEmailAddress}",
+			userFirstName = "${userFirstName}",
+			userLastName = "${userLastName}",
+			userScreenName = "${userScreenName}",
+			userScreenName = ""
+		);
+	}
+
+	@description = "Ensure that the super admin can add pages, add portlets, navigate to the product menu, use the WYSIWYG editor, and view alert messages."
+	@priority = "5"
+	testSmoke {
+		property portal.smoke = "true";
+		property test.assert.warning.exceptions = "true";
+
+		if (isset(duplicate)) {
+			Alert.viewErrorMessage(
+				errorMessage = "A configuration with this ID already exists. Please enter a unique ID."
+			);
+		}
+		else {
+			Alert.viewSuccessMessage();
+		}
+
+		if ("${check}" == "true") {
+			Alert.viewSuccessMessage();
+		}
+
+		if (IsElementPresent(locator1 = "Blogs#ADD_BLOGS_ENTRY")) {
+			Alert.viewSuccessMessage();
+		}
+
+		var siteName = return(
+			TestCase.getSiteName(
+				siteName = "${siteName}"
+			),
+			siteName
+		);
+		var wikiPageContent = "<p id='demo'>PASS</p>
+
+<script type='text/javascript'>
+document.getElementById('demo').innerHTML = 'FAIL';
+</script>";
+
+		Smoke.viewWelcomePage();
+
+		Smoke.runSmoke();
+
+		AssertElementPresent(locator1 = "Home#PAGE", value1 = "Welcome");
+
+		Click(locator1 = "Home#PAGE");
+
+		Refresh();
+
+		Type(value1 = "Welcome");
+
+		AssertElementPresent.assertElementPresent(locator1 = "Home#PAGE", value1 = "Welcome");
+	}
+}

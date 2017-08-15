@@ -104,7 +104,10 @@
 		</execute>
 	</command>
 
-	<command name="DeleteConfiguredKBFolder" priority="3">
+	<command name="DeleteConfiguredKBFolder" priority="5">
+		<property name="portal.acceptance" value="pending" />
+		<property name="testray.component.names" value="Training" />
+
 		<execute macro="Page#add">
 			<var name="pageName" value="Knowledge Base Page" />
 		</execute>
@@ -194,7 +197,10 @@
 		</execute>
 	</command>
 
-	<command name="DeleteImportedArticles" priority="4">
+	<command name="DeleteImportedArticles" priority="5">
+		<property name="portal.acceptance" value="pending" />
+		<property name="testray.component.names" value="Training" />
+
 		<execute macro="Page#add">
 			<var name="pageName" value="Knowledge Base Display Page" />
 		</execute>
@@ -706,7 +712,9 @@
 
 			<execute function="Click" locator1="Icon#ROW_VERTICAL_ELLIPSIS" />
 
-			<execute function="AssertClick" locator1="MenuItem#EDIT" value1="Edit" />
+			<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Edit">
+				<var name="key_menuItem" value="Edit" />
+			</execute>
 
 			<execute function="AssertTextEquals" locator1="TextInput#CUSTOM_FIELD" value1="01/01/${kbEntry}" />
 		</for>

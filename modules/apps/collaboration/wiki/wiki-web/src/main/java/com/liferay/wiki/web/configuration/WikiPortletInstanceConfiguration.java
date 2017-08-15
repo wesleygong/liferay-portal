@@ -28,7 +28,7 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
 @Meta.OCD(
 	id = "com.liferay.wiki.configuration.WikiPortletInstanceConfiguration",
 	localization = "content/Language",
-	name = "wiki.portlet.instance.configuration.name"
+	name = "wiki-portlet-instance-configuration-name"
 )
 public interface WikiPortletInstanceConfiguration {
 
@@ -54,6 +54,13 @@ public interface WikiPortletInstanceConfiguration {
 	 */
 	@Meta.AD(deflt = "true", required = false)
 	public boolean enableComments();
+
+	/**
+	 * Set this to <code>true</code> to enable highlighting of search results in
+	 * the Wiki portlet.
+	 */
+	@Meta.AD(deflt = "true", required = false)
+	public boolean enableHighlighting();
 
 	/**
 	 * Set this to <code>true</code> to enable ratings for Wiki pages.

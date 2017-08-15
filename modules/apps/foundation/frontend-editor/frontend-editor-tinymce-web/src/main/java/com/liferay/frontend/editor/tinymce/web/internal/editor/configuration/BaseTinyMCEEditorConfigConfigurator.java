@@ -15,10 +15,11 @@
 package com.liferay.frontend.editor.tinymce.web.internal.editor.configuration;
 
 /**
- * @author Ambrin Chaudhary
- * @deprecated As of 1.0.0, replaced by {@link BaseTinyMCEEditorConfigContributor}
+ * @author     Ambrin Chaudhary
+ * @deprecated As of 1.0.0, replaced by {@link
+ *             BaseTinyMCEEditorConfigContributor}
  */
 @Deprecated
-public class BaseTinyMCEEditorConfigConfigurator
+public abstract class BaseTinyMCEEditorConfigConfigurator
 	extends BaseTinyMCEEditorConfigContributor {
 }

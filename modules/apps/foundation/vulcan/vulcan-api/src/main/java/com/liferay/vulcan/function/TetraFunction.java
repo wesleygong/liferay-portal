@@ -18,11 +18,30 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
+ * Represents a function that accepts four arguments and produces a result. This
+ * is the four-arity specialization of {@link Function}.
+ *
+ * <p>This is a <a href="package-summary.html">functional interface</a> whose
+ * functional method is {@link #apply(Object, Object, Object, Object)}.
+ *
  * @author Alejandro Hernández
+ * @author Jorge Ferrer
+ * @see    Function
  */
 @FunctionalInterface
 public interface TetraFunction<A, B, C, D, R> {
 
+	/**
+	 * Returns a composed function that first applies this function to its
+	 * input, and then applies the {@code afterFunction} function to the result.
+	 * If evaluation of either function throws an exception, it is relayed to
+	 * the caller of the composed function.
+	 *
+	 * @param  afterFunction the function to apply after this function is
+	 *         applied
+	 * @return a composed function that first applies this function and then
+	 *         applies the {@code after} function
+	 */
 	public default <V> TetraFunction<A, B, C, D, V> andThen(
 		Function<? super R, ? extends V> afterFunction) {
 
@@ -31,6 +50,15 @@ public interface TetraFunction<A, B, C, D, R> {
 		return (A a, B b, C c, D d) -> afterFunction.apply(apply(a, b, c, d));
 	}
 
+	/**
+	 * Applies this function to the given arguments.
+	 *
+	 * @param  a the first function argument
+	 * @param  b the second function argument
+	 * @param  c the third function argument
+	 * @param  d the fourth function argument
+	 * @return the function result
+	 */
 	public R apply(A a, B b, C c, D d);
 
 }

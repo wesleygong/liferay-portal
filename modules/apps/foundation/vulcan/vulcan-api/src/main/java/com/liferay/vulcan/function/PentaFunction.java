@@ -18,11 +18,30 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
+ * Represents a function that accepts five arguments and produces a result. This
+ * is the five-arity specialization of {@link Function}.
+ *
+ * <p>This is a <a href="package-summary.html">functional interface</a> whose
+ * functional method is {@link #apply(Object, Object, Object, Object, Object)}.
+ *
  * @author Alejandro Hernández
+ * @author Jorge Ferrer
+ * @see    Function
  */
 @FunctionalInterface
 public interface PentaFunction<A, B, C, D, E, R> {
 
+	/**
+	 * Returns a composed function that first applies this function to its
+	 * input, and then applies the {@code afterFunction} function to the result.
+	 * If evaluation of either function throws an exception, it is relayed to
+	 * the caller of the composed function.
+	 *
+	 * @param  afterFunction the function to apply after this function is
+	 *         applied
+	 * @return a composed function that first applies this function and then
+	 *         applies the {@code after} function
+	 */
 	public default <V> PentaFunction<A, B, C, D, E, V> andThen(
 		Function<? super R, ? extends V> afterFunction) {
 
@@ -32,6 +51,16 @@ public interface PentaFunction<A, B, C, D, E, R> {
 			apply(a, b, c, d, e));
 	}
 
+	/**
+	 * Applies this function to the given arguments.
+	 *
+	 * @param  a the first function argument
+	 * @param  b the second function argument
+	 * @param  c the third function argument
+	 * @param  d the fourth function argument
+	 * @param  e the fifth function argument
+	 * @return the function result
+	 */
 	public R apply(A a, B b, C c, D d, E e);
 
 }

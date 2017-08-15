@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.source.formatter.checks.util.SourceUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,8 +66,10 @@ public class SourceFormatterUtil {
 
 		outerLoop:
 		for (String fileName : allFileNames) {
-			String encodedFileName = StringUtil.replace(
-				fileName, CharPool.BACK_SLASH, CharPool.SLASH);
+			String encodedFileName = SourceUtil.getAbsolutePath(fileName);
+
+			encodedFileName = StringUtil.replace(
+				encodedFileName, CharPool.BACK_SLASH, CharPool.SLASH);
 
 			for (String includeRegex : includesRegex) {
 				if (encodedFileName.matches(includeRegex)) {
@@ -311,7 +314,8 @@ public class SourceFormatterUtil {
 	}
 
 	private static List<String> _scanForFiles(
-			String baseDir, final List<PathMatcher> excludeDirPathMatchers,
+			final String baseDir,
+			final List<PathMatcher> excludeDirPathMatchers,
 			final List<PathMatcher> excludeFilePathMatchers,
 			final List<PathMatcher> includeFilePathMatchers,
 			final boolean includeSubrepositories)
@@ -334,18 +338,25 @@ public class SourceFormatterUtil {
 					}
 
 					if (!includeSubrepositories) {
-						Path gitRepoPath = dirPath.resolve(".gitrepo");
+						String baseDirPath = SourceUtil.getAbsolutePath(
+							baseDir);
+						String currentDirPath = SourceUtil.getAbsolutePath(
+							dirPath);
 
-						if (Files.exists(gitRepoPath)) {
-							try {
-								String content = FileUtil.read(
-									gitRepoPath.toFile());
+						if (!baseDirPath.equals(currentDirPath)) {
+							Path gitRepoPath = dirPath.resolve(".gitrepo");
 
-								if (content.contains("mode = pull")) {
-									return FileVisitResult.SKIP_SUBTREE;
+							if (Files.exists(gitRepoPath)) {
+								try {
+									String content = FileUtil.read(
+										gitRepoPath.toFile());
+
+									if (content.contains("mode = pull")) {
+										return FileVisitResult.SKIP_SUBTREE;
+									}
 								}
-							}
-							catch (Exception e) {
+								catch (Exception e) {
+								}
 							}
 						}
 					}

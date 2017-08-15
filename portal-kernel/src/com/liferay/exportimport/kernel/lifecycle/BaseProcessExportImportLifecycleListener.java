@@ -47,7 +47,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * @author Daniel Kocsis
+ * @author     Daniel Kocsis
  * @deprecated As of 7.0.0
  */
 @Deprecated
@@ -139,14 +139,41 @@ public abstract class BaseProcessExportImportLifecycleListener
 		}
 	}
 
+	protected void onProcessFailed(
+			ExportImportLifecycleEvent exportImportLifecycleEvent)
+		throws Exception {
+	}
+
+	/**
+	 * @deprecated As of 7.0.0
+	 */
+	@Deprecated
 	protected void onProcessFailed(List<Serializable> attributes)
 		throws Exception {
 	}
 
+	protected void onProcessStarted(
+			ExportImportLifecycleEvent exportImportLifecycleEvent)
+		throws Exception {
+	}
+
+	/**
+	 * @deprecated As of 7.0.0
+	 */
+	@Deprecated
 	protected void onProcessStarted(List<Serializable> attributes)
 		throws Exception {
 	}
 
+	protected void onProcessSucceeded(
+			ExportImportLifecycleEvent exportImportLifecycleEvent)
+		throws Exception {
+	}
+
+	/**
+	 * @deprecated As of 7.0.0
+	 */
+	@Deprecated
 	protected void onProcessSucceeded(List<Serializable> attributes)
 		throws Exception {
 	}

@@ -14,13 +14,13 @@
 
 package com.liferay.poshi.runner.elements;
 
-import static com.liferay.poshi.runner.elements.ReadableSyntaxKeys.THESE_VARIABLES;
-
 import com.liferay.poshi.runner.util.Dom4JUtil;
 
 import java.io.IOException;
 
+import org.dom4j.CDATA;
 import org.dom4j.Element;
+import org.dom4j.Node;
 
 /**
  * @author Kenji Heigel
@@ -29,8 +29,6 @@ public class VarElement extends PoshiElement {
 
 	public VarElement(Element element) {
 		this("var", element);
-
-		initValueAttributeName(element);
 	}
 
 	public VarElement(String readableSyntax) {
@@ -47,85 +45,82 @@ public class VarElement extends PoshiElement {
 		super(name, readableSyntax);
 	}
 
-	public void addAttributes(String readableSyntax) {
-		String[] items = readableSyntax.split("\\|", -1);
-
-		addAttribute("name", items[1].trim());
-
-		String value = items[2].trim();
-
-		if (value.contains("Util#")) {
-			valueAttributeName = "method";
-		}
-		else {
-			valueAttributeName = "value";
-		}
-
-		addAttribute(valueAttributeName, value);
-	}
-
-	@Override
-	public void addElements(String readableSyntax) {
-	}
-
-	public String getVarName() {
-		return attributeValue("name");
-	}
-
 	public String getVarValue() {
+		if (valueAttributeName == null) {
+			for (Node node : Dom4JUtil.toNodeList(content())) {
+				if (node instanceof CDATA) {
+					return node.getText();
+				}
+			}
+		}
+
 		return attributeValue(valueAttributeName);
 	}
 
-	public void setNamePadLength(int namePadLength) {
-		this.namePadLength = namePadLength;
-	}
+	@Override
+	public void parseReadableSyntax(String readableSyntax) {
+		String name = getNameFromAssignment(readableSyntax);
 
-	public void setValuePadLength(int valuePadLength) {
-		this.valuePadLength = valuePadLength;
+		addAttribute("name", name);
+
+		String value = getQuotedContent(readableSyntax);
+
+		if (value.contains("Util.")) {
+			value = value.replace("Util.", "Util#");
+
+			addAttribute("method", value);
+
+			return;
+		}
+
+		if (value.contains("\n")) {
+			addCDATA(value);
+
+			return;
+		}
+
+		addAttribute("value", value);
 	}
 
 	@Override
 	public String toReadableSyntax() {
 		StringBuilder sb = new StringBuilder();
 
-		Element parentElement = getParent();
+		sb.append("\n\t");
+
+		PoshiElement parentElement = (PoshiElement)getParent();
 
 		String parentElementName = parentElement.getName();
 
-		if (parentElementName.equals("command") ||
-			parentElementName.equals("set-up") ||
-			parentElementName.equals("tear-down")) {
-
-			String previousSiblingElementName = null;
-
-			Element previousSiblingElement = getPreviousSiblingElement();
-
-			if (previousSiblingElement != null) {
-				previousSiblingElementName = previousSiblingElement.getName();
-			}
-
-			if ((previousSiblingElement == null) ||
-				!previousSiblingElementName.equals(getName())) {
-
-				sb.append("\n\t");
-				sb.append(getReadableExecuteKey());
-				sb.append(" ");
-				sb.append(getReadableVariableKey());
-			}
+		if (!parentElementName.equals("execute")) {
+			sb.append(getName());
+			sb.append(" ");
 		}
 
-		sb.append("\n\t\t");
-		sb.append("|");
-		sb.append(_pad(getVarName(), namePadLength));
-		sb.append("|");
-		sb.append(_pad(getVarValue(), valuePadLength));
-		sb.append("|");
+		String name = attributeValue("name");
+
+		sb.append(name);
+
+		sb.append(" = \"");
+
+		String value = getVarValue();
+
+		value = value.replace("Util#", "Util.");
+
+		sb.append(value);
+
+		sb.append("\"");
+
+		if (!parentElementName.equals("execute")) {
+			sb.append(";");
+		}
 
 		return sb.toString();
 	}
 
-	protected String getReadableVariableKey() {
-		return THESE_VARIABLES;
+	@Override
+	protected String getBlockName() {
+		return null;
 	}
 
 	protected void initValueAttributeName(Element element) {
@@ -141,6 +136,14 @@ public class VarElement extends PoshiElement {
 			return;
 		}
 
+		for (Node node : Dom4JUtil.toNodeList(element.content())) {
+			if (node instanceof CDATA) {
+				add((CDATA)node.clone());
+
+				return;
+			}
+		}
+
 		try {
 			throw new IllegalArgumentException(
 				"Invalid variable element " + Dom4JUtil.format(element));
@@ -150,33 +153,6 @@ public class VarElement extends PoshiElement {
 		}
 	}
 
-	protected int namePadLength;
 	protected String valueAttributeName;
-	protected int valuePadLength;
-
-	private String _pad(String s, int padLength) {
-		if (s == null) {
-			s = "";
-		}
-
-		int length = s.length();
-
-		if (length <= padLength) {
-			int pad = 1 + padLength - length;
-
-			StringBuilder sb = new StringBuilder();
-
-			sb.append(" ");
-			sb.append(s);
-
-			for (int i = 0; i < pad; i++) {
-				sb.append(" ");
-			}
-
-			return sb.toString();
-		}
-
-		return s;
-	}
 
 }

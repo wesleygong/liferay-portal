@@ -43,8 +43,6 @@ AUI.add(
 
 		var TPL_REPEATABLE_HELPER = '<div class="lfr-ddm-repeatable-helper"></div>';
 
-		var TPL_REPEATABLE_PLACEHOLDER = '<div class="lfr-ddm-repeatable-placeholder"></div>';
-
 		var TPL_REQUIRED_MARK = '<span class="icon-asterisk text-warning"><span class="hide-accessible">' + Liferay.Language.get('required') + '</span></span>';
 
 		var FieldTypes = Liferay.namespace('DDM.FieldTypes');
@@ -960,9 +958,9 @@ AUI.add(
 
 						var container = instance.get('container');
 
+						var colorPicker = instance.get('colorPicker');
 						var selectorInput = container.one('.selector-input');
 						var valueField = container.one('.color-value');
-						var colorPicker = instance.get('colorPicker');
 
 						if (!colorPicker) {
 							return;
@@ -1096,7 +1094,7 @@ AUI.add(
 
 						var portletNamespace = instance.get('portletNamespace');
 
-						var portletURL = Liferay.PortletURL.createURL(themeDisplay.getURLControlPanel());
+						var portletURL = Liferay.PortletURL.createURL(themeDisplay.getLayoutRelativeControlPanelURL());
 
 						portletURL.setParameter('criteria', criteria);
 						portletURL.setParameter('itemSelectedEventName', portletNamespace + 'selectDocumentLibrary');
@@ -1141,7 +1139,7 @@ AUI.add(
 					getUploadURL: function() {
 						var instance = this;
 
-						var portletURL = Liferay.PortletURL.createURL(themeDisplay.getURLControlPanel());
+						var portletURL = Liferay.PortletURL.createURL(themeDisplay.getLayoutRelativeControlPanelURL());
 
 						portletURL.setLifecycle(Liferay.PortletURL.ACTION_PHASE);
 						portletURL.setParameter('cmd', 'add_temp');
@@ -2418,7 +2416,7 @@ AUI.add(
 
 						var portletNamespace = instance.get('portletNamespace');
 
-						var portletURL = Liferay.PortletURL.createURL(themeDisplay.getURLControlPanel());
+						var portletURL = Liferay.PortletURL.createURL(themeDisplay.getLayoutRelativeControlPanelURL());
 
 						portletURL.setParameter('criteria', criteria);
 						portletURL.setParameter('itemSelectedEventName', portletNamespace + 'selectDocumentLibrary');
@@ -2710,7 +2708,7 @@ AUI.add(
 							value = RadioField.superclass.getValue.apply(instance, arguments);
 						}
 
-						return JSON.stringify([value]);
+						return value;
 					},
 
 					setLabel: function() {
@@ -2745,14 +2743,6 @@ AUI.add(
 						var radioNodes = instance.getRadioNodes();
 
 						radioNodes.set('checked', false);
-
-						if (Lang.isString(value)) {
-							value = JSON.parse(value);
-						}
-
-						if (value.length) {
-							value = value[0];
-						}
 
 						radioNodes.filter('[value=' + value + ']').set('checked', true);
 					},
@@ -2945,15 +2935,49 @@ AUI.add(
 
 						var fieldName = field.get('name');
 
+						var fieldContainer = field.get('container');
+
+						var parentNode = fieldContainer.get('parentNode');
+
 						var repeatableInstance = instance.repeatableInstances[fieldName];
 
 						if (!repeatableInstance) {
-							repeatableInstance = new A.SortableList(
+							var ddPlugins = [];
+
+							if (Liferay.Util.getTop() === A.config.win) {
+								ddPlugins.push(
+									{
+										fn: A.Plugin.DDWinScroll
+									}
+								);
+							}
+							else {
+								ddPlugins.push(
+									{
+										cfg: {
+											constrain: '.lfr-form-content'
+										},
+										fn: A.Plugin.DDConstrained
+									},
+									{
+										cfg: {
+											horizontal: false,
+											node: '.lfr-form-content'
+										},
+										fn: A.Plugin.DDNodeScroll
+									}
+								);
+							}
+
+							repeatableInstance = new Liferay.DDM.RepeatableSortableList(
 								{
-									dropOn: field.get('container').get('parentNode'),
+									dd: {
+										plugins: ddPlugins
+									},
+									dropOn: '#' + parentNode.attr('id'),
 									helper: A.Node.create(TPL_REPEATABLE_HELPER),
 									nodes: '[data-fieldName=' + fieldName + ']',
-									placeholder: A.Node.create(TPL_REPEATABLE_PLACEHOLDER),
+									placeholder: A.Node.create('<div class="form-builder-placeholder"></div>'),
 									sortCondition: function(event) {
 										var dropNode = event.drop.get('node');
 
@@ -2962,15 +2986,17 @@ AUI.add(
 								}
 							);
 
+							repeatableInstance.after('drag:align', A.bind(instance._afterRepeatableDragAlign, instance));
+
 							repeatableInstance.after('drag:end', A.rbind(instance._afterRepeatableDragEnd, instance, field.get('parent')));
 
 							instance.repeatableInstances[fieldName] = repeatableInstance;
 						}
 						else {
-							repeatableInstance.add(field.get('container'));
+							repeatableInstance.add(fieldContainer);
 						}
 
-						var drag = A.DD.DDM.getDrag(field.get('container'));
+						var drag = A.DD.DDM.getDrag(fieldContainer);
 
 						drag.addInvalid('.alloy-editor');
 						drag.addInvalid('.lfr-source-editor');
@@ -3020,6 +3046,13 @@ AUI.add(
 						if (field.get('repeatable')) {
 							instance.registerRepeatable(field);
 						}
+					},
+
+					_afterRepeatableDragAlign: function() {
+						var DDM = A.DD.DDM;
+
+						DDM.syncActiveShims();
+						DDM._dropMove();
 					},
 
 					_afterRepeatableDragEnd: function(event, parentField) {
@@ -3143,6 +3176,39 @@ AUI.add(
 						translationManager.addTarget(instance);
 
 						return translationManager;
+					}
+				}
+			}
+		);
+
+		Liferay.DDM.RepeatableSortableList = A.Component.create(
+			{
+				EXTENDS: A.SortableList,
+
+				prototype: {
+					_createDrag: function(node) {
+						var instance = this;
+
+						var helper = instance.get('helper');
+
+						if (!A.DD.DDM.getDrag(node)) {
+							var dragOptions = {
+								bubbleTargets: instance,
+								node: node,
+								target: true
+							};
+
+							var proxyOptions = instance.get('proxy');
+
+							if (helper) {
+								proxyOptions.borderStyle = null;
+							}
+
+							new A.DD.Drag(
+								A.mix(dragOptions, instance.get('dd'))
+							)
+							.plug(A.Plugin.DDProxy, proxyOptions);
+						}
 					}
 				}
 			}

@@ -22,6 +22,7 @@ import static com.liferay.exportimport.kernel.lifecycle.ExportImportLifecycleCon
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.asset.kernel.model.adapter.StagedAssetLink;
 import com.liferay.exportimport.constants.ExportImportConstants;
 import com.liferay.exportimport.kernel.controller.ExportImportController;
 import com.liferay.exportimport.kernel.controller.ImportController;
@@ -29,13 +30,13 @@ import com.liferay.exportimport.kernel.exception.LARFileException;
 import com.liferay.exportimport.kernel.exception.LARTypeException;
 import com.liferay.exportimport.kernel.exception.LayoutImportException;
 import com.liferay.exportimport.kernel.exception.MissingReferenceException;
-import com.liferay.exportimport.kernel.lar.ExportImportHelperUtil;
+import com.liferay.exportimport.kernel.lar.ExportImportHelper;
 import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
 import com.liferay.exportimport.kernel.lar.ManifestSummary;
 import com.liferay.exportimport.kernel.lar.MissingReference;
 import com.liferay.exportimport.kernel.lar.MissingReferences;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
-import com.liferay.exportimport.kernel.lar.PortletDataContextFactoryUtil;
+import com.liferay.exportimport.kernel.lar.PortletDataContextFactory;
 import com.liferay.exportimport.kernel.lar.PortletDataHandler;
 import com.liferay.exportimport.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerUtil;
@@ -206,7 +207,7 @@ public class LayoutImportController implements ImportController {
 				EVENT_LAYOUT_IMPORT_STARTED, getProcessFlag(),
 				String.valueOf(
 					exportImportConfiguration.getExportImportConfigurationId()),
-				PortletDataContextFactoryUtil.clonePortletDataContext(
+				_portletDataContextFactory.clonePortletDataContext(
 					portletDataContext));
 
 			Map<String, Serializable> settingsMap =
@@ -222,7 +223,7 @@ public class LayoutImportController implements ImportController {
 				EVENT_LAYOUT_IMPORT_SUCCEEDED, getProcessFlag(),
 				String.valueOf(
 					exportImportConfiguration.getExportImportConfigurationId()),
-				PortletDataContextFactoryUtil.clonePortletDataContext(
+				_portletDataContextFactory.clonePortletDataContext(
 					portletDataContext),
 				userId);
 		}
@@ -233,7 +234,7 @@ public class LayoutImportController implements ImportController {
 				EVENT_LAYOUT_IMPORT_FAILED, getProcessFlag(),
 				String.valueOf(
 					exportImportConfiguration.getExportImportConfigurationId()),
-				PortletDataContextFactoryUtil.clonePortletDataContext(
+				_portletDataContextFactory.clonePortletDataContext(
 					portletDataContext),
 				t);
 
@@ -275,7 +276,7 @@ public class LayoutImportController implements ImportController {
 			portletDataContext.setPrivateLayout(privateLayout);
 
 			MissingReferences missingReferences =
-				ExportImportHelperUtil.validateMissingReferences(
+				_exportImportHelper.validateMissingReferences(
 					portletDataContext);
 
 			Map<String, MissingReference> dependencyMissingReferences =
@@ -409,7 +410,7 @@ public class LayoutImportController implements ImportController {
 		// Manifest
 
 		ManifestSummary manifestSummary =
-			ExportImportHelperUtil.getManifestSummary(portletDataContext);
+			_exportImportHelper.getManifestSummary(portletDataContext);
 
 		portletDataContext.setManifestSummary(manifestSummary);
 
@@ -648,14 +649,13 @@ public class LayoutImportController implements ImportController {
 		String userIdStrategyString = MapUtil.getString(
 			parameterMap, PortletDataHandlerKeys.USER_ID_STRATEGY);
 
-		UserIdStrategy userIdStrategy =
-			ExportImportHelperUtil.getUserIdStrategy(
-				userId, userIdStrategyString);
+		UserIdStrategy userIdStrategy = _exportImportHelper.getUserIdStrategy(
+			userId, userIdStrategyString);
 
 		ZipReader zipReader = ZipReaderFactoryUtil.getZipReader(file);
 
 		PortletDataContext portletDataContext =
-			PortletDataContextFactoryUtil.createImportPortletDataContext(
+			_portletDataContextFactory.createImportPortletDataContext(
 				group.getCompanyId(), targetGroupId, parameterMap,
 				userIdStrategy, zipReader);
 
@@ -718,6 +718,8 @@ public class LayoutImportController implements ImportController {
 
 		portletDataContext.addDeletionSystemEventStagedModelTypes(
 			new StagedModelType(Layout.class));
+		portletDataContext.addDeletionSystemEventStagedModelTypes(
+			new StagedModelType(StagedAssetLink.class));
 	}
 
 	/**
@@ -893,9 +895,8 @@ public class LayoutImportController implements ImportController {
 
 		String larType = headerElement.attributeValue("type");
 
-		String[] expectedLARTypes = new String[] {
-			"layout-prototype", "layout-set", "layout-set-prototype"
-		};
+		String[] expectedLARTypes =
+			{"layout-prototype", "layout-set", "layout-set-prototype"};
 
 		if (Stream.of(expectedLARTypes).noneMatch(lt -> lt.equals(larType))) {
 			throw new LARTypeException(larType, expectedLARTypes);
@@ -1112,6 +1113,9 @@ public class LayoutImportController implements ImportController {
 		DeletionSystemEventImporter.getInstance();
 
 	@Reference
+	private ExportImportHelper _exportImportHelper;
+
+	@Reference
 	private ExportImportLifecycleManager _exportImportLifecycleManager;
 
 	@Reference
@@ -1131,6 +1135,9 @@ public class LayoutImportController implements ImportController {
 
 	private final PermissionImporter _permissionImporter =
 		PermissionImporter.getInstance();
+
+	@Reference
+	private PortletDataContextFactory _portletDataContextFactory;
 
 	@Reference
 	private PortletDataHandlerProvider _portletDataHandlerProvider;

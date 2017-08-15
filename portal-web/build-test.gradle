@@ -8,6 +8,16 @@ buildscript {
 	repositories {
 		if (!Boolean.getBoolean("maven.local.ignore")) {
 			mavenLocal()
+
+			if (project.hasProperty("tmp.maven.repository.dir")) {
+				File tmpMavenRepositoryDir = file(project.properties["tmp.maven.repository.dir"])
+
+				if (tmpMavenRepositoryDir.exists()) {
+					maven {
+						url tmpMavenRepositoryDir
+					}
+				}
+			}
 		}
 
 		maven {
@@ -24,7 +34,7 @@ poshiRunner {
 	}
 
 	openCVVersion = "2.4.10-0.10"
-	version = "1.0.59"
+	version = "1.0.62"
 }
 
 task updateGradleCache
@@ -45,6 +55,16 @@ dependencies {
 repositories {
 	if (!Boolean.getBoolean("maven.local.ignore")) {
 		mavenLocal()
+
+		if (project.hasProperty("tmp.maven.repository.dir")) {
+			File tmpMavenRepositoryDir = file(project.properties["tmp.maven.repository.dir"])
+
+			if (tmpMavenRepositoryDir.exists()) {
+				maven {
+					url tmpMavenRepositoryDir
+				}
+			}
+		}
 	}
 
 	maven {

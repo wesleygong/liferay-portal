@@ -28,6 +28,7 @@ import com.liferay.gradle.util.Validator;
 
 import java.io.File;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -88,17 +89,16 @@ public class TestIntegrationDefaultsPlugin
 				project,
 				TestIntegrationPlugin.SET_UP_TESTABLE_TOMCAT_TASK_NAME);
 
-		String setenvGCNew = GradleUtil.getProperty(
-			project, "app.server.tomcat.setenv.gc.new", (String)null);
-		String setenvGCOld = GradleUtil.getProperty(
-			project, "app.server.tomcat.setenv.gc.old", (String)null);
-
-		if (Validator.isNotNull(setenvGCNew) &&
-			Validator.isNotNull(setenvGCOld)) {
-
-			setUpTestableTomcatTask.catalinaOptsReplacement(
-				setenvGCOld, setenvGCNew);
-		}
+		setUpTestableTomcatTask.setJaCoCoAgentConfiguration(
+			GradleUtil.getProperty(
+				project, "jacoco.agent.configuration", (String)null));
+		setUpTestableTomcatTask.setJaCoCoAgentFile(
+			GradleUtil.getProperty(project, "jacoco.agent.jar", (String)null));
+		setUpTestableTomcatTask.setAspectJAgent(
+			GradleUtil.getProperty(project, "aspectj.agent", (String)null));
+		setUpTestableTomcatTask.setAspectJConfiguration(
+			GradleUtil.getProperty(
+				project, "aspectj.configuration", (String)null));
 
 		setUpTestableTomcatTask.setZipUrl(
 			new Callable<String>() {
@@ -141,6 +141,13 @@ public class TestIntegrationDefaultsPlugin
 
 				@Override
 				public List<String> call() throws Exception {
+					String argLine = System.getProperty(
+						"app.server.start.executable.arg.line");
+
+					if (Validator.isNotNull(argLine)) {
+						return Arrays.asList(argLine.split(" "));
+					}
+
 					return tomcatAppServer.getStartExecutableArgs();
 				}
 

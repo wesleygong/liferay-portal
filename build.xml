@@ -4,6 +4,27 @@
 	<import file="build-common.xml" />
 
 	<target name="all">
+		<if>
+			<not>
+				<or>
+					<equals arg1="${build.binaries.cache.dir}" arg2="" />
+					<available file="${project.dir}/${build.binaries.cache.dir}" type="dir" />
+				</or>
+			</not>
+			<then>
+				<property location="${project.dir}/${build.binaries.cache.dir}" name="build.binaries.cache.dir.absolute.path" />
+
+				<echo>
+Please clone the repository at https://github.com/liferay/${build.binaries.cache.repository.name}
+into ${build.binaries.cache.dir.absolute.path} to have a cached copy of all
+Gradle dependencies used during the build.
+
+Set the property "build.binaries.cache.dir" to an empty value to suppress this
+message.
+				</echo>
+			</then>
+		</if>
+
 		<antcall target="clean" />
 		<antcall target="compile" />
 		<antcall target="deploy" />
@@ -83,6 +104,8 @@
 			<ant dir="portal-test-integration" inheritAll="false" target="clean" />
 
 			<ant dir="sql" inheritAll="false" target="clean" />
+
+			<delete dir="jacoco" />
 
 			<sequential>
 				<delete dir="${sdk.dir}" />
@@ -441,7 +464,7 @@
 	<target name="deploy-additional-jars">
 		<copy todir="${app.server.lib.global.dir}">
 			<fileset dir="lib/development" includes="hsql.jar,mariadb.jar,mysql.jar,postgresql.jar" />
-			<fileset dir="lib/global" />
+			<fileset dir="lib/global" excludes="dependencies.properties" />
 		</copy>
 
 		<if>
@@ -465,7 +488,7 @@
 			</then>
 			<else>
 				<copy todir="${app.server.lib.portal.dir}">
-					<fileset dir="lib/portal" />
+					<fileset dir="lib/portal" excludes="dependencies.properties" />
 				</copy>
 			</else>
 		</if>

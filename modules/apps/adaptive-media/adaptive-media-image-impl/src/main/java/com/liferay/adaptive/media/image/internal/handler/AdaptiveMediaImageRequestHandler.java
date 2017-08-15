@@ -33,6 +33,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.io.IOException;
 
@@ -112,17 +113,17 @@ public class AdaptiveMediaImageRequestHandler
 		Map<String, String> properties = new HashMap<>();
 
 		AdaptiveMediaAttribute<Object, String> fileName =
-			AdaptiveMediaAttribute.fileName();
+			AdaptiveMediaAttribute.getFileName();
 
 		properties.put(fileName.getName(), fileVersion.getFileName());
 
 		AdaptiveMediaAttribute<Object, String> contentType =
-			AdaptiveMediaAttribute.contentType();
+			AdaptiveMediaAttribute.getContentType();
 
 		properties.put(contentType.getName(), fileVersion.getMimeType());
 
 		AdaptiveMediaAttribute<Object, Integer> contentLength =
-			AdaptiveMediaAttribute.contentLength();
+			AdaptiveMediaAttribute.getContentLength();
 
 		properties.put(
 			contentLength.getName(), String.valueOf(fileVersion.getSize()));
@@ -148,12 +149,13 @@ public class AdaptiveMediaImageRequestHandler
 		try {
 			Optional<AdaptiveMediaImageConfigurationEntry>
 				configurationEntryOptional = attributeMapping.getValueOptional(
-					AdaptiveMediaAttribute.configurationUuid()).flatMap(
-						configurationUuid ->
-							_configurationHelper.
-								getAdaptiveMediaImageConfigurationEntry(
-									fileVersion.getCompanyId(),
-									configurationUuid));
+					AdaptiveMediaAttribute.getConfigurationUuid()
+				).flatMap(
+					configurationUuid ->
+						_configurationHelper.
+							getAdaptiveMediaImageConfigurationEntry(
+								fileVersion.getCompanyId(), configurationUuid)
+				);
 
 			if (!configurationEntryOptional.isPresent()) {
 				return Optional.empty();
@@ -270,23 +272,27 @@ public class AdaptiveMediaImageRequestHandler
 
 			FileVersion fileVersion = fileVersionMapTuple.first;
 
+			if (fileVersion.getStatus() == WorkflowConstants.STATUS_IN_TRASH) {
+				return Optional.empty();
+			}
+
 			Map<String, String> properties = fileVersionMapTuple.second;
 
 			AdaptiveMediaAttribute<Object, Integer> contentLengthAttribute =
-				AdaptiveMediaAttribute.contentLength();
+				AdaptiveMediaAttribute.getContentLength();
 
 			properties.put(
 				contentLengthAttribute.getName(),
 				String.valueOf(fileVersion.getSize()));
 
 			AdaptiveMediaAttribute<Object, String> contentTypeAttribute =
-				AdaptiveMediaAttribute.contentType();
+				AdaptiveMediaAttribute.getContentType();
 
 			properties.put(
 				contentTypeAttribute.getName(), fileVersion.getMimeType());
 
 			AdaptiveMediaAttribute<Object, String> fileNameAttribute =
-				AdaptiveMediaAttribute.fileName();
+				AdaptiveMediaAttribute.getFileName();
 
 			properties.put(
 				fileNameAttribute.getName(), fileVersion.getFileName());
@@ -310,11 +316,11 @@ public class AdaptiveMediaImageRequestHandler
 
 		Optional<String> adaptiveMediaConfigurationUuidOptional =
 			adaptiveMedia.getValueOptional(
-				AdaptiveMediaAttribute.configurationUuid());
+				AdaptiveMediaAttribute.getConfigurationUuid());
 
 		Optional<String> attributeMappingConfigurationUuidOptional =
 			attributeMapping.getValueOptional(
-				AdaptiveMediaAttribute.configurationUuid());
+				AdaptiveMediaAttribute.getConfigurationUuid());
 
 		if (adaptiveMediaConfigurationUuidOptional.equals(
 				attributeMappingConfigurationUuidOptional)) {

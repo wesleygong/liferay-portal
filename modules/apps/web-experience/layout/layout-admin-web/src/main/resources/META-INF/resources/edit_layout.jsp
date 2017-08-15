@@ -69,6 +69,10 @@ if (layoutRevision != null) {
 		LayoutSetBranch layoutSetBranch = LayoutSetBranchLocalServiceUtil.getLayoutSetBranch(layoutSetBranchId);
 
 		layoutSetBranchName = layoutSetBranch.getName();
+
+		if (LayoutSetBranchConstants.MASTER_BRANCH_NAME.equals(layoutSetBranchName)) {
+			layoutSetBranchName = LanguageUtil.get(request, layoutSetBranchName);
+		}
 	}
 }
 
@@ -122,7 +126,7 @@ renderResponse.setTitle(selLayout.getName(locale));
 			<portlet:param name="mvcPath" value="/view.jsp" />
 		</portlet:actionURL>
 
-		<aui:form action='<%= HttpUtil.addParameter(editLayoutURL, "refererPlid", plid) %>' cssClass="edit-layout-form" enctype="multipart/form-data" method="post" name="editLayoutFm">
+		<aui:form action='<%= HttpUtil.addParameter(editLayoutURL, "refererPlid", plid) %>' cssClass="edit-layout-form" data-senna-off="true" enctype="multipart/form-data" method="post" name="editLayoutFm">
 			<aui:input name="backURL" type="hidden" value="<%= backURL %>" />
 			<aui:input name="groupId" type="hidden" value="<%= layoutsAdminDisplayContext.getGroupId() %>" />
 			<aui:input name="liveGroupId" type="hidden" value="<%= layoutsAdminDisplayContext.getLiveGroupId() %>" />

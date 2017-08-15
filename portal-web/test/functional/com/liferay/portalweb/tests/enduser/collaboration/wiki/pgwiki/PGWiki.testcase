@@ -291,7 +291,7 @@
 	</command>
 
 	<command name="AddWikiFrontPageChildPageFormatHTML" priority="4">
-		<property name="portal.acceptance" value="quarantine" />
+		<property name="portal.acceptance" value="true" />
 
 		<var name="welcomeToLiferay">
 			<![CDATA[
@@ -323,11 +323,9 @@
 			<var name="wikiPageTitle" value="Wiki FrontPage Child Page Title" />
 		</execute>
 
-		<execute function="Click" locator1="AlloyEditor#CONTENT_FIELD" />
-
-		<execute function="Click" locator1="AlloyEditor#CONTENT_EDITOR_SWITCH_ACE_EDITOR" />
-
-		<execute function="Type#typeAceEditor" locator1="TextArea#ACE_EDITOR" value1="${welcomeToLiferay}" />
+		<execute macro="AlloyEditor#addSourceContent">
+			<var name="content" value="${welcomeToLiferay}" />
+		</execute>
 
 		<execute macro="PortletEntry#publish" />
 
@@ -548,8 +546,8 @@
 
 		<execute macro="WikiEntry#confirmHTML" />
 
-		<execute macro="WikiEntry#addPageContentViaSource">
-			<var name="wikiPageContent">
+		<execute macro="AlloyEditor#addSourceContent">
+			<var name="content">
 			<![CDATA[
 				<p id="demo">PASS</p><script type="text/javascript">document.getElementById('demo').innerHTML="this code should not be read by the client";</script>
 			]]>
@@ -599,6 +597,9 @@
 	</command>
 
 	<command name="AddWikiFrontPageFormatHTML" priority="5">
+		<property name="portal.acceptance" value="pending" />
+		<property name="testray.component.names" value="Training" />
+
 		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Wiki Test Page" />
 		</execute>
@@ -728,13 +729,9 @@
 			<var name="wikiPageTitle" value="Wiki Page Title" />
 		</execute>
 
-		<execute function="Click#clickAt" locator1="AlloyEditor#CONTENT_FIELD" />
-
-		<execute function="Click" locator1="AlloyEditor#CONTENT_EDITOR_SWITCH_ACE_EDITOR" />
-
-		<execute function="Pause" locator1="1000" />
-
-		<execute function="Type#typeAceEditor" locator1="TextArea#ACE_EDITOR" value1="${welcomeToLiferay}" />
+		<execute macro="AlloyEditor#addSourceContent">
+			<var name="content" value="${welcomeToLiferay}" />
+		</execute>
 
 		<execute macro="PortletEntry#publish" />
 
@@ -798,15 +795,12 @@
 			<var name="wikiPageTitle" value="Wiki Page With JSPWiki Content" />
 		</execute>
 
-		<execute function="Click" locator1="AlloyEditor#CONTENT_FIELD" />
+		<execute macro="AlloyEditor#addSourceContent">
+			<var name="content"><![CDATA[
+!JSPWiki Header"
 
-		<execute function="Click" locator1="AlloyEditor#CONTENT_EDITOR_SWITCH_ACE_EDITOR" />
-
-		<execute function="Type#sendKeysAceEditor" locator1="TextArea#ACE_EDITOR" value1="!JSPWiki Header" />
-
-		<execute function="KeyPress" locator1="TextArea#ACE_EDITOR" value1="\RETURN" />
-
-		<execute function="Type#sendKeysAceEditor" locator1="TextArea#ACE_EDITOR" value1="__JSPWiki Bold Text__" />
+__JSPWiki Bold Text__]]></var>
+		</execute>
 
 		<execute macro="PortletEntry#publish" />
 
@@ -831,6 +825,9 @@
 	</command>
 
 	<command name="AddWikiPages" priority="5">
+		<property name="portal.acceptance" value="pending" />
+		<property name="testray.component.names" value="Training" />
+
 		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Wiki Test Page" />
 		</execute>
@@ -1104,7 +1101,7 @@
 	</command>
 
 	<command name="DeleteWikiFrontPage" priority="5">
-		<property name="portal.acceptance" value="quarantine" />
+		<property name="portal.acceptance" value="true" />
 
 		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Wiki Test Page" />
@@ -1215,7 +1212,7 @@
 	</command>
 
 	<command name="EditWikiFrontPage" priority="5">
-		<property name="portal.acceptance" value="quarantine" />
+		<property name="portal.acceptance" value="true" />
 
 		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Wiki Test Page" />

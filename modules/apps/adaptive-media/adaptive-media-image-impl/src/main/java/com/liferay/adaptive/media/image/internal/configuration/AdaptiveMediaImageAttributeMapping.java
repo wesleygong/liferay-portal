@@ -51,20 +51,21 @@ public class AdaptiveMediaImageAttributeMapping {
 			attributes = new HashMap<>();
 
 		attributes.put(
-			AdaptiveMediaAttribute.configurationUuid(),
+			AdaptiveMediaAttribute.getConfigurationUuid(),
 			_getValueOptional(
-				properties, AdaptiveMediaAttribute.configurationUuid()));
+				properties, AdaptiveMediaAttribute.getConfigurationUuid()));
 		attributes.put(
-			AdaptiveMediaAttribute.contentLength(),
+			AdaptiveMediaAttribute.getContentLength(),
 			_getValueOptional(
-				properties, AdaptiveMediaAttribute.contentLength()));
+				properties, AdaptiveMediaAttribute.getContentLength()));
 		attributes.put(
-			AdaptiveMediaAttribute.contentType(),
+			AdaptiveMediaAttribute.getContentType(),
 			_getValueOptional(
-				properties, AdaptiveMediaAttribute.contentType()));
+				properties, AdaptiveMediaAttribute.getContentType()));
 		attributes.put(
-			AdaptiveMediaAttribute.fileName(),
-			_getValueOptional(properties, AdaptiveMediaAttribute.fileName()));
+			AdaptiveMediaAttribute.getFileName(),
+			_getValueOptional(
+				properties, AdaptiveMediaAttribute.getFileName()));
 		attributes.put(
 			AdaptiveMediaImageAttribute.IMAGE_HEIGHT,
 			_getValueOptional(
@@ -82,9 +83,8 @@ public class AdaptiveMediaImageAttributeMapping {
 	 * attribute (if any) in this mapping.
 	 *
 	 * @param  adaptiveMediaAttribute a non <code>null</code> attribute
-	 * @return A non-<code>null</code> optional that will contain the
+	 * @return a non-<code>null</code> optional that contains the
 	 *         (non-<code>null</code>) value (if any)
-	 * @review
 	 */
 	public <V> Optional<V> getValueOptional(
 		AdaptiveMediaAttribute<AdaptiveMediaImageProcessor, V>

@@ -25,13 +25,16 @@ import com.liferay.gradle.plugins.cache.CacheExtension;
 import com.liferay.gradle.plugins.cache.CachePlugin;
 import com.liferay.gradle.plugins.cache.task.TaskCache;
 import com.liferay.gradle.plugins.defaults.internal.FindSecurityBugsPlugin;
+import com.liferay.gradle.plugins.defaults.internal.JaCoCoPlugin;
 import com.liferay.gradle.plugins.defaults.internal.LiferayRelengPlugin;
 import com.liferay.gradle.plugins.defaults.internal.WhipDefaultsPlugin;
 import com.liferay.gradle.plugins.defaults.internal.util.BackupFilesBuildAdapter;
 import com.liferay.gradle.plugins.defaults.internal.util.FileUtil;
 import com.liferay.gradle.plugins.defaults.internal.util.GitUtil;
+import com.liferay.gradle.plugins.defaults.internal.util.GradlePluginsDefaultsUtil;
 import com.liferay.gradle.plugins.defaults.internal.util.GradleUtil;
 import com.liferay.gradle.plugins.defaults.internal.util.IncrementVersionClosure;
+import com.liferay.gradle.plugins.defaults.internal.util.XMLUtil;
 import com.liferay.gradle.plugins.defaults.internal.util.copy.RenameDependencyAction;
 import com.liferay.gradle.plugins.defaults.tasks.CheckOSGiBundleStateTask;
 import com.liferay.gradle.plugins.defaults.tasks.InstallCacheTask;
@@ -109,7 +112,6 @@ import java.util.regex.Pattern;
 
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import nebula.plugin.extraconfigurations.OptionalBasePlugin;
 import nebula.plugin.extraconfigurations.ProvidedBasePlugin;
@@ -145,9 +147,6 @@ import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.artifacts.maven.Conf2ScopeMapping;
 import org.gradle.api.artifacts.maven.Conf2ScopeMappingContainer;
 import org.gradle.api.artifacts.maven.MavenDeployer;
-import org.gradle.api.artifacts.repositories.AuthenticationContainer;
-import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
-import org.gradle.api.artifacts.repositories.PasswordCredentials;
 import org.gradle.api.execution.TaskExecutionGraph;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.CopySpec;
@@ -203,7 +202,6 @@ import org.gradle.api.tasks.testing.logging.TestLoggingContainer;
 import org.gradle.execution.ProjectConfigurer;
 import org.gradle.external.javadoc.CoreJavadocOptions;
 import org.gradle.external.javadoc.StandardJavadocDocletOptions;
-import org.gradle.internal.authentication.DefaultBasicAuthentication;
 import org.gradle.internal.service.ServiceRegistry;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
 import org.gradle.plugins.ide.api.XmlFileContentMerger;
@@ -229,9 +227,6 @@ import org.w3c.dom.NodeList;
  */
 public class LiferayOSGiDefaultsPlugin implements Plugin<Project> {
 
-	public static final String ASPECTJ_WEAVER_CONFIGURATION_NAME =
-		"aspectJWeaver";
-
 	public static final String CHECK_OSGI_BUNDLE_STATE_TASK_NAME =
 		"checkOSGiBundleState";
 
@@ -240,8 +235,7 @@ public class LiferayOSGiDefaultsPlugin implements Plugin<Project> {
 	public static final String COPY_LIBS_TASK_NAME = "copyLibs";
 
 	public static final String DEFAULT_REPOSITORY_URL =
-		"https://cdn.lfrs.sl/repository.liferay.com/nexus/content/groups" +
-			"/public";
+		GradlePluginsDefaultsUtil.DEFAULT_REPOSITORY_URL;
 
 	public static final String DEPLOY_APP_SERVER_LIB_TASK_NAME =
 		"deployAppServerLib";
@@ -341,8 +335,6 @@ public class LiferayOSGiDefaultsPlugin implements Plugin<Project> {
 
 			WhipDefaultsPlugin.INSTANCE.apply(project);
 
-			Configuration aspectJWeaverConfiguration =
-				_addConfigurationAspectJWeaver(project);
 			Configuration portalConfiguration = GradleUtil.getConfiguration(
 				project, LiferayBasePlugin.PORTAL_CONFIGURATION_NAME);
 			Configuration portalTestConfiguration = _addConfigurationPortalTest(
@@ -356,11 +348,13 @@ public class LiferayOSGiDefaultsPlugin implements Plugin<Project> {
 				project, portalConfiguration, portalTestConfiguration);
 			_configureSourceSetTestIntegration(
 				project, portalConfiguration, portalTestConfiguration);
-			_configureTaskTestAspectJWeaver(
-				project, JavaPlugin.TEST_TASK_NAME, aspectJWeaverConfiguration);
-			_configureTaskTestAspectJWeaver(
-				project, TestIntegrationBasePlugin.TEST_INTEGRATION_TASK_NAME,
-				aspectJWeaverConfiguration);
+
+			if (GradleUtil.getProperty(
+					project, "junit.code.coverage",
+					Boolean.getBoolean("junit.code.coverage"))) {
+
+				JaCoCoPlugin.INSTANCE.apply(project);
+			}
 		}
 
 		Task baselineTask = GradleUtil.getTask(
@@ -378,7 +372,8 @@ public class LiferayOSGiDefaultsPlugin implements Plugin<Project> {
 			_addTaskCheckOSGiBundleState(project);
 		}
 
-		InstallCacheTask installCacheTask = _addTaskInstallCache(project);
+		InstallCacheTask installCacheTask = _addTaskInstallCache(
+			project, portalRootDir);
 
 		_addTaskCommitCache(project, installCacheTask);
 
@@ -421,7 +416,7 @@ public class LiferayOSGiDefaultsPlugin implements Plugin<Project> {
 			_SOURCE_FORMATTER_PORTAL_TOOL_NAME);
 		_configurePmd(project);
 		_configureProject(project);
-		configureRepositories(project);
+		GradlePluginsDefaultsUtil.configureRepositories(project, portalRootDir);
 		_configureSourceSetMain(project);
 		_configureTaskDeploy(project, deployDependenciesTask);
 		_configureTaskJar(project, testProject);
@@ -530,107 +525,6 @@ public class LiferayOSGiDefaultsPlugin implements Plugin<Project> {
 			});
 	}
 
-	protected static void configureRepositories(Project project) {
-		RepositoryHandler repositoryHandler = project.getRepositories();
-
-		if (!Boolean.getBoolean("maven.local.ignore")) {
-			repositoryHandler.mavenLocal();
-		}
-
-		repositoryHandler.maven(
-			new Action<MavenArtifactRepository>() {
-
-				@Override
-				public void execute(
-					MavenArtifactRepository mavenArtifactRepository) {
-
-					String url = System.getProperty(
-						"repository.url", DEFAULT_REPOSITORY_URL);
-
-					mavenArtifactRepository.setUrl(url);
-				}
-
-			});
-
-		final String repositoryPrivatePassword = System.getProperty(
-			"repository.private.password");
-		final String repositoryPrivateUrl = System.getProperty(
-			"repository.private.url");
-		final String repositoryPrivateUsername = System.getProperty(
-			"repository.private.username");
-
-		if (Validator.isNotNull(repositoryPrivatePassword) &&
-			Validator.isNotNull(repositoryPrivateUrl) &&
-			Validator.isNotNull(repositoryPrivateUsername)) {
-
-			MavenArtifactRepository mavenArtifactRepository =
-				repositoryHandler.maven(
-					new Action<MavenArtifactRepository>() {
-
-						@Override
-						public void execute(
-							MavenArtifactRepository mavenArtifactRepository) {
-
-							mavenArtifactRepository.setUrl(
-								repositoryPrivateUrl);
-						}
-
-					});
-
-			mavenArtifactRepository.authentication(
-				new Action<AuthenticationContainer>() {
-
-					@Override
-					public void execute(
-						AuthenticationContainer authenticationContainer) {
-
-						authenticationContainer.add(
-							new DefaultBasicAuthentication("basic"));
-					}
-
-				});
-
-			mavenArtifactRepository.credentials(
-				new Action<PasswordCredentials>() {
-
-					@Override
-					public void execute(
-						PasswordCredentials passwordCredentials) {
-
-						passwordCredentials.setPassword(
-							repositoryPrivatePassword);
-						passwordCredentials.setUsername(
-							repositoryPrivateUsername);
-					}
-
-				});
-		}
-	}
-
-	private Configuration _addConfigurationAspectJWeaver(
-		final Project project) {
-
-		Configuration configuration = GradleUtil.addConfiguration(
-			project, ASPECTJ_WEAVER_CONFIGURATION_NAME);
-
-		configuration.defaultDependencies(
-			new Action<DependencySet>() {
-
-				@Override
-				public void execute(DependencySet dependencySet) {
-					_addDependenciesAspectJWeaver(project);
-				}
-
-			});
-
-		configuration.setDescription(
-			"Configures AspectJ Weaver to apply to the test tasks.");
-		configuration.setTransitive(false);
-		configuration.setVisible(false);
-
-		return configuration;
-	}
-
 	private Configuration _addConfigurationPortalTest(Project project) {
 		Configuration configuration = GradleUtil.addConfiguration(
 			project, PORTAL_TEST_CONFIGURATION_NAME);
@@ -641,12 +535,6 @@ public class LiferayOSGiDefaultsPlugin implements Plugin<Project> {
 		configuration.setVisible(false);
 
 		return configuration;
-	}
-
-	private void _addDependenciesAspectJWeaver(Project project) {
-		GradleUtil.addDependency(
-			project, ASPECTJ_WEAVER_CONFIGURATION_NAME, "org.aspectj",
-			"aspectjweaver", "1.8.9");
 	}
 
 	private void _addDependenciesPmd(Project project) {
@@ -1015,7 +903,9 @@ public class LiferayOSGiDefaultsPlugin implements Plugin<Project> {
 		return copy;
 	}
 
-	private InstallCacheTask _addTaskInstallCache(final Project project) {
+	private InstallCacheTask _addTaskInstallCache(
+		final Project project, File portalRootDir) {
+
 		InstallCacheTask installCacheTask = GradleUtil.addTask(
 			project, INSTALL_CACHE_TASK_NAME, InstallCacheTask.class);
 
@@ -1070,6 +960,14 @@ public class LiferayOSGiDefaultsPlugin implements Plugin<Project> {
 				}
 
 			});
+
+		if (portalRootDir != null) {
+			installCacheTask.setCacheFormat(InstallCacheTask.CacheFormat.MAVEN);
+			installCacheTask.setCacheRootDir(
+				new File(
+					portalRootDir,
+					GradlePluginsDefaultsUtil.TMP_MAVEN_REPOSITORY_DIR_NAME));
+		}
 
 		installCacheTask.setDescription(
 			"Installs the project to the local Gradle cache for testing.");
@@ -3191,32 +3089,8 @@ public class LiferayOSGiDefaultsPlugin implements Plugin<Project> {
 		_configureTaskTestIgnoreFailures(test);
 		_configureTaskTestJvmArgs(test, "junit.java.unit.gc");
 		_configureTaskTestLogging(test);
-	}
 
-	private void _configureTaskTestAspectJWeaver(
-		Project project, String taskName,
-		final Configuration aspectJWeaverConfiguration) {
-
-		Test test = (Test)GradleUtil.getTask(project, taskName);
-
-		test.doFirst(
-			new Action<Task>() {
-
-				@Override
-				public void execute(Task task) {
-					Test test = (Test)task;
-
-					test.jvmArgs(
-						"-javaagent:" +
-							FileUtil.getAbsolutePath(
-								aspectJWeaverConfiguration.getSingleFile()));
-				}
-
-			});
-
-		test.systemProperty(
-			"org.aspectj.weaver.loadtime.configuration",
-			"com/liferay/aspectj/modules/aop.xml");
+		test.setEnableAssertions(false);
 	}
 
 	private void _configureTaskTestIgnoreFailures(Test test) {
@@ -3649,11 +3523,7 @@ public class LiferayOSGiDefaultsPlugin implements Plugin<Project> {
 		urlConnection.setRequestProperty("Authorization", authorization);
 
 		try (InputStream inputStream = urlConnection.getInputStream()) {
-			DocumentBuilderFactory documentBuilderFactory =
-				DocumentBuilderFactory.newInstance();
-
-			DocumentBuilder documentBuilder =
-				documentBuilderFactory.newDocumentBuilder();
+			DocumentBuilder documentBuilder = XMLUtil.getDocumentBuilder();
 
 			Document document = documentBuilder.parse(inputStream);
 
@@ -3782,15 +3652,7 @@ public class LiferayOSGiDefaultsPlugin implements Plugin<Project> {
 			return false;
 		}
 
-		DocumentBuilderFactory documentBuilderFactory =
-			DocumentBuilderFactory.newInstance();
-
-		documentBuilderFactory.setFeature(
-			"http://apache.org/xml/features/nonvalidating/load-external-dtd",
-			false);
-
-		DocumentBuilder documentBuilder =
-			documentBuilderFactory.newDocumentBuilder();
+		DocumentBuilder documentBuilder = XMLUtil.getDocumentBuilder();
 
 		Document document = documentBuilder.parse(serviceXmlFile);
 

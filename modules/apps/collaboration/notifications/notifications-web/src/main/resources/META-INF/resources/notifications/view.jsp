@@ -17,9 +17,22 @@
 <%@ include file="/init.jsp" %>
 
 <%
+String navigation = ParamUtil.getString(request, "navigation", "all");
+
 boolean actionRequired = ParamUtil.getBoolean(request, "actionRequired");
 
-int userNotificationEventsCount = UserNotificationEventLocalServiceUtil.getDeliveredUserNotificationEventsCount(themeDisplay.getUserId(), UserNotificationDeliveryConstants.TYPE_WEBSITE, true, actionRequired);
+String orderByCol = "date";
+String orderByType = ParamUtil.getString(request, "orderByType", "desc");
+
+SearchContainer notificationsSearchContainer = new SearchContainer(renderRequest, currentURLObj, null, actionRequired ? "you-do-not-have-any-requests" : "you-do-not-have-any-notifications");
+
+notificationsSearchContainer.setId("userNotificationEvents");
+
+NotificationsUtil.populateResults(themeDisplay.getUserId(), actionRequired, navigation, orderByType, notificationsSearchContainer);
+
+PortletURL navigationURL = PortletURLUtil.clone(currentURLObj, renderResponse);
+
+navigationURL.setParameter(SearchContainer.DEFAULT_CUR_PARAM, "0");
 %>
 
 <aui:nav-bar markupView="lexicon">
@@ -49,7 +62,7 @@ int userNotificationEventsCount = UserNotificationEventLocalServiceUtil.getDeliv
 </aui:nav-bar>
 
 <liferay-frontend:management-bar
-	disabled="<%= userNotificationEventsCount == 0 %>"
+	disabled="<%= NotificationsUtil.getAllNotificationsCount(themeDisplay.getUserId(), actionRequired) == 0 %>"
 	includeCheckBox="<%= true %>"
 	searchContainerId="userNotificationEvents"
 >
@@ -61,25 +74,46 @@ int userNotificationEventsCount = UserNotificationEventLocalServiceUtil.getDeliv
 		/>
 	</liferay-frontend:management-bar-buttons>
 
+	<liferay-frontend:management-bar-filters>
+
+		<%
+		String[] navigationKeys = {"all"};
+
+		if (!actionRequired) {
+			navigationKeys = new String[] {"all", "unread", "read"};
+		}
+		%>
+
+		<liferay-frontend:management-bar-navigation
+			navigationKeys="<%= navigationKeys %>"
+			portletURL="<%= PortletURLUtil.clone(navigationURL, renderResponse) %>"
+		/>
+
+		<liferay-frontend:management-bar-sort
+			orderByCol="<%= orderByCol %>"
+			orderByType="<%= orderByType %>"
+			orderColumns='<%= new String[] {"date"} %>'
+			portletURL="<%= PortletURLUtil.clone(navigationURL, renderResponse) %>"
+		/>
+	</liferay-frontend:management-bar-filters>
+
 	<liferay-frontend:management-bar-action-buttons>
-		<liferay-frontend:management-bar-button href='<%= "javascript:" + renderResponse.getNamespace() + "markAsRead();" %>' icon="times" label="mark-as-read" />
+		<c:if test="<%= !actionRequired %>">
+			<liferay-frontend:management-bar-button href='<%= "javascript:" + renderResponse.getNamespace() + "markNotificationsAsRead();" %>' icon="envelope-open" label="mark-as-read" />
+			<liferay-frontend:management-bar-button href='<%= "javascript:" + renderResponse.getNamespace() + "markNotificationsAsUnread();" %>' icon="envelope-closed" label="mark-as-unread" />
+		</c:if>
+
+		<liferay-frontend:management-bar-button href='<%= "javascript:" + renderResponse.getNamespace() + "deleteAllNotifications();" %>' icon="times" label="delete" />
 	</liferay-frontend:management-bar-action-buttons>
 </liferay-frontend:management-bar>
 
 <div class="container-fluid-1280 main-content-body">
-	<aui:form action="<%= currentURL %>" cssClass="row" method="get" name="fm">
+	<aui:form action="<%= currentURL %>" method="get" name="fm">
 		<div class="user-notifications">
 			<liferay-ui:search-container
-				emptyResultsMessage='<%= actionRequired ? "you-do-not-have-any-requests" : "you-do-not-have-any-notifications" %>'
-				id="userNotificationEvents"
-				iteratorURL="<%= currentURLObj %>"
 				rowChecker="<%= new EmptyOnClickRowChecker(renderResponse) %>"
-				total="<%= userNotificationEventsCount %>"
+				searchContainer="<%= notificationsSearchContainer %>"
 			>
-				<liferay-ui:search-container-results
-					results="<%= UserNotificationEventLocalServiceUtil.getDeliveredUserNotificationEvents(themeDisplay.getUserId(), UserNotificationDeliveryConstants.TYPE_WEBSITE, true, actionRequired, searchContainer.getStart(), searchContainer.getEnd()) %>"
-				/>
-
 				<liferay-ui:search-container-row
 					className="com.liferay.portal.kernel.model.UserNotificationEvent"
 					keyProperty="userNotificationEventId"
@@ -95,12 +129,28 @@ int userNotificationEventsCount = UserNotificationEventLocalServiceUtil.getDeliv
 </div>
 
 <aui:script>
-	function <portlet:namespace />markAsRead() {
+	function <portlet:namespace />deleteAllNotifications() {
 		var form = AUI.$(document.<portlet:namespace />fm);
 
 		form.attr('method', 'post');
 
-		submitForm(form, '<portlet:actionURL name="markAllAsRead" />');
+		submitForm(form, '<portlet:actionURL name="deleteAllNotifications"><portlet:param name="redirect" value="<%= currentURL %>" /></portlet:actionURL>');
+	}
+
+	function <portlet:namespace />markNotificationsAsRead() {
+		var form = AUI.$(document.<portlet:namespace />fm);
+
+		form.attr('method', 'post');
+
+		submitForm(form, '<portlet:actionURL name="markNotificationsAsRead"><portlet:param name="redirect" value="<%= currentURL %>" /></portlet:actionURL>');
+	}
+
+	function <portlet:namespace />markNotificationsAsUnread() {
+		var form = AUI.$(document.<portlet:namespace />fm);
+
+		form.attr('method', 'post');
+
+		submitForm(form, '<portlet:actionURL name="markNotificationsAsUnread"><portlet:param name="redirect" value="<%= currentURL %>" /></portlet:actionURL>');
 	}
 </aui:script>
 

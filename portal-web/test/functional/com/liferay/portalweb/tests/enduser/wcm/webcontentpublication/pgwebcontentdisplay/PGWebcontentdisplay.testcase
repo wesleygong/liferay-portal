@@ -236,8 +236,9 @@
 		</execute>
 	</command>
 
-	<command name="AddWebContentViaAddContentPanel" priority="4">
-		<property name="testray.component.names" value="Web Content Display" />
+	<command name="AddWebContentViaAddContentPanel" priority="5">
+		<property name="portal.acceptance" value="pending" />
+		<property name="testray.component.names" value="Web Content Display,Training" />
 
 		<execute macro="Navigator#openURL" />
 
@@ -273,8 +274,9 @@
 		</execute>
 	</command>
 
-	<command name="AddWithStructure" priority="4">
-		<property name="testray.component.names" value="Web Content Display" />
+	<command name="AddWithStructure" priority="5">
+		<property name="portal.acceptance" value="pending" />
+		<property name="testray.component.names" value="Web Content Display,Training" />
 
 		<execute macro="Navigator#openURL" />
 
@@ -431,7 +433,9 @@
 			<var name="webContentContent" value="WC WebContent Content WC WebContent Content WC WebContent Content" />
 		</execute>
 
-		<execute macro="WebContentNavigator#gotoEditPGViaWCD" />
+		<execute macro="WebContentNavigator#gotoEditPGViaWCD">
+			<var name="webContentTitle" value="WC WebContent Title" />
+		</execute>
 
 		<execute macro="WebContent#selectTemplateCP">
 			<var name="structureName" value="Basic Web Content" />
@@ -465,7 +469,9 @@
 			<var name="webContentContent" value="WC WebContent Content" />
 		</execute>
 
-		<execute macro="WebContentNavigator#gotoEditPGViaWCD" />
+		<execute macro="WebContentNavigator#gotoEditPGViaWCD">
+			<var name="webContentTitle" value="WC WebContent Title" />
+		</execute>
 
 		<execute macro="WebContent#editPGViaWCD">
 			<var name="webContentContentEdit" value="WC WebContent Content Edit" />
@@ -494,7 +500,9 @@
 			<var name="webContentContent" value="WC WebContent Content" />
 		</execute>
 
-		<execute macro="WebContentNavigator#gotoEditPGViaWCD" />
+		<execute macro="WebContentNavigator#gotoEditPGViaWCD">
+			<var name="webContentTitle" value="WC WebContent Title" />
+		</execute>
 
 		<execute macro="WebContent#addLocale">
 			<var name="language" value="Chinese (China)" />
@@ -529,7 +537,7 @@
 
 	<command name="RemoveWCDPortletSite" priority="5">
 		<property name="portal.acceptance" value="true" />
-		<property name="testray.component.names" value="Web Content Display" />
+		<property name="testray.component.names" value="Web Content Display,Training" />
 
 		<execute macro="Portlet#deletePG">
 			<var name="portletName" value="Web Content Display" />
@@ -595,7 +603,7 @@
 
 	<command name="SelectWebContent" priority="5">
 		<property name="portal.acceptance" value="true" />
-		<property name="testray.component.names" value="Web Content Display" />
+		<property name="testray.component.names" value="Web Content Display,Training" />
 
 		<execute macro="Navigator#openURL" />
 
@@ -973,6 +981,7 @@
 			<var name="templateName" value="Template Edit" />
 			<var name="templateScript" value="Template Edited Extra Content" />
 			<var name="webContentContent" value="WC WebContent Content" />
+			<var name="webContentTitle" value="WC WebContent Title" />
 		</execute>
 	</command>
 
@@ -992,7 +1001,9 @@
 			<var name="webContentContent" value="WC WebContent Content" />
 		</execute>
 
-		<execute macro="WebContentNavigator#gotoEditPGViaWCD" />
+		<execute macro="WebContentNavigator#gotoEditPGViaWCD">
+			<var name="webContentTitle" value="WC WebContent Title" />
+		</execute>
 
 		<execute macro="WebContent#addLocale">
 			<var name="language" value="Chinese (China)" />
@@ -1038,23 +1049,90 @@
 		</execute>
 	</command>
 
-	<command name="ViewWCDWithDeletedWCArticle" priority="4">
+	<command name="ViewWebContentDisplayPortletMessages" priority="4">
 		<property name="testray.component.names" value="Web Content Display" />
+
+		<execute macro="ProductMenu#gotoSitesContent">
+			<var name="portlet" value="Web Content" />
+		</execute>
+
+		<execute macro="WebContentNavigator#gotoAddCP" />
+
+		<execute macro="WebContent#addCP">
+			<var name="webContentContent" value="WC WebContent Content" />
+			<var name="webContentTitle" value="WC WebContent Title" />
+		</execute>
+
+		<execute macro="PortletEntry#publish" />
 
 		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Web Content Display Page" />
 		</execute>
 
-		<execute macro="WebContent#addPGViaWCD">
-			<var name="webContentContent" value="WC WebContent Content" />
+		<execute macro="Alert#viewInfoMessage">
+			<var name="infoMessage" value="This application is not visible to users yet Select Web Content to make it visible" />
+		</execute>
+
+		<execute macro="WebContentDisplayPortlet#selectWebContent">
 			<var name="webContentTitle" value="WC WebContent Title" />
+		</execute>
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Web Content Display Page" />
 		</execute>
 
 		<execute macro="WebContent#viewPGViaWCD">
 			<var name="webContentContent" value="WC WebContent Content" />
 		</execute>
 
-		<execute macro="Navigator#openURL" />
+		<execute macro="WebContentDisplayPortlet#removeWebContent" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Web Content Display Page" />
+		</execute>
+
+		<execute macro="Alert#viewInfoMessage">
+			<var name="infoMessage" value="This application is not visible to users yet Select Web Content to make it visible" />
+		</execute>
+
+		<execute macro="WebContentDisplayPortlet#selectWebContent">
+			<var name="webContentTitle" value="WC WebContent Title" />
+		</execute>
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Web Content Display Page" />
+		</execute>
+
+		<execute macro="WebContent#viewPGViaWCD">
+			<var name="webContentContent" value="WC WebContent Content" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSitesContent">
+			<var name="portlet" value="Web Content" />
+		</execute>
+
+		<execute macro="WebContent#moveToRecycleBinCP">
+			<var name="assetType" value="Web Content Article" />
+			<var name="webContentTitle" value="WC WebContent Title" />
+		</execute>
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Web Content Display Page" />
+		</execute>
+
+		<execute macro="WebContentDisplayPortlet#viewRecycleBinMessage">
+			<var name="webContentTitle" value="WC WebContent Title" />
+		</execute>
+
+		<execute macro="WebContentDisplayPortlet#undoMoveToRecycleBin" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Web Content Display Page" />
+		</execute>
+
+		<execute macro="WebContent#viewPGViaWCD">
+			<var name="webContentContent" value="WC WebContent Content" />
+		</execute>
 
 		<execute macro="ProductMenu#gotoSitesContent">
 			<var name="portlet" value="Web Content" />

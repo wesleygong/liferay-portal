@@ -55,6 +55,10 @@ SearchContext searchContext = SearchContextFactory.getInstance(request);
 searchContext.setGroupIds(null);
 searchContext.setKeywords(keywords);
 
+QueryConfig queryConfig = searchContext.getQueryConfig();
+
+queryConfig.setHighlightEnabled(journalContentSearchPortletInstanceConfiguration.enableHighlighting());
+
 Hits hits = indexer.search(searchContext);
 
 String[] queryTerms = hits.getQueryTerms();

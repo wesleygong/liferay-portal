@@ -42,8 +42,10 @@ AUI.add(
 							emptyListText: Liferay.Language.get('there-are-no-rules-yet-click-on-plus-icon-below-to-add-the-first'),
 							'enable-field': Liferay.Language.get('enable-x'),
 							'equals-to': Liferay.Language.get('is-equal-to'),
+							field: Liferay.Language.get('field'),
 							'greater-than': Liferay.Language.get('is-greater-than'),
 							'greater-than-equals': Liferay.Language.get('is-greater-than-or-equal-to'),
+							if: Liferay.Language.get('if'),
 							'is-empty': Liferay.Language.get('is-empty'),
 							'jump-to-page': Liferay.Language.get('jump-to-page-x'),
 							'less-than': Liferay.Language.get('is-less-than'),
@@ -54,7 +56,8 @@ AUI.add(
 							or: Liferay.Language.get('or'),
 							'require-field': Liferay.Language.get('require-x'),
 							ruleBuilder: Liferay.Language.get('rule-builder'),
-							'show-field': Liferay.Language.get('show-x')
+							'show-field': Liferay.Language.get('show-x'),
+							value: Liferay.Language.get('value')
 						}
 					}
 				},
@@ -373,7 +376,7 @@ AUI.add(
 						var instance = this;
 
 						if (fieldValue === 'user') {
-							return 'User';
+							return Liferay.Language.get('user');
 						}
 
 						var fields = instance.getFields();

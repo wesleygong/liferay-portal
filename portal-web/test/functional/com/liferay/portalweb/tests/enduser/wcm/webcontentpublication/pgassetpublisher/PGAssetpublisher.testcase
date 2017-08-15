@@ -60,9 +60,13 @@
 			<var name="portletOption" value="Look and Feel Configuration" />
 		</execute>
 
+		<execute macro="IFrame#selectConfigurationFrame" />
+
 		<execute macro="Portlet#configureCustomTitleViaLookandfeelPG">
 			<var name="portletName" value="Asset Publisher" />
 		</execute>
+
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Asset Publisher Page" />
@@ -76,9 +80,13 @@
 			<var name="portletOption" value="Look and Feel Configuration" />
 		</execute>
 
+		<execute macro="IFrame#selectConfigurationFrame" />
+
 		<execute macro="Portlet#selectApplicationDecorator">
 			<var name="decorator" value="Barebone" />
 		</execute>
+
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Asset Publisher Page" />
@@ -89,8 +97,9 @@
 		</execute>
 	</command>
 
-	<command name="AddAPMultiplePortlet" priority="4">
-		<property name="testray.component.names" value="Asset Publisher" />
+	<command name="AddAPMultiplePortlet" priority="5">
+		<property name="portal.acceptance" value="pending" />
+		<property name="testray.component.names" value="Asset Publisher,Training" />
 
 		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Asset Publisher Page" />
@@ -346,6 +355,8 @@
 			<var name="portletName" value="Asset Publisher" />
 		</execute>
 
+		<execute macro="PortletEntry#save" />
+
 		<execute macro="Portlet#configureApplicationDecoratorViaLookandfeelPG">
 			<var name="applicationDecorator" value="Decorate" />
 		</execute>
@@ -535,8 +546,9 @@
 		</execute>
 	</command>
 
-	<command name="ConfigureAPPortletScopeMultipleSites" priority="4">
-		<property name="testray.component.names" value="Asset Publisher" />
+	<command name="ConfigureAPPortletScopeMultipleSites" priority="5">
+		<property name="portal.acceptance" value="pending" />
+		<property name="testray.component.names" value="Asset Publisher,Training" />
 
 		<execute macro="TestCase#getSiteName">
 			<return from="siteName" name="siteName" />
@@ -901,11 +913,16 @@
 			<var name="assetTitle3" value="WebContent Title 3" />
 		</execute>
 
-		<execute macro="WebContent#editPGViaAP">
+		<execute macro="AssetPublisherPortlet#gotoEditAssetPG">
 			<var name="assetTitle" value="WebContent Title 1" />
-			<var name="webContentContentEdit" value="WebContent Content 1 Edit" />
-			<var name="webContentTitleEdit" value="WebContent Title 1 Edit" />
 		</execute>
+
+		<execute macro="WebContent#addCP">
+			<var name="webContentContent" value="WebContent Content 1 Edit" />
+			<var name="webContentTitle" value="WebContent Title 1 Edit" />
+		</execute>
+
+		<execute macro="Button#clickPublish" />
 
 		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Asset Publisher Page" />
@@ -976,11 +993,16 @@
 			<var name="assetTitle3" value="WebContent Title 3" />
 		</execute>
 
-		<execute macro="WebContent#editPGViaAP">
+		<execute macro="AssetPublisherPortlet#gotoEditAssetPG">
 			<var name="assetTitle" value="WebContent Title 1" />
-			<var name="webContentContentEdit" value="WebContent Content 1 Edit" />
-			<var name="webContentTitleEdit" value="WebContent Title 1 Edit" />
 		</execute>
+
+		<execute macro="WebContent#addCP">
+			<var name="webContentContent" value="WebContent Content 1 Edit" />
+			<var name="webContentTitle" value="WebContent Title 1 Edit" />
+		</execute>
+
+		<execute macro="Button#clickPublish" />
 
 		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Asset Publisher Page" />
@@ -1154,8 +1176,9 @@
 		</execute>
 	</command>
 
-	<command name="RestoreAPArchivedSetup" priority="4">
-		<property name="testray.component.names" value="Asset Publisher" />
+	<command name="RestoreAPArchivedSetup" priority="5">
+		<property name="portal.acceptance" value="pending" />
+		<property name="testray.component.names" value="Asset Publisher,Training" />
 
 		<execute macro="Navigator#openURL" />
 

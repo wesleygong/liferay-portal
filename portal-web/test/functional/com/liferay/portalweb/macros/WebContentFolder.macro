@@ -2,12 +2,17 @@
 	<command name="addCP">
 		<var name="key_webContentTitle" value="${folderName}" />
 
-		<execute function="Click" locator1="Button#PLUS" />
+		<execute macro="LexiconEntry#gotoAdd" />
 
 		<if>
-			<condition function="IsElementPresent" locator1="MenuItem#FOLDER" />
+			<condition function="IsElementPresent" locator1="MenuItem#ANY_MENU_ITEM">
+				<var name="key_menuItem" value="Folder" />
+			</condition>
+
 			<then>
-				<execute function="AssertClick" locator1="MenuItem#FOLDER" value1="Folder" />
+				<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Folder">
+					<var name="key_menuItem" value="Folder" />
+				</execute>
 			</then>
 		</if>
 
@@ -38,11 +43,13 @@
 
 		<execute function="Click" locator1="WC#ENTRY_DESCRIPTIVE_TITLE" value1="${folderName}" />
 
-		<execute function="AssertTextEquals" locator1="WC#FILTER_SELECTED" value1="${folderName}" />
+		<execute function="AssertTextEquals" locator1="Portlet#HEADER" value1="${folderName}" />
 
 		<execute function="Click" locator1="Button#PLUS" />
 
-		<execute function="Click" locator1="MenuItem#SUBFOLDER" value1="Subfolder" />
+		<execute function="Click" locator1="MenuItem#ANY_MENU_ITEM" value1="Subfolder">
+			<var name="key_menuItem" value="Subfolder" />
+		</execute>
 
 		<execute macro="PortletEntry#inputName">
 			<var name="name" value="${subfolderName}" />
@@ -59,6 +66,34 @@
 		<execute macro="Alert#viewSuccessMessage" />
 		<execute function="AssertElementPresent#pauseAssertVisible" locator1="WC#ENTRY_DESCRIPTIVE_THUMBNAIL" />
 		<execute function="AssertTextEquals#assertPartialText" locator1="WC#ENTRY_DESCRIPTIVE_TITLE" value1="${subfolderName}" />
+	</command>
+
+	<command name="checkSubfolderPermissions">
+		<var name="key_webContentTitle" value="${folderName}" />
+
+		<execute macro="Portlet#changeDisplayStyle">
+			<var name="displayStyle" value="Descriptive" />
+		</execute>
+
+		<execute function="Click" locator1="WC#ENTRY_DESCRIPTIVE_TITLE" value1="${folderName}" />
+
+		<execute function="AssertTextEquals" locator1="Portlet#HEADER" value1="${folderName}" />
+
+		<execute function="MouseOver" locator1="Button#PLUS" />
+
+		<if>
+			<equals arg1="${subfolder}" arg2="false" />
+			<then>
+				<execute function="AssertElementNotPresent" locator1="MenuItem#ANY_MENU_ITEM" value1="Subfolder">
+					<var name="key_menuItem" value="Subfolder" />
+				</execute>
+			</then>
+			<else>
+				<execute function="AssertElementPresent" locator1="MenuItem#ANY_MENU_ITEM" value1="Subfolder">
+					<var name="key_menuItem" value="Subfolder" />
+				</execute>
+			</else>
+		</if>
 	</command>
 
 	<command name="configureWorkflowCP">
@@ -137,7 +172,9 @@
 
 		<execute function="Click" locator1="WC#ENTRY_DESCRIPTIVE_MENULIST_ICON" />
 
-		<execute function="AssertClick" locator1="MenuItem#EDIT" value1="Edit" />
+		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Edit">
+			<var name="key_menuItem" value="Edit" />
+		</execute>
 	</command>
 
 	<command name="moveToRecycleBinCP">

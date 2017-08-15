@@ -17,7 +17,7 @@
 <c:if test="<%= (portlets != null) && !portlets.isEmpty() %>">
 
 	<%
-	PortletResourceAccessor[] portletResourceAccessors = new PortletResourceAccessor[] {PortletResourceAccessor.HEADER_PORTAL_CSS, PortletResourceAccessor.HEADER_PORTLET_CSS};
+	PortletResourceAccessor[] portletResourceAccessors = {PortletResourceAccessor.HEADER_PORTAL_CSS, PortletResourceAccessor.HEADER_PORTLET_CSS};
 	PredicateFilter<String> predicateFilter = PredicateFilter.ALL;
 	boolean useComboServletStaticURLGenerator = themeDisplay.isThemeCssFastLoad();
 	%>
@@ -28,7 +28,7 @@
 	for (String url : urls) {
 	%>
 
-		<link data-senna-track="permanent" href="<%= HtmlUtil.escapeAttribute(url) %>" id="<%= HtmlUtil.escapeAttribute(StringUtil.toHexString(url.hashCode())) %>" rel="stylesheet" type="text/css" />
+		<link data-senna-track="temporary" href="<%= HtmlUtil.escapeAttribute(url) %>" id="<%= HtmlUtil.escapeAttribute(StringUtil.toHexString(url.hashCode())) %>" rel="stylesheet" type="text/css" />
 
 	<%
 	}

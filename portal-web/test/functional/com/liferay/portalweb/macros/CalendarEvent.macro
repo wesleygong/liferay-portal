@@ -616,20 +616,10 @@
 			</then>
 		</if>
 
-		<if>
-			<equals arg1="${rsvp}" arg2="No" />
-			<then>
-				<execute macro="CalendarScheduler#viewSpecificEventNotPresent">
-					<var name="eventTitle" value="${eventTitle}" />
-				</execute>
-			</then>
-			<else>
-				<execute macro="CalendarScheduler#viewRSVP">
-					<var name="eventTitle" value="${eventTitle}" />
-					<var name="rsvp"  value="${rsvp}" />
-				</execute>
-			</else>
-		</if>
+		<execute macro="CalendarScheduler#viewRSVP">
+			<var name="eventTitle" value="${eventTitle}" />
+			<var name="rsvp" value="${rsvp}" />
+		</execute>
 	</command>
 
 	<command name="addSetTime">
@@ -1477,6 +1467,10 @@
 		<execute function="Type" locator1="CalendarEditEvent#END_DATE" value1="${endDate}" />
 	</command>
 
+	<command name="setEndDate">
+		<execute function="Type" locator1="CalendarEditEvent#END_DATE" value1="${endDate}" />
+	</command>
+
 	<command name="setEndDateTomorrow">
 		<execute function="Click" locator1="CalendarEditEvent#END_DATE" />
 
@@ -2085,7 +2079,7 @@
 
 					<execute function="AssertTextEquals#assertPartialText" locator1="CalendarViewEventDetails#REPEAT_OCCURRENCE_SUMMARY" value1="Monthly" />
 					<execute function="AssertTextEquals#assertPartialText" locator1="CalendarViewEventDetails#REPEAT_OCCURRENCE_SUMMARY" value1="${numberOfOccurrences} Times" />
-					<execute function="AssertTextEquals#assertPartialText" locator1="CalendarViewEventDetails#REPEAT_OCCURRENCE_SUMMARY" value1="${today} " />
+					<execute function="AssertTextEquals#assertPartialText" locator1="CalendarViewEventDetails#REPEAT_OCCURRENCE_SUMMARY" value1="${today}" />
 				</then>
 			</elseif>
 		</if>

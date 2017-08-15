@@ -508,9 +508,8 @@ public class StringUtilTest {
 	public void testShortenStringWith4ByteChars() {
 		int space = CharPool.SPACE;
 
-		int[] codePoints = new int[] {
-			128515, 128516, space, 128517, 128518, 128519, 128520, 128521
-		};
+		int[] codePoints =
+			{128515, 128516, space, 128517, 128518, 128519, 128520, 128521};
 
 		String string = new String(codePoints, 0, codePoints.length);
 
@@ -733,6 +732,10 @@ public class StringUtilTest {
 		// Surrounding spaces
 
 		Assert.assertEquals("ab", StringUtil.trim(" \t\r\nab \t\r\n"));
+
+		// UTF-8 spaces
+
+		Assert.assertEquals("ab", StringUtil.trim("\u3000ab\u3000"));
 	}
 
 	@Test

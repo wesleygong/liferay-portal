@@ -51,7 +51,6 @@ import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.util.PropsValues;
-import com.liferay.portlet.trash.model.impl.TrashEntryImpl;
 import com.liferay.trash.kernel.model.TrashEntry;
 import com.liferay.trash.kernel.model.TrashVersion;
 import com.liferay.trash.kernel.service.TrashEntryLocalServiceUtil;
@@ -77,8 +76,8 @@ import javax.portlet.PortletURL;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author Sergio González
- * @author Julio Camarero
+ * @author     Sergio González
+ * @author     Julio Camarero
  * @deprecated As of 7.0.0
  */
 @Deprecated
@@ -224,7 +223,7 @@ public class TrashImpl implements Trash {
 
 					Date removedDate = document.getDate(Field.REMOVED_DATE);
 
-					entry = new TrashEntryImpl();
+					entry = TrashEntryLocalServiceUtil.createTrashEntry(0);
 
 					entry.setUserName(userName);
 					entry.setCreateDate(removedDate);

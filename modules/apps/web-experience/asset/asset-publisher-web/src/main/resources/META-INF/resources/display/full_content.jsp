@@ -67,7 +67,7 @@ request.setAttribute("view.jsp-showIconLabel", true);
 			/>
 		</c:if>
 
-		<span><%= HtmlUtil.escape(title) %></span>
+		<span class="header-title"><%= HtmlUtil.escape(title) %></span>
 	</c:if>
 
 	<c:if test="<%= !print %>">
@@ -241,5 +241,4 @@ request.setAttribute("view.jsp-showIconLabel", true);
 </c:if>
 
 <%!
-private static Log _log = LogFactoryUtil.getLog("com_liferay_asset_publisher_web.display.full_content_jsp");
 %>

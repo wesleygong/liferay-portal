@@ -247,7 +247,7 @@ public class VerifyProperties extends VerifyProcess {
 		}
 	}
 
-	private static final String[][] _MIGRATED_PORTAL_KEYS = new String[][] {
+	private static final String[][] _MIGRATED_PORTAL_KEYS = {
 		new String[] {
 			"cookie.http.only.names.excludes", "cookie.http.only.names.excludes"
 		},
@@ -277,7 +277,7 @@ public class VerifyProperties extends VerifyProcess {
 		}
 	};
 
-	private static final String[][] _MIGRATED_SYSTEM_KEYS = new String[][] {
+	private static final String[][] _MIGRATED_SYSTEM_KEYS = {
 		new String[] {
 			"com.liferay.filters.compression.CompressionFilter",
 			"com.liferay.portal.servlet.filters.gzip.GZipFilter"
@@ -1690,7 +1690,7 @@ public class VerifyProperties extends VerifyProcess {
 		}
 	};
 
-	private static final String[] _OBSOLETE_PORTAL_KEYS = new String[] {
+	private static final String[] _OBSOLETE_PORTAL_KEYS = {
 		"aim.login", "aim.login", "amazon.access.key.id",
 		"amazon.associate.tag", "amazon.secret.access.key",
 		"asset.entry.increment.view.counter.enabled", "asset.entry.validator",
@@ -1786,13 +1786,14 @@ public class VerifyProperties extends VerifyProcess {
 		"hibernate.cache.use_second_level_cache",
 		"hibernate.cache.use_structured_entries", "icq.jar", "icq.login",
 		"icq.password", "index.filter.search.limit",
-		"index.portal.field.analyzer.enabled", "index.read.only",
-		"invitation.email.max.recipients", "invitation.email.message.body",
-		"invitation.email.message.subject", "javax.persistence.validation.mode",
-		"jbi.workflow.url", "json.deserializer.strict.mode",
-		"journal.article.form.add", "journal.article.form.default.values",
-		"journal.article.form.update", "journal.article.form.translate",
-		"journal.article.types", "journal.articles.page.delta.values",
+		"index.portal.field.analyzer.enabled", "index.search.highlight.enabled",
+		"index.read.only", "invitation.email.max.recipients",
+		"invitation.email.message.body", "invitation.email.message.subject",
+		"javax.persistence.validation.mode", "jbi.workflow.url",
+		"json.deserializer.strict.mode", "journal.article.form.add",
+		"journal.article.form.default.values", "journal.article.form.update",
+		"journal.article.form.translate", "journal.article.types",
+		"journal.articles.page.delta.values",
 		"journal.browse.by.structures.sorted.by.name",
 		"journal.image.extensions", "journal.image.small.max.size",
 		"journal.template.language.parser[css]",
@@ -1888,12 +1889,12 @@ public class VerifyProperties extends VerifyProcess {
 		"xss.allow", "ym.login", "ym.password"
 	};
 
-	private static final String[] _OBSOLETE_SYSTEM_KEYS = new String[] {
+	private static final String[] _OBSOLETE_SYSTEM_KEYS = {
 		"com.liferay.util.Http.proxy.host", "com.liferay.util.Http.proxy.port",
 		"com.liferay.util.XSSUtil.regexp.pattern"
 	};
 
-	private static final String[][] _RENAMED_PORTAL_KEYS = new String[][] {
+	private static final String[][] _RENAMED_PORTAL_KEYS = {
 		new String[] {
 			"amazon.license.0", "amazon.access.key.id"
 		},
@@ -1999,6 +2000,14 @@ public class VerifyProperties extends VerifyProcess {
 				"configuration.jsp"
 		},
 		new String[] {
+			"ehcache.cluster.link.replicator.properties",
+			"ehcache.replicator.properties"
+		},
+		new String[] {
+			"ehcache.cluster.link.replicator.properties.default",
+			"ehcache.replicator.properties.default"
+		},
+		new String[] {
 			"field.editable.com.liferay.portal.kernel.model.User.emailAddress",
 			"field.editable.user.types"
 		},
@@ -2059,7 +2068,7 @@ public class VerifyProperties extends VerifyProcess {
 		}
 	};
 
-	private static final String[][] _RENAMED_SYSTEM_KEYS = new String[][] {
+	private static final String[][] _RENAMED_SYSTEM_KEYS = {
 		new String[] {
 			"com.liferay.portal.kernel.util.StringBundler.unsafe.create." +
 				"threshold",

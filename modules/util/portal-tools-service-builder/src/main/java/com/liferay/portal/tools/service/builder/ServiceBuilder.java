@@ -1678,9 +1678,13 @@ public class ServiceBuilder {
 		String methodName = method.getName();
 
 		if (methodName.equals("afterPropertiesSet") ||
+			methodName.equals("clearService") ||
 			methodName.equals("destroy") || methodName.equals("equals") ||
-			methodName.equals("getClass") || methodName.equals("hashCode") ||
-			methodName.equals("notify") || methodName.equals("notifyAll") ||
+			methodName.equals("getClass") || methodName.equals("getService") ||
+			methodName.equals("getWrappedService") ||
+			methodName.equals("hashCode") || methodName.equals("notify") ||
+			methodName.equals("notifyAll") ||
+			methodName.equals("setWrappedService") ||
 			methodName.equals("toString") || methodName.equals("wait")) {
 
 			return false;
@@ -1698,27 +1702,59 @@ public class ServiceBuilder {
 
 			return false;
 		}
-		else if (methodName.endsWith("Finder") &&
-				 (methodName.startsWith("get") ||
-				  methodName.startsWith("set"))) {
 
-			return false;
-		}
-		else if (methodName.endsWith("Persistence") &&
-				 (methodName.startsWith("get") ||
-				  methodName.startsWith("set"))) {
+		JavaClass javaClass = method.getParentClass();
 
-			return false;
-		}
-		else if (methodName.endsWith("Service") &&
-				 (methodName.startsWith("get") ||
-				  methodName.startsWith("set"))) {
+		String packageName = javaClass.getPackageName();
 
-			return false;
-		}
-		else {
+		if (!packageName.endsWith(".service.base")) {
 			return true;
 		}
+
+		if (!methodName.endsWith("Finder") &&
+			!methodName.endsWith("Persistence") &&
+			!methodName.endsWith("Service")) {
+
+			return true;
+		}
+
+		Type type = null;
+
+		Type[] parameterTypes = method.getParameterTypes(true);
+		Type returnType = method.getReturnType(true);
+
+		if (methodName.startsWith("get")) {
+			if (ArrayUtil.isEmpty(parameterTypes)) {
+				type = returnType;
+			}
+		}
+		else if (methodName.startsWith("set")) {
+			if ((parameterTypes != null) && (parameterTypes.length == 1)) {
+				type = parameterTypes[0];
+			}
+		}
+
+		if (type == null) {
+			return true;
+		}
+
+		String typeClassName = type.getFullyQualifiedName();
+
+		int index = typeClassName.lastIndexOf(CharPool.PERIOD);
+
+		if (index == -1) {
+			return true;
+		}
+
+		String typePackageName = typeClassName.substring(0, index);
+
+		if (typePackageName.endsWith(".persistence") ||
+			typePackageName.endsWith(".service")) {
+
+			return false;
+		}
+
+		return true;
 	}
 
 	public boolean isHBMCamelCasePropertyAccessor(String propertyName) {
@@ -5106,6 +5142,7 @@ public class ServiceBuilder {
 		List<EntityColumn> columnList = new ArrayList<>();
 
 		boolean permissionedModel = false;
+		boolean resourcedModel = false;
 
 		List<Element> columnElements = entityElement.elements("column");
 
@@ -5141,12 +5178,6 @@ public class ServiceBuilder {
 
 		for (Element columnElement : columnElements) {
 			String columnName = columnElement.attributeValue("name");
-
-			if (columnName.equals("resourceBlockId") &&
-				!ejbName.equals("ResourceBlock")) {
-
-				permissionedModel = true;
-			}
 
 			String columnDBName = columnElement.attributeValue("db-name");
 
@@ -5194,6 +5225,16 @@ public class ServiceBuilder {
 				columnElement.attributeValue("container-model"));
 			boolean parentContainerModel = GetterUtil.getBoolean(
 				columnElement.attributeValue("parent-container-model"));
+
+			if (columnName.equals("resourceBlockId") &&
+				!ejbName.equals("ResourceBlock")) {
+
+				permissionedModel = true;
+			}
+
+			if (columnName.equals("resourcePrimKey") && !primary) {
+				resourcedModel = true;
+			}
 
 			EntityColumn col = new EntityColumn(
 				columnName, columnDBName, columnType, primary, accessor,
@@ -5371,6 +5412,20 @@ public class ServiceBuilder {
 				"finder-column");
 
 			finderColumnElement.addAttribute("name", "resourceBlockId");
+
+			finderElements.add(0, finderElement);
+		}
+
+		if (resourcedModel) {
+			Element finderElement = DocumentHelper.createElement("finder");
+
+			finderElement.addAttribute("name", "ResourcePrimKey");
+			finderElement.addAttribute("return-type", "Collection");
+
+			Element finderColumnElement = finderElement.addElement(
+				"finder-column");
+
+			finderColumnElement.addAttribute("name", "resourcePrimKey");
 
 			finderElements.add(0, finderElement);
 		}

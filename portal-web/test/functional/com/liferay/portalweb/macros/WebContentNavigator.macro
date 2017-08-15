@@ -28,12 +28,9 @@
 
 		<execute macro="LexiconEntry#gotoAdd" />
 
-		<if>
-			<condition function="IsElementPresent" locator1="MenuItem#BASIC_WEB_CONTENT" />
-			<then>
-				<execute function="AssertClick" locator1="MenuItem#BASIC_WEB_CONTENT" value1="Basic Web Content" />
-			</then>
-		</if>
+		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Basic Web Content">
+			<var name="key_menuItem" value="Basic Web Content" />
+		</execute>
 
 		<execute function="AssertVisible" locator1="TextInput#TITLE" />
 	</command>
@@ -78,6 +75,14 @@
 		</execute>
 	</command>
 
+	<command name="gotoArticleMenuPGViaWCD">
+		<execute function="MouseOver" locator1="WCD#WEB_CONTENT_CONTENT" />
+
+		<execute function="Click#makeVisibleClickAt" locator1="WCD#ARTICLE_ELLIPSIS_ICON">
+			<var name="key_webContentTitle" value="${webContentTitle}" />
+		</execute>
+	</command>
+
 	<command name="gotoEditCP">
 		<execute macro="WebContentNavigator#_openDescriptiveMenulistCP">
 			<var name="webContentTitle" value="${webContentTitle}" />
@@ -101,9 +106,12 @@
 	</command>
 
 	<command name="gotoEditPGViaWCD">
-		<execute macro="Portlet#gotoPortletOptions">
-			<var name="portletName" value="Web Content Display" />
-			<var name="portletOption" value="Edit Web Content" />
+		<execute macro="WebContentNavigator#gotoArticleMenuPGViaWCD">
+			<var name="webContentTitle" value="${webContentTitle}" />
+		</execute>
+
+		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Edit Web Content">
+			<var name="key_menuItem" value="Edit Web Content" />
 		</execute>
 
 		<execute function="SelectFrame" locator1="IFrame#MODAL_IFRAME" />
@@ -148,7 +156,9 @@
 	<command name="gotoManageStructures">
 		<execute function="Click" locator1="Icon#HEADER_VERTICAL_ELLIPSIS" />
 
-		<execute function="AssertClick" locator1="MenuItem#STRUCTURES" value1="Structures" />
+		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Structures">
+			<var name="key_menuItem" value="Structures" />
+		</execute>
 
 		<execute macro="SiteAdmin#viewPortletTitle">
 			<var name="portletTitle" value="Structures" />
@@ -158,7 +168,9 @@
 	<command name="gotoManageTemplates">
 		<execute function="Click" locator1="Icon#HEADER_VERTICAL_ELLIPSIS" />
 
-		<execute function="AssertClick" locator1="MenuItem#TEMPLATES" value1="Templates" />
+		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Templates">
+			<var name="key_menuItem" value="Templates" />
+		</execute>
 
 		<execute macro="SiteAdmin#viewPortletTitle">
 			<var name="portletTitle" value="Templates" />
@@ -179,13 +191,14 @@
 	<command name="gotoMoreStructuresViaPlusButton">
 		<execute macro="LexiconEntry#gotoAdd" />
 
-		<var name="key_menuItem" value="More" />
-
 		<if>
-			<condition function="IsElementPresent" locator1="MenuItem#ANY_MENU_ITEM" />
+			<condition function="IsElementPresent" locator1="MenuItem#ANY_MENU_ITEM">
+				<var name="key_menuItem" value="More" />
+			</condition>
+
 			<then>
-				<execute function="AssertTextEquals" locator1="Pagination#SHOWING_TOTAL_ITEMS" value1="Showing ${pageMod} Items">
-					<var name="key_pageMod" value="${pageMod}" />
+				<execute function="AssertTextEquals" locator1="MenuItem#ANY_MENU_ITEM" value1="Showing ${pageMod} Items">
+					<var name="key_menuItem" value="Showing ${pageMod} Items" />
 				</execute>
 			</then>
 		</if>

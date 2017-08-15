@@ -17,6 +17,8 @@
 <%@ include file="/init.jsp" %>
 
 <%
+String portletResource = ParamUtil.getString(request, "portletResource");
+
 Layout selLayout = layoutsAdminDisplayContext.getSelLayout();
 
 Long groupId = layoutsAdminDisplayContext.getGroupId();
@@ -61,11 +63,12 @@ renderResponse.setTitle(LanguageUtil.get(request, "add-new-page"));
 	<portlet:param name="mvcPath" value="/add_layout.jsp" />
 </portlet:actionURL>
 
-<aui:form action="<%= addLayoutURL %>" cssClass="container-fluid-1280" enctype="multipart/form-data" method="post" name="addPageFm">
+<aui:form action="<%= addLayoutURL %>" cssClass="container-fluid-1280" data-senna-off="true" enctype="multipart/form-data" method="post" name="addPageFm">
 	<aui:input name="groupId" type="hidden" value="<%= String.valueOf(groupId) %>" />
 	<aui:input name="privateLayout" type="hidden" value="<%= privateLayout %>" />
 	<aui:input name="parentPlid" type="hidden" value="<%= parentPlid %>" />
 	<aui:input name="parentLayoutId" type="hidden" value="<%= parentLayoutId %>" />
+	<aui:input name="portletResource" type="hidden" value="<%= portletResource %>" />
 	<aui:input name="type" type="hidden" value="portlet" />
 	<aui:input name="layoutPrototypeId" type="hidden" value="" />
 	<aui:input name="explicitCreation" type="hidden" value="<%= true %>" />

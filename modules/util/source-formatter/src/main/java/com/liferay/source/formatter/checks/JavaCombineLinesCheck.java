@@ -392,7 +392,8 @@ public class JavaCombineLinesCheck extends BaseFileCheck {
 
 		if ((trimmedLine.length() + previousLineLength) < getMaxLineLength()) {
 			if (trimmedPreviousLine.startsWith("for ") &&
-				previousLine.endsWith(StringPool.COLON) &&
+				(previousLine.endsWith(StringPool.COLON) ||
+				 previousLine.endsWith(StringPool.SEMICOLON)) &&
 				line.endsWith(StringPool.OPEN_CURLY_BRACE)) {
 
 				return _getCombinedLinesContent(
@@ -626,6 +627,29 @@ public class JavaCombineLinesCheck extends BaseFileCheck {
 			}
 		}
 
+		if (trimmedPreviousLine.matches("for \\(.*;")) {
+			int x = -1;
+
+			while (true) {
+				x = trimmedLine.indexOf("; ", x + 1);
+
+				if ((x == -1) ||
+					(previousLineLength + 2 + x) > getMaxLineLength()) {
+
+					break;
+				}
+
+				if (ToolsUtil.isInsideQuotes(trimmedLine, x)) {
+					continue;
+				}
+
+				return _getCombinedLinesContent(
+					content, line, trimmedLine, lineLength, lineCount,
+					previousLine, trimmedLine.substring(0, x + 2), true, true,
+					0);
+			}
+		}
+
 		if (previousLine.endsWith(StringPool.PLUS) &&
 			(lineTabCount == (previousLineTabCount + 1))) {
 
@@ -665,7 +689,7 @@ public class JavaCombineLinesCheck extends BaseFileCheck {
 		if (previousLine.endsWith(StringPool.COMMA) &&
 			(previousLineTabCount == lineTabCount) &&
 			!line.matches(".*[\\^\\|\\&]") &&
-			!trimmedPreviousLine.equals("},")) {
+			!trimmedPreviousLine.matches("[\\)\\}],")) {
 
 			String nextLine = getLine(content, lineCount + 1);
 
@@ -675,7 +699,7 @@ public class JavaCombineLinesCheck extends BaseFileCheck {
 				int x = -1;
 
 				while (true) {
-					x = trimmedLine.indexOf(CharPool.COMMA, x + 1);
+					x = trimmedLine.indexOf(StringPool.COMMA_AND_SPACE, x + 1);
 
 					if (x == -1) {
 						break;

@@ -22,6 +22,7 @@ import com.liferay.document.library.kernel.model.DLFolder;
 import com.liferay.exportimport.kernel.lar.ExportImportClassedModelUtil;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandler;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerRegistryUtil;
+import com.liferay.exportimport.test.util.lar.BaseWorkflowedStagedModelDataHandlerTestCase;
 import com.liferay.message.boards.kernel.model.MBCategory;
 import com.liferay.message.boards.kernel.model.MBCategoryConstants;
 import com.liferay.message.boards.kernel.model.MBMessage;
@@ -46,7 +47,6 @@ import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
-import com.liferay.portal.lar.test.BaseWorkflowedStagedModelDataHandlerTestCase;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portlet.messageboards.util.test.MBTestUtil;
 
@@ -60,6 +60,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
@@ -76,6 +77,28 @@ public class MBMessageStagedModelDataHandlerTest
 		new AggregateTestRule(
 			new LiferayIntegrationTestRule(),
 			SynchronousDestinationTestRule.INSTANCE);
+
+	@Test
+	public void testDoubleExportImport() throws Exception {
+		Map<String, List<StagedModel>> dependentStagedModelsMap =
+			addDependentStagedModelsMap(stagingGroup);
+
+		StagedModel stagedModel = addStagedModel(
+			stagingGroup, dependentStagedModelsMap);
+
+		exportImportStagedModel(stagedModel);
+
+		StagedModel importedStagedModel = getStagedModel(
+			stagedModel.getUuid(), liveGroup);
+
+		Assert.assertNotNull(importedStagedModel);
+
+		exportImportStagedModel(stagedModel);
+
+		importedStagedModel = getStagedModel(stagedModel.getUuid(), liveGroup);
+
+		Assert.assertNotNull(importedStagedModel);
+	}
 
 	@Override
 	protected Map<String, List<StagedModel>> addDependentStagedModelsMap(

@@ -820,11 +820,15 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 
 			if (getLifecycle().equals(PortletRequest.RENDER_PHASE) &&
 				!LiferayWindowState.isExclusive(request) &&
-				!LiferayWindowState.isPopUp(request) &&
-				(renderParameters != null)) {
+				!LiferayWindowState.isPopUp(request)) {
 
-				RenderParametersPool.put(
-					request, plid, _portletName, renderParameters);
+				if ((renderParameters == null) || renderParameters.isEmpty()) {
+					RenderParametersPool.clear(request, plid, _portletName);
+				}
+				else {
+					RenderParametersPool.put(
+						request, plid, _portletName, renderParameters);
+				}
 			}
 		}
 		else {
@@ -906,8 +910,8 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 
 	/**
 	 * @deprecated As of 7.0.0, replaced by {@link
-	 *             #_mergePublicRenderParameters(
-	 *             DynamicServletRequest, Map, PortletPreferences)}
+	 *             #_mergePublicRenderParameters(DynamicServletRequest, Map,
+	 *             PortletPreferences)}
 	 */
 	@Deprecated
 	protected void mergePublicRenderParameters(

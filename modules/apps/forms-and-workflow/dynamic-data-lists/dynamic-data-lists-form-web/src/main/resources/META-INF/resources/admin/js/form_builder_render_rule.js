@@ -17,11 +17,7 @@ AUI.add(
 					},
 
 					logicOperator: {
-						setter: function(val) {
-							return val.toUpperCase();
-						},
-						validator: '_isValidLogicOperator',
-						value: Liferay.Language.get('or')
+						value: 'or'
 					},
 
 					pages: {
@@ -34,10 +30,12 @@ AUI.add(
 
 					strings: {
 						value: {
+							actions: Liferay.Language.get('actions'),
 							and: Liferay.Language.get('and'),
 							autofill: Liferay.Language.get('autofill'),
 							calculate: Liferay.Language.get('calculate'),
 							cancel: Liferay.Language.get('cancel'),
+							condition: Liferay.Language.get('condition'),
 							description: Liferay.Language.get('define-condition-and-action-to-change-fields-and-elements-on-the-form'),
 							do: Liferay.Language.get('do'),
 							enable: Liferay.Language.get('enable'),
@@ -143,7 +141,7 @@ AUI.add(
 							};
 						}
 
-						instance.set('logicOperator', rule['logical-operator']);
+						instance.set('logicOperator', rule['logical-operator'] || instance.get('logicOperator'));
 
 						contentBox.setHTML(instance._getRuleContainerTemplate(rule));
 
@@ -253,14 +251,6 @@ AUI.add(
 
 						return [
 							{
-								label: strings.autofill,
-								value: 'auto-fill'
-							},
-							{
-								label: strings.calculate,
-								value: 'calculate'
-							},
-							{
 								label: strings.show,
 								value: 'show'
 							},
@@ -269,12 +259,20 @@ AUI.add(
 								value: 'enable'
 							},
 							{
+								label: strings.require,
+								value: 'require'
+							},
+							{
+								label: strings.autofill,
+								value: 'auto-fill'
+							},
+							{
 								label: strings.jumpToPage,
 								value: 'jump-to-page'
 							},
 							{
-								label: strings.require,
-								value: 'require'
+								label: strings.calculate,
+								value: 'calculate'
 							}
 						];
 					},
@@ -294,7 +292,7 @@ AUI.add(
 							actions.push(
 								A.merge(
 									{
-										action: instance._actions[currentIndex + '-target'].getValue()
+										action: instance._actions[currentIndex + '-target'].getValue()[0] || ''
 									},
 									targetAction ? targetAction.getValue() : undefined
 								)
@@ -373,7 +371,7 @@ AUI.add(
 								conditions: rule ? rule.conditions : [],
 								deleteIcon: Liferay.Util.getLexiconIconTpl('trash', 'icon-monospaced'),
 								invalid: !instance._isValidRule(rule),
-								logicalOperator: instance.get('logicOperator'),
+								logicalOperator: instance.get('logicOperator').toLowerCase(),
 								plusIcon: Liferay.Util.getLexiconIconTpl('plus', 'icon-monospaced'),
 								showLabel: false,
 								strings: instance.get('strings')
@@ -386,14 +384,7 @@ AUI.add(
 
 						var value = selectField.getValue();
 
-						if (!A.Lang.isArray(value)) {
-							value = value || '';
-						}
-						else {
-							value = value[0];
-						}
-
-						return value;
+						return value[0] || '';
 					},
 
 					_handleActionChange: function(event) {

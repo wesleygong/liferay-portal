@@ -105,14 +105,44 @@ in `gradle.properties`.
 ### Changed
 - [LPS-72252]: Update the [Liferay Gradle Plugins] dependency to version 3.3.9.
 
-## 1.4.1 - *(Unreleased)*
+## 1.5.0 - 2017-07-05
+
+### Added
+- [LPS-73056]: Add the ability to download the Liferay bundle from
+[www.liferay.com](https://www.liferay.com) via authentication token. This
+behavior can be enabled by setting the `liferay.workspace.bundle.token.download`
+property to `true` in `gradle.properties`.
 
 ### Changed
-- [LPS-73156]: Update the [Liferay Gradle Plugins] dependency to version 3.3.31.
 - [LPS-73248]: Use Liferay 7.0.3 GA4 by default.
+- [LPS-73383]: Update the [Liferay Gradle Plugins] dependency to version 3.3.35.
+
+## 1.5.1 - 2017-07-21
+
+### Changed
+- [LPS-72705]: Update the [Liferay Gradle Plugins] dependency to version 3.4.11.
+- [LPS-73746]: Update the [Liferay Portal Tools Bundle Support] dependency to
+version 3.0.2.
+
+### Fixed
+- [LPS-73746]: Trim authentication token in case users add extra lines into
+their token file.
+
+## 1.6.0 - 2017-08-01
+
+### Added
+- [LPS-73913]: Add the ability to pass the Liferay bundle authentication token
+password from a file by setting the
+`liferay.workspace.bundle.token.password.file` property in `gradle.properties`.
+
+### Changed
+- [LPS-73855]: Update the [Liferay Gradle Plugins] dependency to version 3.4.17.
+- [LPS-73913]: Update the [Liferay Portal Tools Bundle Support] dependency to
+version 3.1.0.
 
 [Gradle Download Task]: https://github.com/michel-kraemer/gradle-download-task/
 [Liferay Gradle Plugins]: https://github.com/liferay/liferay-portal/tree/master/modules/sdk/gradle-plugins
+[Liferay Portal Tools Bundle Support]: https://github.com/liferay/liferay-portal/tree/master/modules/util/portal-tools-bundle-support
 [LPS-66853]: https://issues.liferay.com/browse/LPS-66853
 [LPS-66906]: https://issues.liferay.com/browse/LPS-66906
 [LPS-67352]: https://issues.liferay.com/browse/LPS-67352
@@ -133,5 +163,10 @@ in `gradle.properties`.
 [LPS-70677]: https://issues.liferay.com/browse/LPS-70677
 [LPS-71724]: https://issues.liferay.com/browse/LPS-71724
 [LPS-72252]: https://issues.liferay.com/browse/LPS-72252
-[LPS-73156]: https://issues.liferay.com/browse/LPS-73156
+[LPS-72705]: https://issues.liferay.com/browse/LPS-72705
+[LPS-73056]: https://issues.liferay.com/browse/LPS-73056
 [LPS-73248]: https://issues.liferay.com/browse/LPS-73248
+[LPS-73383]: https://issues.liferay.com/browse/LPS-73383
+[LPS-73746]: https://issues.liferay.com/browse/LPS-73746
+[LPS-73855]: https://issues.liferay.com/browse/LPS-73855
+[LPS-73913]: https://issues.liferay.com/browse/LPS-73913

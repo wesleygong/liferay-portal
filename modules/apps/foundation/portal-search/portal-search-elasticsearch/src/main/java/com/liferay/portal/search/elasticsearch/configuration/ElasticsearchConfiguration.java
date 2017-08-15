@@ -26,7 +26,7 @@ import com.liferay.portal.search.elasticsearch.connection.OperationMode;
 @Meta.OCD(
 	id = "com.liferay.portal.search.elasticsearch.configuration.ElasticsearchConfiguration",
 	localization = "content/Language",
-	name = "elastic.search.configuration.name"
+	name = "elastic-search-configuration-name"
 )
 public interface ElasticsearchConfiguration {
 
@@ -151,10 +151,5 @@ public interface ElasticsearchConfiguration {
 
 	@Meta.AD(deflt = "true", description = "sync-search", required = false)
 	public boolean syncSearch();
-
-	@Meta.AD(
-		deflt = "60000", description = "shutdown-wait-time", required = false
-	)
-	public long shutdownWaitTime();
 
 }

@@ -26,9 +26,10 @@ import com.liferay.vulcan.message.json.PageMessageMapper;
 import com.liferay.vulcan.pagination.Page;
 import com.liferay.vulcan.response.control.Embedded;
 import com.liferay.vulcan.response.control.Fields;
-import com.liferay.vulcan.wiring.osgi.ProviderManager;
-import com.liferay.vulcan.wiring.osgi.RelatedModel;
-import com.liferay.vulcan.wiring.osgi.ResourceManager;
+import com.liferay.vulcan.wiring.osgi.manager.ProviderManager;
+import com.liferay.vulcan.wiring.osgi.manager.ResourceManager;
+import com.liferay.vulcan.wiring.osgi.model.RelatedCollection;
+import com.liferay.vulcan.wiring.osgi.model.RelatedModel;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -58,6 +59,9 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
+ * Gives Vulcan the ability to write collection pages. For that end it uses the
+ * right {@link PageMessageMapper} in accordance with the media type.
+ *
  * @author Alejandro Hernández
  * @author Carlos Sierra Andrés
  * @author Jorge Ferrer
@@ -232,6 +236,15 @@ public class PageMessageBodyWriter<T> implements MessageBodyWriter<Page<T>> {
 						pageMessageMapper, pageJSONObjectBuilder,
 						itemJSONObjectBuilder, linkedRelatedModel, model,
 						modelClass, embeddedPathElements, fields, embedded));
+
+				List<RelatedCollection<V, ?>> relatedCollections =
+					_resourceManager.getRelatedCollections(modelClass);
+
+				relatedCollections.forEach(
+					relatedCollection -> _writeRelatedCollection(
+						pageMessageMapper, pageJSONObjectBuilder,
+						itemJSONObjectBuilder, relatedCollection, model,
+						modelClass, embeddedPathElements, fields));
 			},
 			(url, embeddedPathElements, isEmbedded) -> {
 				if (isEmbedded) {
@@ -302,6 +315,15 @@ public class PageMessageBodyWriter<T> implements MessageBodyWriter<Page<T>> {
 						pageMessageMapper, jsonObjectBuilder,
 						itemJSONObjectBuilder, linkedRelatedModel, item,
 						modelClass, null, fields, embedded));
+
+				List<RelatedCollection<T, ?>> relatedCollections =
+					_resourceManager.getRelatedCollections(modelClass);
+
+				relatedCollections.forEach(
+					relatedCollection -> _writeRelatedCollection(
+						pageMessageMapper, jsonObjectBuilder,
+						itemJSONObjectBuilder, relatedCollection, item,
+						modelClass, null, fields));
 
 				pageMessageMapper.onFinishItem(
 					jsonObjectBuilder, itemJSONObjectBuilder, item, modelClass,
@@ -378,6 +400,23 @@ public class PageMessageBodyWriter<T> implements MessageBodyWriter<Page<T>> {
 			jsonObjectBuilder,
 			_getPageURL(
 				modelClass, page.getLastPageNumber(), page.getItemsPerPage()));
+	}
+
+	private <U, V> void _writeRelatedCollection(
+		PageMessageMapper<?> pageMessageMapper,
+		JSONObjectBuilder pageJSONObjectBuilder,
+		JSONObjectBuilder itemJSONObjectBuilder,
+		RelatedCollection<U, V> relatedCollection, U parentModel,
+		Class<U> parentModelClass,
+		FunctionalList<String> parentEmbeddedPathElements, Fields fields) {
+
+		_writerHelper.writeRelatedCollection(
+			relatedCollection, parentModel, parentModelClass,
+			parentEmbeddedPathElements, _uriInfo, fields,
+			(url, embeddedPathElements) ->
+				pageMessageMapper.mapItemLinkedResourceURL(
+					pageJSONObjectBuilder, itemJSONObjectBuilder,
+					embeddedPathElements, url));
 	}
 
 	@Context

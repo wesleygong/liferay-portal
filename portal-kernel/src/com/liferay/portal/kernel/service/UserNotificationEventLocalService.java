@@ -335,6 +335,12 @@ public interface UserNotificationEventLocalService extends BaseLocalService,
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<UserNotificationEvent> getArchivedUserNotificationEvents(
+		long userId, int deliveryType, boolean actionRequired,
+		boolean archived, int start, int end,
+		OrderByComparator<UserNotificationEvent> obc);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<UserNotificationEvent> getArchivedUserNotificationEvents(
 		long userId, int deliveryType, boolean archived);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -370,6 +376,12 @@ public interface UserNotificationEventLocalService extends BaseLocalService,
 	public List<UserNotificationEvent> getDeliveredUserNotificationEvents(
 		long userId, int deliveryType, boolean delivered,
 		boolean actionRequired, int start, int end);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<UserNotificationEvent> getDeliveredUserNotificationEvents(
+		long userId, int deliveryType, boolean delivered,
+		boolean actionRequired, int start, int end,
+		OrderByComparator<UserNotificationEvent> obc);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<UserNotificationEvent> getDeliveredUserNotificationEvents(
@@ -429,6 +441,9 @@ public interface UserNotificationEventLocalService extends BaseLocalService,
 	*/
 	public long dynamicQueryCount(DynamicQuery dynamicQuery,
 		Projection projection);
+
+	public void archiveUserNotificationEvents(long userId, int deliveryType,
+		boolean actionRequired) throws PortalException;
 
 	public void deleteUserNotificationEvent(java.lang.String uuid,
 		long companyId);

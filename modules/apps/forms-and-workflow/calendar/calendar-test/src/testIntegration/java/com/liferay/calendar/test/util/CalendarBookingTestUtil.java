@@ -184,6 +184,19 @@ public class CalendarBookingTestUtil {
 	}
 
 	public static CalendarBooking addMasterCalendarBooking(
+			Calendar invitingCalendar, Calendar invitedCalendar)
+		throws PortalException {
+
+		User user = UserLocalServiceUtil.fetchUser(
+			invitingCalendar.getUserId());
+
+		return addMasterCalendarBooking(
+			user, invitingCalendar,
+			new long[] {invitedCalendar.getCalendarId()},
+			createServiceContext(user));
+	}
+
+	public static CalendarBooking addMasterCalendarBooking(
 			User user, Calendar calendar, long[] childCalendarBookingIds,
 			long startTime, long endTime, ServiceContext serviceContext)
 		throws PortalException {
@@ -419,8 +432,12 @@ public class CalendarBookingTestUtil {
 			calendarBooking.getUserId(), calendarBooking.getCalendarBookingId(),
 			instanceIndex, calendarBooking.getCalendarId(), titleMap,
 			calendarBooking.getDescriptionMap(), calendarBooking.getLocation(),
-			startTime, endTime, false, null, true, 0, null, 0, null,
-			serviceContext);
+			startTime, endTime, calendarBooking.isAllDay(),
+			calendarBooking.getRecurrence(), true,
+			calendarBooking.getFirstReminder(),
+			calendarBooking.getFirstReminderType(),
+			calendarBooking.getSecondReminder(),
+			calendarBooking.getSecondReminderType(), serviceContext);
 	}
 
 	public static CalendarBooking updateCalendarBookingInstanceAndAllFollowing(
@@ -434,8 +451,12 @@ public class CalendarBookingTestUtil {
 			user.getUserId(), calendarBooking.getCalendarBookingId(),
 			instanceIndex, calendarBooking.getCalendarId(), titleMap,
 			descriptionMap, calendarBooking.getLocation(), instanceStartTime,
-			instanceEndTime, false, null, true, 0, null, 0, null,
-			serviceContext);
+			instanceEndTime, calendarBooking.isAllDay(),
+			calendarBooking.getRecurrence(), true,
+			calendarBooking.getFirstReminder(),
+			calendarBooking.getFirstReminderType(),
+			calendarBooking.getSecondReminder(),
+			calendarBooking.getSecondReminderType(), serviceContext);
 	}
 
 	public static CalendarBooking

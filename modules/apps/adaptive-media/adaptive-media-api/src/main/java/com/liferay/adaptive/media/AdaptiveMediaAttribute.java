@@ -38,26 +38,25 @@ import java.util.function.Function;
 public final class AdaptiveMediaAttribute<T, V> {
 
 	/**
-	 * Returns a string-attribute map containing the available
-	 * name-attribute pairs.
+	 * Returns a string-attribute map containing the available name-attribute
+	 * pairs.
 	 *
 	 * @return the list of available attributes
 	 */
 	public static Map<String, AdaptiveMediaAttribute<?, ?>>
-		allowedAttributes() {
+		getAllowedAdaptiveMediaAttributes() {
 
-		return _allowedAttributes;
+		return _allowedAdaptiveMediaAttributes;
 	}
 
 	/**
-	 * Returns a generic attribute representing the configuration UUID used
-	 * to generate the media. This attribute can be used with any kind of
-	 * media.
+	 * Returns a generic attribute representing the configuration UUID used to
+	 * generate the media. This attribute can be used with any kind of media.
 	 *
 	 * @return the configuration UUID
 	 */
 	public static final <S> AdaptiveMediaAttribute<S, String>
-		configurationUuid() {
+		getConfigurationUuid() {
 
 		return (AdaptiveMediaAttribute<S, String>)_CONFIGURATION_UUID;
 	}
@@ -68,17 +67,19 @@ public final class AdaptiveMediaAttribute<T, V> {
 	 *
 	 * @return the content length attribute
 	 */
-	public static final <S> AdaptiveMediaAttribute<S, Integer> contentLength() {
+	public static final <S>
+		AdaptiveMediaAttribute<S, Integer> getContentLength() {
+
 		return (AdaptiveMediaAttribute<S, Integer>)_CONTENT_LENGTH;
 	}
 
 	/**
-	 * Returns a generic attribute representing the media's content type.
-	 * This attribute can be used with any kind of media.
+	 * Returns a generic attribute representing the media's content type. This
+	 * attribute can be used with any kind of media.
 	 *
 	 * @return the content type attribute
 	 */
-	public static final <S> AdaptiveMediaAttribute<S, String> contentType() {
+	public static final <S> AdaptiveMediaAttribute<S, String> getContentType() {
 		return (AdaptiveMediaAttribute<S, String>)_CONTENT_TYPE;
 	}
 
@@ -88,7 +89,7 @@ public final class AdaptiveMediaAttribute<T, V> {
 	 *
 	 * @return the file name attribute
 	 */
-	public static final <S> AdaptiveMediaAttribute<S, String> fileName() {
+	public static final <S> AdaptiveMediaAttribute<S, String> getFileName() {
 		return (AdaptiveMediaAttribute<S, String>)_FILE_NAME;
 	}
 
@@ -111,7 +112,7 @@ public final class AdaptiveMediaAttribute<T, V> {
 		String name, Function<String, V> converter, Comparator<V> comparator) {
 
 		_name = name;
-		_converter = converter;
+		_converterFunction = converter;
 		_comparator = comparator;
 	}
 
@@ -137,7 +138,7 @@ public final class AdaptiveMediaAttribute<T, V> {
 	 * @return the value converted to the correct type
 	 */
 	public V convert(String value) {
-		return _converter.apply(value);
+		return _converterFunction.apply(value);
 	}
 
 	/**
@@ -179,25 +180,25 @@ public final class AdaptiveMediaAttribute<T, V> {
 			"file-name", (value) -> value, String::compareTo);
 
 	private static final Map<String, AdaptiveMediaAttribute<?, ?>>
-		_allowedAttributes = new HashMap<>();
+		_allowedAdaptiveMediaAttributes = new HashMap<>();
 
 	static {
-		_allowedAttributes.put(
+		_allowedAdaptiveMediaAttributes.put(
 			AdaptiveMediaAttribute._CONFIGURATION_UUID.getName(),
 			AdaptiveMediaAttribute._CONFIGURATION_UUID);
-		_allowedAttributes.put(
+		_allowedAdaptiveMediaAttributes.put(
 			AdaptiveMediaAttribute._CONTENT_LENGTH.getName(),
 			AdaptiveMediaAttribute._CONTENT_LENGTH);
-		_allowedAttributes.put(
+		_allowedAdaptiveMediaAttributes.put(
 			AdaptiveMediaAttribute._CONTENT_TYPE.getName(),
 			AdaptiveMediaAttribute._CONTENT_TYPE);
-		_allowedAttributes.put(
+		_allowedAdaptiveMediaAttributes.put(
 			AdaptiveMediaAttribute._FILE_NAME.getName(),
 			AdaptiveMediaAttribute._FILE_NAME);
 	}
 
 	private final Comparator<V> _comparator;
-	private final Function<String, V> _converter;
+	private final Function<String, V> _converterFunction;
 	private final String _name;
 
 }

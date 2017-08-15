@@ -75,10 +75,6 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 
 	@Override
 	public final void format() throws Exception {
-		if (sourceFormatterArgs.isShowDocumentation()) {
-			System.setProperty("java.awt.headless", "false");
-		}
-
 		List<String> fileNames = getFileNames();
 
 		if (fileNames.isEmpty()) {
@@ -333,7 +329,7 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 		// Find suppressions files in any child directory
 
 		List<String> moduleSuppressionsFileNames = getFileNames(
-			new String[0], new String[] {"**/modules/**/" + fileName}, true);
+			new String[0], new String[] {"**/" + fileName}, true);
 
 		for (String moduleSuppressionsFileName : moduleSuppressionsFileNames) {
 			moduleSuppressionsFileName = StringUtil.replace(

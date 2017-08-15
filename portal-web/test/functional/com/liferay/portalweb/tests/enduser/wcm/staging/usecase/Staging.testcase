@@ -175,7 +175,9 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="WebContentNavigator#gotoEditPGViaWCD" />
+		<execute macro="WebContentNavigator#gotoEditPGViaWCD">
+			<var name="webContentTitle" value="WebContent Title" />
+		</execute>
 
 		<execute macro="WebContent#addTagPGViaWCD">
 			<var name="tagName" value="tag name" />
@@ -527,9 +529,102 @@
 		</execute>
 	</command>
 
-	<command name="StagingDemoDocumentsAndMedia" priority="3">
+	<command name="StagingCopyFromLive" priority="4">
+		<execute macro="ProductMenu#gotoSitesPublishing">
+			<var name="portlet" value="Staging" />
+		</execute>
+
+		<execute macro="Staging#activateStagingCP">
+			<var name="pageVersioningEnabled" value="true" />
+			<var name="siteName" value="Site Name" />
+		</execute>
+
+		<execute macro="Navigator#openSiteURL">
+			<var name="siteName" value="Site Name" />
+		</execute>
+
+		<execute macro="Navigator#gotoStagedSitePage">
+			<var name="pageName" value="Staging Test Page" />
+			<var name="siteName" value="Site Name" />
+		</execute>
+
+		<execute macro="Staging#viewSitePagesVariationPG">
+			<var name="sitePagesVariationName" value="Main Variation" />
+		</execute>
+
+		<execute macro="Portlet#addPG">
+			<var name="portletName" value="Blogs" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSitesContent">
+			<var name="portlet" value="Blogs" />
+		</execute>
+
+		<execute macro="BlogsNavigator#gotoAddEntry" />
+
+		<execute macro="BlogsEntry#addEntryContent">
+			<var name="entryContent" value="Bodzavirágból, bodzavirágból hullik a, hullik a sárga virágpor." />
+			<var name="entrySubtitle" value="Nemes Nagy Ágnes" />
+			<var name="entryTitle" value="Tavaszi felhők" />
+		</execute>
+
+		<execute function="Pause" locator1="1000" />
+
+		<execute macro="PortletEntry#publish" />
+
+		<execute macro="Navigator#gotoStagedSitePage">
+			<var name="pageName" value="Staging Test Page" />
+			<var name="siteName" value="Site Name" />
+		</execute>
+
+		<execute macro="Staging#markAsReadyForPublication" />
+
+		<execute macro="Staging#gotoPublishToLive" />
+
+		<execute macro="Staging#publishToLive" />
+
+		<execute macro="ProductMenu#gotoLiveSite" />
+
+		<execute macro="Navigator#gotoStagedSitePage">
+			<var name="pageName" value="Staging Test Page" />
+			<var name="siteName" value="Site Name" />
+		</execute>
+
+		<execute macro="Blogs#editEntryPG">
+			<var name="entryContent" value="Bodzavirágból, bodzavirágból hullik a, hullik a sárga virágpor." />
+			<var name="entryContentEdit" value="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+			<var name="entrySubtitle" value="Nemes Nagy Ágnes" />
+			<var name="entrySubtitleEdit" value="Nemes Nagy Ágnes" />
+			<var name="entryTitle" value="Tavaszi felhők" />
+			<var name="entryTitleEdit" value="Tavaszi felhők" />
+		</execute>
+
+		<execute macro="Navigator#gotoStagedSitePage">
+			<var name="pageName" value="Staging Test Page" />
+			<var name="siteName" value="Site Name" />
+		</execute>
+
+		<execute macro="Staging#copyFromLive">
+			<var name="portletName" value="Blogs" />
+			<var name="portletOption" value="Staging" />
+		</execute>
+
+		<execute macro="Navigator#gotoStagedSitePage">
+			<var name="pageName" value="Staging Test Page" />
+			<var name="siteName" value="Site Name" />
+		</execute>
+
+		<execute macro="BlogsEntry#viewEntry">
+			<var name="entryContent" value="Bodzavirágból, bodzavirágból hullik a, hullik a sárga virágpor." />
+			<var name="entryTitle" value="Tavaszi felhők" />
+		</execute>
+	</command>
+
+	<command name="StagingDemoDocumentsAndMedia" priority="5">
 		<property name="custom.properties" value="default.layout.template.id=1_column" />
+		<property name="portal.acceptance" value="pending" />
 		<property name="test.name.skip.portal.instance" value="Staging#StagingDemoDocumentsAndMedia" />
+		<property name="testray.component.names" value="Training" />
 
 		<execute macro="ProductMenu#gotoControlPanelConfiguration">
 			<var name="portlet" value="Server Administration" />
@@ -886,7 +981,10 @@
 		<execute function="AssertTextEquals" locator1="Message#WORKFLOW_UNAPPROVED" value1="Web Content Title is not approved." />
 	</command>
 
-	<command name="StagingMultipleDM" priority="3">
+	<command name="StagingMultipleDM" priority="5">
+		<property name="portal.acceptance" value="pending" />
+		<property name="testray.component.names" value="Training" />
+
 		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Staging Test Page" />
 			<var name="siteName" value="Site Name" />
@@ -959,7 +1057,10 @@
 		<execute macro="DMDocument#viewStagingDetailsPG" />
 	</command>
 
-	<command name="StagingOnlyApprovedPublishToLive" priority="4">
+	<command name="StagingOnlyApprovedPublishToLive" priority="5">
+		<property name="portal.acceptance" value="pending" />
+		<property name="testray.component.names" value="Training" />
+
 		<execute macro="ProductMenu#gotoControlPanelSites">
 			<var name="portlet" value="Sites" />
 		</execute>

@@ -19,7 +19,6 @@ AUI.add(
 			{
 				ATTRS: {
 					alert: {
-						valueFn: '_valueAlert'
 					},
 
 					context: {
@@ -61,6 +60,10 @@ AUI.add(
 
 					ruleBuilder: {
 						valueFn: '_valueRuleBuilder'
+					},
+
+					rules: {
+						value: []
 					},
 
 					translationManager: {
@@ -150,7 +153,6 @@ AUI.add(
 
 						clearInterval(instance._intervalId);
 
-						instance.get('alert').destroy();
 						instance.get('formBuilder').destroy();
 						instance.get('ruleBuilder').destroy();
 
@@ -419,21 +421,29 @@ AUI.add(
 									Settings.autosaveURL,
 									{
 										after: {
-											success: function() {
-												var responseData = this.get('responseData');
+											success: function(event, id, xhr) {
+												var requestURL = this.get('uri');
+												var responseURL = xhr.responseURL;
 
-												instance._defineIds(responseData);
+												if (requestURL !== responseURL) {
+													window.location.reload();
+												}
+												else {
+													var responseData = this.get('responseData');
 
-												instance.savedState = state;
+													instance._defineIds(responseData);
 
-												instance.fire(
-													'autosave',
-													{
-														modifiedDate: responseData.modifiedDate
-													}
-												);
+													instance.savedState = state;
 
-												callback.call();
+													instance.fire(
+															'autosave',
+															{
+																modifiedDate: responseData.modifiedDate
+															}
+													);
+
+													callback.call();
+												}
 											}
 										},
 										data: formData,
@@ -560,9 +570,11 @@ AUI.add(
 
 						var publishMessage = Liferay.Language.get('the-form-was-published-successfully-access-it-with-this-url-x');
 
-						var formUrl = '<span style="font-weight: 500">' + instance._createFormURL() + '</span>';
+						var formUrl = instance._createFormURL();
 
-						publishMessage = publishMessage.replace(/\{0\}/gim, formUrl);
+						var span = '<span style="font-weight: 500"><a href=' + formUrl + ' target="_blank">' + formUrl + '</a></span>';
+
+						publishMessage = publishMessage.replace(/\{0\}/gim, span);
 
 						instance._showAlert(publishMessage, 'success');
 
@@ -682,16 +694,26 @@ AUI.add(
 									Settings.publishRecordSetURL,
 									{
 										after: {
-											success: function() {
-												instance.set('published', newPublishedValue);
+											success: function(event, id, xhr) {
+												var requestURL = this.get('uri');
+												var responseURL = xhr.responseURL;
 
-												instance.syncInputValues();
-
-												if (newPublishedValue) {
-													instance._handlePublishAction();
+												if (requestURL !== responseURL) {
+													window.location.reload();
 												}
 												else {
-													instance._handleUnpublishAction();
+													var responseData = this.get('responseData');
+
+													instance.set('published', newPublishedValue);
+
+													instance.syncInputValues();
+
+													if (newPublishedValue) {
+														instance._handlePublishAction();
+													}
+													else {
+														instance._handleUnpublishAction();
+													}
 												}
 											}
 										},
@@ -783,14 +805,23 @@ AUI.add(
 
 						var alert = instance.get('alert');
 
+						if (alert) {
+							alert.destroy();
+						}
+
 						var icon = 'exclamation-full';
 
 						if (type === 'success') {
 							icon = 'check';
 						}
 
-						alert.setAttrs(
+						alert = new Liferay.Alert(
 							{
+								closeable: true,
+								delay: {
+									hide: 3000,
+									show: 0
+								},
 								icon: icon,
 								message: message,
 								type: type
@@ -802,6 +833,8 @@ AUI.add(
 						}
 
 						alert.show();
+
+						instance.set('alert', alert);
 					},
 
 					_syncDescription: function() {
@@ -834,16 +867,6 @@ AUI.add(
 						instance._setName(name);
 					},
 
-					_valueAlert: function() {
-						var instance = this;
-
-						return new Liferay.Alert(
-							{
-								closeable: true
-							}
-						);
-					},
-
 					_valueFormBuilder: function() {
 						var instance = this;
 
@@ -862,7 +885,7 @@ AUI.add(
 						return new Liferay.DDL.FormBuilderRuleBuilder(
 							{
 								formBuilder: instance.get('formBuilder'),
-								rules: Settings.rules,
+								rules: instance.get('rules'),
 								visible: false
 							}
 						);

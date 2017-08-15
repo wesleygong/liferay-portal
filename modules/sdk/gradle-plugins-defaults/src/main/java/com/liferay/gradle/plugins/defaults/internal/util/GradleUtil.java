@@ -61,6 +61,22 @@ public class GradleUtil extends com.liferay.gradle.util.GradleUtil {
 
 	public static final String SNAPSHOT_VERSION_SUFFIX = "-SNAPSHOT";
 
+	public static MavenArtifactRepository addMavenArtifactRepository(
+		RepositoryHandler repositoryHandler, final Object url) {
+
+		return repositoryHandler.maven(
+			new Action<MavenArtifactRepository>() {
+
+				@Override
+				public void execute(
+					MavenArtifactRepository mavenArtifactRepository) {
+
+					mavenArtifactRepository.setUrl(url);
+				}
+
+			});
+	}
+
 	public static <T extends Task> T addTask(
 		Project project, String name, Class<T> clazz, boolean overwrite) {
 
@@ -198,6 +214,26 @@ public class GradleUtil extends com.liferay.gradle.util.GradleUtil {
 		}
 	}
 
+	public static boolean getProperty(
+		Object object, String name, boolean defaultValue) {
+
+		Object value = getProperty(object, name);
+
+		if (value == null) {
+			return defaultValue;
+		}
+
+		if (value instanceof Boolean) {
+			return (Boolean)value;
+		}
+
+		if (value instanceof String) {
+			return Boolean.parseBoolean((String)value);
+		}
+
+		return defaultValue;
+	}
+
 	public static String getProperty(
 		Object object, String name, String defaultValue) {
 
@@ -255,7 +291,9 @@ public class GradleUtil extends com.liferay.gradle.util.GradleUtil {
 
 		List<String> taskNames = startParameter.getTaskNames();
 
-		if (taskNames.contains(taskName)) {
+		if (taskNames.contains(taskName) ||
+			taskNames.contains(project.getPath() + ":" + taskName)) {
+
 			return true;
 		}
 
