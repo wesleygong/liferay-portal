@@ -109,6 +109,10 @@ public abstract class AlloyPortlet extends GenericPortlet {
 			(LiferayPortletConfig)portletConfig);
 	}
 
+	public AlloyControllerInvokerManager getAlloyInvokerManager() {
+		return _alloyControllerInvokerManager;
+	}
+
 	@Override
 	public void processAction(
 			ActionRequest actionRequest, ActionResponse actionResponse)

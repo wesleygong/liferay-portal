@@ -14,6 +14,7 @@
 
 package com.liferay.alloy.mvc;
 
+import com.liferay.alloy.mvc.internal.json.web.service.AlloyControllerInvokerManager;
 import com.liferay.alloy.mvc.internal.json.web.service.AlloyMockUtil;
 import com.liferay.counter.kernel.service.CounterLocalServiceUtil;
 import com.liferay.portal.kernel.bean.BeanPropertiesUtil;
@@ -529,6 +530,17 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 		}
 
 		touch();
+	}
+
+	protected void invokeAlloyController(
+		String controller, String lifecycle, String action,
+		Object[] parameters) throws Exception {
+
+		AlloyControllerInvokerManager alloyControllerInvokerManager =
+			alloyPortlet.getAlloyInvokerManager();
+
+		alloyControllerInvokerManager.invokeAlloyController(
+			controller, lifecycle, action, parameters);
 	}
 
 	protected void executeResource(Method method) throws Exception {

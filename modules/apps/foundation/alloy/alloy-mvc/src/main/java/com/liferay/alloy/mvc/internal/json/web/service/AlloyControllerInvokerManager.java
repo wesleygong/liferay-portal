@@ -17,13 +17,17 @@ package com.liferay.alloy.mvc.internal.json.web.service;
 import com.liferay.alloy.mvc.AlloyController;
 import com.liferay.alloy.mvc.AlloyPortlet;
 import com.liferay.alloy.mvc.json.web.service.AlloyControllerInvoker;
+import com.liferay.alloy.mvc.json.web.service.AlloyControllerInvoker;
 import com.liferay.alloy.mvc.json.web.service.BaseAlloyControllerInvokerImpl;
+import com.liferay.alloy.mvc.json.web.service.BaseAlloyControllerInvokerImpl;
+import com.liferay.alloy.mvc.json.web.service.JSONWebServiceMethod;
 import com.liferay.alloy.mvc.json.web.service.JSONWebServiceMethod;
 import com.liferay.portal.kernel.json.JSONSerializable;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebServiceActionsManagerUtil;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.portlet.LiferayPortletConfig;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
@@ -120,6 +124,15 @@ public class AlloyControllerInvokerManager {
 				alloyControllerInvokerClass, method,
 				getAPIPath(controller, method), "GET");
 		}
+	}
+
+	public void invokeAlloyController(String controller, String lifecycle, String action, Object[] parameters) throws Exception {
+		AlloyControllerInvoker alloyControllerInvoker =
+			_alloyControllerInvokers.get(controller);
+
+		parameters = ArrayUtil.append(parameters, new Object[] {"action", action});
+
+		alloyControllerInvoker.invokeAlloyController(lifecycle, parameters);
 	}
 
 	public void unregisterControllers() {
