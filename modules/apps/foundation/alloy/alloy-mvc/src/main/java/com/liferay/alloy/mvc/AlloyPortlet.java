@@ -109,10 +109,6 @@ public abstract class AlloyPortlet extends GenericPortlet {
 			(LiferayPortletConfig)portletConfig);
 	}
 
-	public AlloyControllerInvokerManager getAlloyInvokerManager() {
-		return _alloyControllerInvokerManager;
-	}
-
 	@Override
 	public void processAction(
 			ActionRequest actionRequest, ActionResponse actionResponse)
@@ -141,6 +137,10 @@ public abstract class AlloyPortlet extends GenericPortlet {
 		String path = getPath(resourceRequest);
 
 		include(path, resourceRequest, resourceResponse);
+	}
+
+	protected AlloyControllerInvokerManager getAlloyInvokerManager() {
+		return _alloyControllerInvokerManager;
 	}
 
 	protected String getControllerPath(PortletRequest portletRequest) {
