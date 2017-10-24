@@ -17,10 +17,7 @@ package com.liferay.alloy.mvc.internal.json.web.service;
 import com.liferay.alloy.mvc.AlloyController;
 import com.liferay.alloy.mvc.AlloyPortlet;
 import com.liferay.alloy.mvc.json.web.service.AlloyControllerInvoker;
-import com.liferay.alloy.mvc.json.web.service.AlloyControllerInvoker;
 import com.liferay.alloy.mvc.json.web.service.BaseAlloyControllerInvokerImpl;
-import com.liferay.alloy.mvc.json.web.service.BaseAlloyControllerInvokerImpl;
-import com.liferay.alloy.mvc.json.web.service.JSONWebServiceMethod;
 import com.liferay.alloy.mvc.json.web.service.JSONWebServiceMethod;
 import com.liferay.portal.kernel.json.JSONSerializable;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebServiceActionsManagerUtil;
@@ -84,7 +81,8 @@ public class AlloyControllerInvokerManager {
 			_alloyControllerInvokers.get(controller);
 
 		parameters = ArrayUtil.append(
-			parameters, new Object[] {
+			parameters,
+			new Object[] {
 				"controller", controller, "action", action, "format", "json"
 			});
 

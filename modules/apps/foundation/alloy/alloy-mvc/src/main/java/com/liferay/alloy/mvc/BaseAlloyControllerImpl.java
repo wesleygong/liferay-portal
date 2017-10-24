@@ -1070,8 +1070,9 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 	}
 
 	protected JSONSerializable invokeAlloyController(
-		String controller, String lifecycle, String action,
-		Object[] parameters) throws Exception {
+			String controller, String lifecycle, String action,
+			Object[] parameters)
+		throws Exception {
 
 		AlloyControllerInvokerManager alloyControllerInvokerManager =
 			alloyPortlet.getAlloyInvokerManager();
