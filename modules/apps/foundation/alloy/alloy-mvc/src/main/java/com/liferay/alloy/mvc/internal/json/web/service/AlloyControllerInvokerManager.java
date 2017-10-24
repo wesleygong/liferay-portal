@@ -75,6 +75,20 @@ public class AlloyControllerInvokerManager {
 			StringPool.SLASH + portletContext.getPortletContextName();
 	}
 
+	public void invokeAlloyController(
+			String controller, String lifecycle, String action,
+			Object[] parameters)
+		throws Exception {
+
+		AlloyControllerInvoker alloyControllerInvoker =
+			_alloyControllerInvokers.get(controller);
+
+		parameters = ArrayUtil.append(
+			parameters, new Object[] {"action", action});
+
+		alloyControllerInvoker.invokeAlloyController(lifecycle, parameters);
+	}
+
 	public void registerController(
 		ThemeDisplay themeDisplay, AlloyPortlet alloyPortlet, Portlet portlet,
 		String controller, Class<? extends AlloyController> controllerClass) {
@@ -124,15 +138,6 @@ public class AlloyControllerInvokerManager {
 				alloyControllerInvokerClass, method,
 				getAPIPath(controller, method), "GET");
 		}
-	}
-
-	public void invokeAlloyController(String controller, String lifecycle, String action, Object[] parameters) throws Exception {
-		AlloyControllerInvoker alloyControllerInvoker =
-			_alloyControllerInvokers.get(controller);
-
-		parameters = ArrayUtil.append(parameters, new Object[] {"action", action});
-
-		alloyControllerInvoker.invokeAlloyController(lifecycle, parameters);
 	}
 
 	public void unregisterControllers() {

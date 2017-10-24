@@ -532,17 +532,6 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 		touch();
 	}
 
-	protected void invokeAlloyController(
-		String controller, String lifecycle, String action,
-		Object[] parameters) throws Exception {
-
-		AlloyControllerInvokerManager alloyControllerInvokerManager =
-			alloyPortlet.getAlloyInvokerManager();
-
-		alloyControllerInvokerManager.invokeAlloyController(
-			controller, lifecycle, action, parameters);
-	}
-
 	protected void executeResource(Method method) throws Exception {
 		try {
 			if (method != null) {
@@ -1077,6 +1066,17 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 	)
 	protected void invoke(Method method) throws Exception {
 		method.invoke(this);
+	}
+
+	protected void invokeAlloyController(
+		String controller, String lifecycle, String action,
+		Object[] parameters) throws Exception {
+
+		AlloyControllerInvokerManager alloyControllerInvokerManager =
+			alloyPortlet.getAlloyInvokerManager();
+
+		alloyControllerInvokerManager.invokeAlloyController(
+			controller, lifecycle, action, parameters);
 	}
 
 	protected boolean isRespondingTo() {
