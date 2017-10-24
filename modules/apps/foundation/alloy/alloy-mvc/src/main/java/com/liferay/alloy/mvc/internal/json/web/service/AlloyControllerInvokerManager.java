@@ -84,7 +84,9 @@ public class AlloyControllerInvokerManager {
 			_alloyControllerInvokers.get(controller);
 
 		parameters = ArrayUtil.append(
-			parameters, new Object[] {"action", action});
+			parameters, new Object[] {
+				"controller", controller, "action", action, "format", "json"
+			});
 
 		return alloyControllerInvoker.invokeAlloyController(
 			lifecycle, parameters);
