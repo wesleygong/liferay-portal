@@ -75,7 +75,7 @@ public class AlloyControllerInvokerManager {
 			StringPool.SLASH + portletContext.getPortletContextName();
 	}
 
-	public void invokeAlloyController(
+	public JSONSerializable invokeAlloyController(
 			String controller, String lifecycle, String action,
 			Object[] parameters)
 		throws Exception {
@@ -86,7 +86,8 @@ public class AlloyControllerInvokerManager {
 		parameters = ArrayUtil.append(
 			parameters, new Object[] {"action", action});
 
-		alloyControllerInvoker.invokeAlloyController(lifecycle, parameters);
+		return alloyControllerInvoker.invokeAlloyController(
+			lifecycle, parameters);
 	}
 
 	public void registerController(
