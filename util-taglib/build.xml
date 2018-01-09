@@ -33,6 +33,13 @@
 	</target>
 
 	<target depends="build-common-java.compile" name="compile">
+		<copy file="classes/META-INF/liferay-portlet_1_0.tld" preservelastmodified="true" tofile="classes/META-INF/liferay-portlet_1_0.tld" />
+
+		<replace file="classes/META-INF/liferay-portlet_1_0.tld">
+			<replacetoken><![CDATA[<short-name>portlet_1_0</short-name>]]></replacetoken>
+			<replacevalue><![CDATA[<short-name>portlet</short-name>]]></replacevalue>
+		</replace>
+
 		<copy file="classes/META-INF/liferay-portlet.tld" preservelastmodified="true" tofile="classes/META-INF/liferay-portlet_2_0.tld" />
 
 		<replace file="classes/META-INF/liferay-portlet_2_0.tld">
@@ -108,16 +115,16 @@
 		</zip>
 	</target>
 
-	<target depends="jar,jar-javadoc,jar-sources,jar-tlddoc" name="publish-portal-release">
-		<publish-portal-artifact>
+	<target name="publish-portal-release">
+		<publish-portal-artifact targets="jar,jar-javadoc,jar-sources,jar-tlddoc">
 			<attach classifier="javadoc" file="${artifact.name}-javadoc.jar" />
 			<attach classifier="sources" file="${artifact.name}-sources.jar" />
 			<attach classifier="tlddoc" file="${artifact.name}-tlddoc.jar" />
 		</publish-portal-artifact>
 	</target>
 
-	<target depends="jar,jar-javadoc,jar-sources,jar-tlddoc" name="publish-portal-snapshot">
-		<publish-portal-artifact snapshot="true">
+	<target name="publish-portal-snapshot">
+		<publish-portal-artifact snapshot="true" targets="jar,jar-javadoc,jar-sources,jar-tlddoc">
 			<attach classifier="javadoc" file="${artifact.name}-javadoc.jar" />
 			<attach classifier="sources" file="${artifact.name}-sources.jar" />
 			<attach classifier="tlddoc" file="${artifact.name}-tlddoc.jar" />

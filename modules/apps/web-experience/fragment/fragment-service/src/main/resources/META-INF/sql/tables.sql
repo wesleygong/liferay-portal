@@ -22,5 +22,14 @@ create table FragmentEntry (
 	name VARCHAR(75) null,
 	css STRING null,
 	html STRING null,
-	js STRING null
+	js STRING null,
+	htmlPreviewEntryId LONG
+);
+
+create table FragmentEntryInstanceLink (
+	fragmentEntryInstanceLinkId LONG not null primary key,
+	groupId LONG,
+	fragmentEntryId LONG,
+	layoutPageTemplateEntryId LONG,
+	position INTEGER
 );

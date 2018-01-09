@@ -56,6 +56,23 @@
 				(lower(AssetCategory.name) = ?)
 		]]>
 	</sql>
+	<sql id="com.liferay.asset.kernel.service.persistence.AssetCategoryFinder.findByC_C">
+		<![CDATA[
+			SELECT
+				{AssetCategory.*}
+			FROM
+				AssetEntry
+			INNER JOIN
+				AssetEntries_AssetCategories ON
+					AssetEntries_AssetCategories.entryId = AssetEntry.entryId
+			INNER JOIN
+				AssetCategory ON
+					AssetCategory.categoryId = AssetEntries_AssetCategories.categoryId
+			WHERE
+				(AssetEntry.classNameId = ?) AND
+				(AssetEntry.classPK =  ?)
+		]]>
+	</sql>
 	<sql id="com.liferay.asset.kernel.service.persistence.AssetCategoryFinder.findByG_N_P">
 		<![CDATA[
 			SELECT
@@ -109,6 +126,45 @@
 				(AssetEntry.classNameId = ?)
 		]]>
 	</sql>
+	<sql id="com.liferay.asset.kernel.service.persistence.AssetEntryFinder.findPriorityByC_C">
+		<![CDATA[
+			SELECT
+				AssetEntry.priority
+			FROM
+				AssetEntry
+			WHERE
+				(AssetEntry.classNameId = ?) AND
+				(AssetEntry.classPK = ?)
+		]]>
+	</sql>
+	<sql id="com.liferay.asset.kernel.service.persistence.AssetLinkFinder.findByC_C">
+		<![CDATA[
+			(
+				SELECT
+					AssetLink.*
+				FROM
+					AssetEntry
+				INNER JOIN
+					AssetLink ON
+						AssetEntry.entryId = AssetLink.entryId1
+				WHERE
+					(AssetEntry.classNameId = ?) AND
+					(AssetEntry.classPK = ?)
+			) UNION
+			(
+				SELECT
+					AssetLink.*
+				FROM
+					AssetEntry
+				INNER JOIN
+					AssetLink ON
+						AssetEntry.entryId = AssetLink.entryId2
+				WHERE
+					(AssetEntry.classNameId = ?) AND
+					(AssetEntry.classPK = ?)
+			)
+	]]>
+	</sql>
 	<sql id="com.liferay.asset.kernel.service.persistence.AssetTagFinder.countByG_N">
 		<![CDATA[
 			SELECT
@@ -161,6 +217,23 @@
 					(AssetTag.name LIKE ?) OR
 					(? IS NULL)
 				)
+		]]>
+	</sql>
+	<sql id="com.liferay.asset.kernel.service.persistence.AssetTagFinder.findByC_C">
+		<![CDATA[
+			SELECT
+				{AssetTag.*}
+			FROM
+				AssetEntry
+			INNER JOIN
+				AssetEntries_AssetTags ON
+	  				AssetEntries_AssetTags.entryId = AssetEntry.entryId
+			INNER JOIN
+				AssetTag ON
+	  				AssetTag.tagId = AssetEntries_AssetTags.tagId
+			WHERE
+				(AssetEntry.classNameId = ?) AND
+				(AssetEntry.classPK =  ?)
 		]]>
 	</sql>
 	<sql id="com.liferay.asset.kernel.service.persistence.AssetTagFinder.findByG_C_N">

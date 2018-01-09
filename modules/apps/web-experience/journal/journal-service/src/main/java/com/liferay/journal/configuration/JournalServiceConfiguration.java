@@ -34,65 +34,65 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
 @ProviderType
 public interface JournalServiceConfiguration {
 
-	@Meta.AD(deflt = "true", required = false)
+	@Meta.AD(deflt = "true", name = "add-default-structures", required = false)
 	public boolean addDefaultStructures();
 
 	@Meta.AD(
 		deflt = "&|\\'|@|\\\\|]|}|:|=|>|/|<|[|{|%|+|#|`|?|\\\"|;|*|~",
 		description = "specifcy-characters-that-are-not-allowed-in-journal-folder-names",
-		required = false
+		name = "characters-blacklist", required = false
 	)
 	public String[] charactersblacklist();
 
 	@Meta.AD(
 		deflt = "${resource:com/liferay/journal/dependencies/error.ftl}",
-		required = false
+		name = "error-template-ftl", required = false
 	)
 	public String errorTemplateFTL();
 
 	@Meta.AD(
 		deflt = "${resource:com/liferay/journal/dependencies/error.vm}",
-		required = false
+		name = "error-template-vm", required = false
 	)
 	public String errorTemplateVM();
 
 	@Meta.AD(
 		deflt = "${resource:com/liferay/journal/dependencies/error.xsl}",
-		required = false
+		name = "error-template-xsl", required = false
 	)
 	public String errorTemplateXSL();
 
-	@Meta.AD(deflt = "15", required = false)
+	@Meta.AD(deflt = "15", name = "check-interval", required = false)
 	public int checkInterval();
 
 	@Meta.AD(
 		deflt = "", description = "journal-article-custom-token-names",
-		required = false
+		name = "custom-token-names", required = false
 	)
 	public String[] customTokenNames();
 
 	@Meta.AD(
 		deflt = "", description = "journal-article-custom-token-values",
-		required = false
+		name = "custom-token-values", required = false
 	)
 	public String[] customTokenValues();
 
 	@Meta.AD(
 		deflt = "true", description = "journal-article-comments",
-		required = false
+		name = "article-comments-enabled", required = false
 	)
 	public boolean articleCommentsEnabled();
 
 	@Meta.AD(
 		deflt = "true",
 		description = "journal-article-database-search-content-keywords",
-		required = false
+		name = "database-content-keyword-search-enabled", required = false
 	)
 	public boolean databaseContentKeywordSearchEnabled();
 
 	@Meta.AD(
 		deflt = "true", description = "journal-article-expire-all-versions",
-		required = false
+		name = "expire-all-article-versions-enabled", required = false
 	)
 	public boolean expireAllArticleVersionsEnabled();
 
@@ -102,49 +102,50 @@ public interface JournalServiceConfiguration {
 	@Deprecated
 	@Meta.AD(
 		deflt = "true", description = "journal-article-view-permission-check",
-		required = false
+		name = "article-view-permissions-check-enabled", required = false
 	)
 	public boolean articleViewPermissionsCheckEnabled();
 
 	@Meta.AD(
 		deflt = "true", description = "journal-article-index-all-versions",
-		required = false
+		name = "index-all-article-versions-enabled", required = false
 	)
 	public boolean indexAllArticleVersionsEnabled();
 
 	@Meta.AD(
 		deflt = "true", description = "journal-folder-icon-check-count",
-		required = false
+		name = "folder-icon-check-count-enabled", required = false
 	)
 	public boolean folderIconCheckCountEnabled();
 
 	@Meta.AD(
-		deflt = "true", description = "publish-to-live-by-default",
-		required = false
+		deflt = "true", description = "publish-to-live-by-default-help",
+		name = "publish-to-live-by-default", required = false
 	)
 	public boolean publishToLiveByDefaultEnabled();
 
 	@Meta.AD(
 		deflt = "true", description = "publish-version-history-by-default",
-		required = false
+		name = "version-history-by-default-enabled", required = false
 	)
 	public boolean versionHistoryByDefaultEnabled();
 
 	@Meta.AD(
-		deflt = "false", description = "sync-content-search-on-startup",
-		required = false
+		deflt = "false", description = "sync-content-search-on-startup-help",
+		name = "sync-content-search-on-startup", required = false
 	)
 	public boolean syncContentSearchOnStartup();
 
 	@Meta.AD(
 		deflt = "@page_break@",
-		description = "journal-article-token-page-break", required = false
+		description = "journal-article-token-page-break",
+		name = "journal-article-page-break-token", required = false
 	)
 	public String journalArticlePageBreakToken();
 
 	@Meta.AD(
-		deflt = "json", description = "journal-article-storage-type",
-		required = false
+		deflt = "json", description = "journal-article-storage-type-help",
+		name = "journal-article-storage-type", required = false
 	)
 	public String journalArticleStorageType();
 

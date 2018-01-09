@@ -29,6 +29,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>BLOGS_RATING</td>
+	<td>//select[contains(@id,'blogs')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>BULLET_STYLE</td>
 	<td>//div[label[contains(.,'Bullet Style')]]/select</td>
 	<td></td>
@@ -206,6 +211,11 @@
 <tr>
 	<td>SCOPE</td>
 	<td>//div[label[contains(.,'Scope')]]/select | //div/select[@title='Scope']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SCOPE_CONFIGURATION</td>
+	<td>//div[label[contains(.,'Scope')]]/select</td>
 	<td></td>
 </tr>
 <tr>

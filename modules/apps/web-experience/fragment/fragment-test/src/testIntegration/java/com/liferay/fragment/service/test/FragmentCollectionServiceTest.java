@@ -25,7 +25,6 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
-import com.liferay.portal.kernel.test.rule.Sync;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
@@ -44,7 +43,6 @@ import org.junit.runner.RunWith;
  * @author Jürgen Kappler
  */
 @RunWith(Arquillian.class)
-@Sync
 public class FragmentCollectionServiceTest {
 
 	@ClassRule
@@ -169,8 +167,7 @@ public class FragmentCollectionServiceTest {
 
 		FragmentEntryServiceUtil.addFragmentEntry(
 			_group.getGroupId(), fragmentCollection.getFragmentCollectionId(),
-			"Fragment Entry", StringPool.BLANK, StringPool.BLANK,
-			StringPool.BLANK, serviceContext);
+			"Fragment Entry", serviceContext);
 
 		FragmentCollectionServiceUtil.deleteFragmentCollection(
 			fragmentCollection.getFragmentCollectionId());

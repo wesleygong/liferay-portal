@@ -346,7 +346,7 @@ public class EmbeddedElasticsearchConnection
 			sb.append("Remote Elasticsearch connections can be configured in ");
 			sb.append("the Control Panel.");
 
-			_log.warn(sb);
+			_log.warn(sb.toString());
 		}
 
 		if (_log.isDebugEnabled()) {
@@ -460,8 +460,14 @@ public class EmbeddedElasticsearchConnection
 
 		if (PortalRunMode.isTestMode()) {
 			settingsBuilder.put("index.refresh_interval", "1ms");
+			settingsBuilder.put(
+				"index.search.slowlog.threshold.fetch.warn", "-1");
+			settingsBuilder.put(
+				"index.search.slowlog.threshold.query.warn", "-1");
 			settingsBuilder.put("index.translog.flush_threshold_ops", "1");
 			settingsBuilder.put("index.translog.interval", "1ms");
+			settingsBuilder.put(
+				"monitor.jvm.enabled", Boolean.FALSE.toString());
 		}
 	}
 

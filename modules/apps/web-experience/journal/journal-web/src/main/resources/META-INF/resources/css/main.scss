@@ -1,5 +1,9 @@
 .portlet-journal {
 	.article-content-content {
+		img {
+			max-width: 100%;
+		}
+
 		.form-builder-field {
 			box-shadow: none;
 			margin: 0;

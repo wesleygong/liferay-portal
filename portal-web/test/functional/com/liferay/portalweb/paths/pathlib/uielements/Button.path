@@ -269,8 +269,13 @@
 	<td></td>
 </tr>
 <tr>
+	<td>CLOSE_SUCCESS_MESSAGE</td>
+	<td>//button[contains(@class,'close')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>COLOR_EFFECT</td>
-	<td>//a[contains(@class, 'btn')]//*[name()='svg'][@data-icon='effects']</td>
+	<td>//a[contains(@class, 'btn')][span/*[name()='svg'][@data-icon='effects']]</td>
 	<td></td>
 </tr>
 <tr>
@@ -296,11 +301,6 @@
 <tr>
 	<td>COPY</td>
 	<td>//button[contains(.,'Copy')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>COPY_FROM_LIVE</td>
-	<td>//button[contains(.,'Copy from Live')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -375,7 +375,7 @@
 </tr>
 <tr>
 	<td>EDITOR_SWITCH</td>
-	<td>//button[contains(@id,'EditorSwitch')]/span/*[name()='svg'][contains(@class,'lexicon-icon-code')]</td>
+	<td>//button[contains(@id,'EditorSwitch') and contains(@class,'editor-view')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -395,7 +395,7 @@
 </tr>
 <tr>
 	<td>FILTER_EFFECT</td>
-	<td>//a[contains(@class,'btn') and (@data-control='effects')]//*[name()='svg'][contains(@class,'lexicon-icon')]</td>
+	<td>//a[contains(@class,'btn') and (@data-control='effects')][span/*[name()='svg'][contains(@class,'lexicon-icon')]]</td>
 	<td></td>
 </tr>
 <tr>
@@ -556,11 +556,6 @@
 <tr>
 	<td>PUBLISH_LOCALIZED</td>
 	<td>//button[contains(@id,'publishButton')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>PUBLISH_TO_LIVE</td>
-	<td>//button[contains(.,'Publish to Live')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -759,6 +754,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>MODAL_CONTENT_SUBMIT</td>
+	<td>//div[@class='modal-content']//button[@type='submit']</td>
+	<td></td>
+</tr>
+<tr>
 	<td>TAB_SUBMIT_BTN</td>
 	<td>//button[contains(@type,'submit') and contains(.,'${key_tab}')]</td>
 	<td></td>
@@ -770,7 +770,7 @@
 </tr>
 <tr>
 	<td>TRANSFORM</td>
-	<td>//a[contains(@class, 'btn')]//*[name()='svg'][@data-icon='transform']</td>
+	<td>//div[a/*[name()='svg'][@data-icon='transform']]</td>
 	<td></td>
 </tr>
 <tr>

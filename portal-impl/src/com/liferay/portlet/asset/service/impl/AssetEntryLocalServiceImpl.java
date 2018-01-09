@@ -266,6 +266,18 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 	}
 
 	@Override
+	public double getEntryPriority(long classNameId, long classPK) {
+		return assetEntryFinder.findPriorityByC_C(classNameId, classPK);
+	}
+
+	@Override
+	public double getEntryPriority(String className, long classPK) {
+		long classNameId = classNameLocalService.getClassNameId(className);
+
+		return assetEntryFinder.findPriorityByC_C(classNameId, classPK);
+	}
+
+	@Override
 	public List<AssetEntry> getGroupEntries(long groupId) {
 		return assetEntryPersistence.findByGroupId(groupId);
 	}
@@ -601,30 +613,15 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 
 			assetEntryQuery.setAttribute("showInvisible", showInvisible);
 
-			String[] assetTagNamesArray = StringUtil.split(assetTagNames);
-
-			if (andSearch) {
-				assetEntryQuery.setAnyCategoryIds(
-					StringUtil.split(assetCategoryIds, 0L));
-
-				for (String assetTagName : assetTagNamesArray) {
-					long[] allAssetTagIds = getTagIds(groupIds, assetTagName);
-
-					assetEntryQuery.addAllTagIdsArray(allAssetTagIds);
-				}
-			}
-			else {
-				assetEntryQuery.setAllCategoryIds(
-					StringUtil.split(assetCategoryIds, 0L));
-
-				if (ArrayUtil.isNotEmpty(assetTagNamesArray)) {
-					assetEntryQuery.setAnyTagIds(
-						getTagIds(groupIds, assetTagNames));
-				}
-			}
-
 			assetEntryQuery.setClassNameIds(
 				getClassNameIds(companyId, className));
+
+			_setAssetCategoryIds(
+				StringUtil.split(assetCategoryIds, 0L), andSearch,
+				assetEntryQuery);
+			_setAssetTagNames(
+				groupIds, StringUtil.split(assetTagNames), andSearch,
+				assetEntryQuery);
 
 			SearchContext searchContext = buildSearchContext(
 				companyId, groupIds, userId, classTypeId, userName, title,
@@ -1197,6 +1194,13 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 
 		assetEntryQuery.setClassNameIds(getClassNameIds(companyId, className));
 
+		_setAssetCategoryIds(
+			searchContext.getAssetCategoryIds(), searchContext.isAndSearch(),
+			assetEntryQuery);
+		_setAssetTagNames(
+			searchContext.getGroupIds(), searchContext.getAssetTagNames(),
+			searchContext.isAndSearch(), assetEntryQuery);
+
 		QueryConfig queryConfig = searchContext.getQueryConfig();
 
 		queryConfig.setHighlightEnabled(false);
@@ -1278,6 +1282,43 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 
 	@BeanReference(type = AssetEntryValidatorRegistry.class)
 	protected AssetEntryValidatorRegistry assetEntryValidatorRegistry;
+
+	private void _setAssetCategoryIds(
+		long[] assetCategoryIds, boolean andSearch,
+		AssetEntryQuery assetEntryQuery) {
+
+		if (ArrayUtil.isEmpty(assetCategoryIds)) {
+			return;
+		}
+
+		if (andSearch) {
+			assetEntryQuery.setAnyCategoryIds(assetCategoryIds);
+		}
+		else {
+			assetEntryQuery.setAllCategoryIds(assetCategoryIds);
+		}
+	}
+
+	private void _setAssetTagNames(
+		long[] groupIds, String[] assetTagNames, boolean andSearch,
+		AssetEntryQuery assetEntryQuery) {
+
+		if (andSearch) {
+			for (String assetTagName : assetTagNames) {
+				long[] allAssetTagIds = getTagIds(groupIds, assetTagName);
+
+				assetEntryQuery.addAllTagIdsArray(allAssetTagIds);
+			}
+		}
+		else {
+			if (ArrayUtil.isNotEmpty(assetTagNames)) {
+				long[] assetTagIds = getTagIds(
+					groupIds, StringUtil.merge(assetTagNames));
+
+				assetEntryQuery.setAnyTagIds(assetTagIds);
+			}
+		}
+	}
 
 	private final ServiceTrackerMap
 		<String, List<AssetEntryValidatorExclusionRule>>

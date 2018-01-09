@@ -18,7 +18,10 @@ import java.io.Serializable;
 
 /**
  * @author Thiago Moreira
+ * @deprecated As of 7.0.0, replaced by {@link
+ *             com.liferay.message.boards.internal.messaging.MailingListRequest}
  */
+@Deprecated
 public class MailingListRequest implements Serializable {
 
 	public long getCategoryId() {

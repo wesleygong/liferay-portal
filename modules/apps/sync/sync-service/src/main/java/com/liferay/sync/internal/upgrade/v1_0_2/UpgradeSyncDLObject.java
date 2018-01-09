@@ -117,7 +117,7 @@ public class UpgradeSyncDLObject extends UpgradeProcess {
 	protected void verifyDLFileEntriesAndFolders(long groupId)
 		throws Exception {
 
-		StringBundler sb1 = new StringBundler(51);
+		StringBundler sb1 = new StringBundler(50);
 
 		sb1.append("select DLFolder.companyId, DLFolder.userId, ");
 		sb1.append("DLFolder.userName, DLFolder.createDate, ");
@@ -303,7 +303,8 @@ public class UpgradeSyncDLObject extends UpgradeProcess {
 
 				if (!ArrayUtil.contains(
 						SyncServiceConfigurationValues.
-							SYNC_MAC_PACKAGE_FOLDER_EXTENSIONS, extension)) {
+							SYNC_MAC_PACKAGE_FOLDER_EXTENSIONS,
+						extension)) {
 
 					continue;
 				}

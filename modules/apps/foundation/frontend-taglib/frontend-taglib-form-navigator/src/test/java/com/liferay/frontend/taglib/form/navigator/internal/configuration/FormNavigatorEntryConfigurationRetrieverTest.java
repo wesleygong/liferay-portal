@@ -14,8 +14,8 @@
 
 package com.liferay.frontend.taglib.form.navigator.internal.configuration;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 
 import java.util.Iterator;
 import java.util.List;
@@ -39,7 +39,7 @@ public class FormNavigatorEntryConfigurationRetrieverTest {
 		public void setUp() throws Exception {
 			super.setUp();
 
-			StringBundler sb = new StringBundler(5);
+			StringBundler sb = new StringBundler(10);
 
 			sb.append("add.general");
 			sb.append(StringPool.EQUAL);
@@ -91,7 +91,9 @@ public class FormNavigatorEntryConfigurationRetrieverTest {
 				formNavigatorEntryConfigurationRetriever.
 					getFormNavigatorEntryKeys("form1", "general", "add").get();
 
-			Assert.assertTrue(formNavigatorEntryKeys.isEmpty());
+			Assert.assertTrue(
+				formNavigatorEntryKeys.toString(),
+				formNavigatorEntryKeys.isEmpty());
 		}
 
 	}
@@ -203,7 +205,7 @@ public class FormNavigatorEntryConfigurationRetrieverTest {
 		public void setUp() throws Exception {
 			super.setUp();
 
-			StringBundler sb = new StringBundler(4);
+			StringBundler sb = new StringBundler(2);
 
 			sb.append("formNavigatorEntryKey1,");
 			sb.append("formNavigatorEntryKey2");

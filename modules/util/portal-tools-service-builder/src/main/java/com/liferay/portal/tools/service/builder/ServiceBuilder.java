@@ -15,6 +15,7 @@
 package com.liferay.portal.tools.service.builder;
 
 import com.liferay.petra.string.CharPool;
+import com.liferay.petra.xml.Dom4jUtil;
 import com.liferay.portal.freemarker.FreeMarkerUtil;
 import com.liferay.portal.kernel.dao.db.IndexMetadata;
 import com.liferay.portal.kernel.dao.db.IndexMetadataFactoryUtil;
@@ -43,7 +44,6 @@ import com.liferay.portal.kernel.util.Validator_IW;
 import com.liferay.portal.tools.ArgumentsUtil;
 import com.liferay.portal.tools.ToolsUtil;
 import com.liferay.portal.xml.SAXReaderFactory;
-import com.liferay.util.xml.Dom4jUtil;
 import com.liferay.util.xml.XMLSafeReader;
 
 import com.thoughtworks.qdox.JavaProjectBuilder;
@@ -726,9 +726,7 @@ public class ServiceBuilder {
 			if (build) {
 				Collections.sort(_ejbList);
 
-				for (int x = 0; x < _ejbList.size(); x++) {
-					Entity entity = _ejbList.get(x);
-
+				for (Entity entity : _ejbList) {
 					if (_isTargetEntity(entity)) {
 						System.out.println("Building " + entity.getName());
 
@@ -3433,9 +3431,7 @@ public class ServiceBuilder {
 
 		// indexes.sql appending
 
-		for (int i = 0; i < _ejbList.size(); i++) {
-			Entity entity = _ejbList.get(i);
-
+		for (Entity entity : _ejbList) {
 			if (!_isTargetEntity(entity)) {
 				continue;
 			}
@@ -3450,17 +3446,13 @@ public class ServiceBuilder {
 
 			List<EntityFinder> finderList = entity.getFinderList();
 
-			for (int j = 0; j < finderList.size(); j++) {
-				EntityFinder finder = finderList.get(j);
-
+			for (EntityFinder finder : finderList) {
 				if (finder.isDBIndex()) {
 					List<String> finderColsNames = new ArrayList<>();
 
 					List<EntityColumn> finderColsList = finder.getColumns();
 
-					for (int k = 0; k < finderColsList.size(); k++) {
-						EntityColumn col = finderColsList.get(k);
-
+					for (EntityColumn col : finderColsList) {
 						finderColsNames.add(col.getDBName());
 					}
 
@@ -3618,9 +3610,7 @@ public class ServiceBuilder {
 			}
 		}
 
-		for (int i = 0; i < _ejbList.size(); i++) {
-			Entity entity = _ejbList.get(i);
-
+		for (Entity entity : _ejbList) {
 			if (!_isTargetEntity(entity)) {
 				continue;
 			}
@@ -3631,11 +3621,9 @@ public class ServiceBuilder {
 
 			List<EntityColumn> columnList = entity.getColumnList();
 
-			for (int j = 0; j < columnList.size(); j++) {
-				EntityColumn column = columnList.get(j);
-
+			for (EntityColumn column : columnList) {
 				if ("sequence".equals(column.getIdType())) {
-					StringBundler sb = new StringBundler();
+					StringBundler sb = new StringBundler(3);
 
 					String sequenceName = column.getIdParam();
 
@@ -3683,9 +3671,7 @@ public class ServiceBuilder {
 			_touch(sqlFile);
 		}
 
-		for (int i = 0; i < _ejbList.size(); i++) {
-			Entity entity = _ejbList.get(i);
-
+		for (Entity entity : _ejbList) {
 			if (!_isTargetEntity(entity)) {
 				continue;
 			}
@@ -4083,14 +4069,10 @@ public class ServiceBuilder {
 		for (Entity entity : entities) {
 			List<EntityColumn> pkList = entity.getPKList();
 
-			for (int j = 0; j < pkList.size(); j++) {
-				EntityColumn col = pkList.get(j);
-
-				String colDBName = col.getDBName();
-
+			for (EntityColumn col : pkList) {
 				IndexMetadata indexMetadata =
 					IndexMetadataFactoryUtil.createIndexMetadata(
-						false, tableName, colDBName);
+						false, tableName, col.getDBName());
 
 				_addIndexMetadata(indexMetadataMap, tableName, indexMetadata);
 			}
@@ -4141,20 +4123,41 @@ public class ServiceBuilder {
 		StringBundler sb = new StringBundler();
 
 		sb.append(_SQL_CREATE_TABLE);
-		sb.append(entityMapping.getTable());
+
+		String tableName = entityMapping.getTable();
+
+		if (tableName.length() > _TABLE_NAME_MAX_LENGTH) {
+			throw new ServiceBuilderException(
+				StringBundler.concat(
+					"Unable to create entity mapping \"", tableName,
+					"\" because table name exceeds ",
+					String.valueOf(_TABLE_NAME_MAX_LENGTH), " characters"));
+		}
+
+		sb.append(tableName);
+
 		sb.append(" (\n");
 
 		for (Entity entity : entities) {
 			List<EntityColumn> pkList = entity.getPKList();
 
-			for (int i = 0; i < pkList.size(); i++) {
-				EntityColumn col = pkList.get(i);
+			for (EntityColumn col : pkList) {
+				String colDBName = col.getDBName();
 
-				String colName = col.getName();
+				if (colDBName.length() > _COLUMN_NAME_MAX_LENGTH) {
+					throw new ServiceBuilderException(
+						StringBundler.concat(
+							"Unable to create entity mapping \"", tableName,
+							"\" because column name \"", colDBName,
+							"\" exceeds ",
+							String.valueOf(_COLUMN_NAME_MAX_LENGTH),
+							" characters"));
+				}
+
 				String colType = col.getType();
 
 				sb.append("\t");
-				sb.append(col.getDBName());
+				sb.append(colDBName);
 				sb.append(" ");
 
 				if (StringUtil.equalsIgnoreCase(colType, "boolean")) {
@@ -4177,7 +4180,8 @@ public class ServiceBuilder {
 					sb.append("TEXT");
 				}
 				else if (colType.equals("String")) {
-					int maxLength = getMaxLength(entity.getName(), colName);
+					int maxLength = getMaxLength(
+						entity.getName(), col.getName());
 
 					if (col.isLocalized()) {
 						maxLength = 4000;
@@ -4225,13 +4229,11 @@ public class ServiceBuilder {
 			for (int j = 0; j < pkList.size(); j++) {
 				EntityColumn col = pkList.get(j);
 
-				String colDBName = col.getDBName();
-
 				if ((i != 1) || (j != 0)) {
 					sb.append(", ");
 				}
 
-				sb.append(colDBName);
+				sb.append(col.getDBName());
 			}
 		}
 
@@ -4252,18 +4254,40 @@ public class ServiceBuilder {
 		StringBundler sb = new StringBundler();
 
 		sb.append(_SQL_CREATE_TABLE);
-		sb.append(entity.getTable());
+
+		String tableName = entity.getTable();
+
+		if (tableName.length() > _TABLE_NAME_MAX_LENGTH) {
+			throw new ServiceBuilderException(
+				StringBundler.concat(
+					"Unable to create entity \"", tableName,
+					"\" because table name exceeds ",
+					String.valueOf(_TABLE_NAME_MAX_LENGTH), " characters"));
+		}
+
+		sb.append(tableName);
+
 		sb.append(" (\n");
 
 		for (int i = 0; i < regularColList.size(); i++) {
 			EntityColumn col = regularColList.get(i);
 
-			String colName = col.getName();
+			String colDBName = col.getDBName();
+
+			if (colDBName.length() > _COLUMN_NAME_MAX_LENGTH) {
+				throw new ServiceBuilderException(
+					StringBundler.concat(
+						"Unable to create entity \"", tableName,
+						"\" because column name \"", colDBName, "\" exceeds ",
+						String.valueOf(_COLUMN_NAME_MAX_LENGTH),
+						" characters"));
+			}
+
 			String colType = col.getType();
 			String colIdType = col.getIdType();
 
 			sb.append("\t");
-			sb.append(col.getDBName());
+			sb.append(colDBName);
 			sb.append(" ");
 
 			if (StringUtil.equalsIgnoreCase(colType, "boolean")) {
@@ -4292,7 +4316,7 @@ public class ServiceBuilder {
 				sb.append("TEXT");
 			}
 			else if (colType.equals("String")) {
-				int maxLength = getMaxLength(entity.getName(), colName);
+				int maxLength = getMaxLength(entity.getName(), col.getName());
 
 				if (col.isLocalized() && (maxLength < 4000)) {
 					maxLength = 4000;
@@ -4333,7 +4357,7 @@ public class ServiceBuilder {
 				sb.append(" IDENTITY");
 			}
 
-			if (colName.equals("mvccVersion")) {
+			if (Objects.equals(col.getName(), "mvccVersion")) {
 				sb.append(" default 0 not null");
 			}
 
@@ -4978,7 +5002,7 @@ public class ServiceBuilder {
 
 			String content = _read(newFinderImplFile);
 
-			StringBundler sb = new StringBundler();
+			StringBundler sb = new StringBundler(13);
 
 			sb.append("package ");
 			sb.append(_packagePath);
@@ -6044,6 +6068,8 @@ public class ServiceBuilder {
 		entity.setResolved();
 	}
 
+	private static final int _COLUMN_NAME_MAX_LENGTH = 30;
+
 	private static final int _DEFAULT_COLUMN_MAX_LENGTH = 75;
 
 	private static final int _SESSION_TYPE_LOCAL = 1;
@@ -6053,6 +6079,8 @@ public class ServiceBuilder {
 	private static final String _SPRING_NAMESPACE_BEANS = "beans";
 
 	private static final String _SQL_CREATE_TABLE = "create table ";
+
+	private static final int _TABLE_NAME_MAX_LENGTH = 30;
 
 	private static final String _TMP_DIR = System.getProperty("java.io.tmpdir");
 

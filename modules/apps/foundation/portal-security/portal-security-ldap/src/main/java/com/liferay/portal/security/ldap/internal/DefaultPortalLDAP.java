@@ -15,6 +15,7 @@
 package com.liferay.portal.security.ldap.internal;
 
 import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.CompanyConstants;
@@ -28,7 +29,6 @@ import com.liferay.portal.kernel.util.PropertiesUtil;
 import com.liferay.portal.kernel.util.Props;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.security.ldap.PortalLDAP;
@@ -804,19 +804,18 @@ public class DefaultPortalLDAP implements PortalLDAP {
 			Properties groupMappings = _ldapSettings.getGroupMappings(
 				ldapServerId, companyId);
 
-			StringBundler filter = new StringBundler(5);
+			StringBundler sb = new StringBundler(5);
 
-			filter.append(StringPool.OPEN_PARENTHESIS);
-			filter.append(groupMappings.getProperty("user"));
-			filter.append(StringPool.EQUAL);
-			filter.append(userDN);
-			filter.append(StringPool.CLOSE_PARENTHESIS);
+			sb.append(StringPool.OPEN_PARENTHESIS);
+			sb.append(groupMappings.getProperty("user"));
+			sb.append(StringPool.EQUAL);
+			sb.append(userDN);
+			sb.append(StringPool.CLOSE_PARENTHESIS);
 
 			SearchControls searchControls = new SearchControls(
 				SearchControls.SUBTREE_SCOPE, 1, 0, null, false, false);
 
-			enu = ldapContext.search(
-				groupDN, filter.toString(), searchControls);
+			enu = ldapContext.search(groupDN, sb.toString(), searchControls);
 
 			if (enu.hasMoreElements()) {
 				return true;
@@ -861,18 +860,18 @@ public class DefaultPortalLDAP implements PortalLDAP {
 			Properties userMappings = _ldapSettings.getUserMappings(
 				ldapServerId, companyId);
 
-			StringBundler filter = new StringBundler(5);
+			StringBundler sb = new StringBundler(5);
 
-			filter.append(StringPool.OPEN_PARENTHESIS);
-			filter.append(userMappings.getProperty(UserConverterKeys.GROUP));
-			filter.append(StringPool.EQUAL);
-			filter.append(groupDN);
-			filter.append(StringPool.CLOSE_PARENTHESIS);
+			sb.append(StringPool.OPEN_PARENTHESIS);
+			sb.append(userMappings.getProperty(UserConverterKeys.GROUP));
+			sb.append(StringPool.EQUAL);
+			sb.append(groupDN);
+			sb.append(StringPool.CLOSE_PARENTHESIS);
 
 			SearchControls searchControls = new SearchControls(
 				SearchControls.SUBTREE_SCOPE, 1, 0, null, false, false);
 
-			enu = ldapContext.search(userDN, filter.toString(), searchControls);
+			enu = ldapContext.search(userDN, sb.toString(), searchControls);
 
 			if (enu.hasMoreElements()) {
 				return true;

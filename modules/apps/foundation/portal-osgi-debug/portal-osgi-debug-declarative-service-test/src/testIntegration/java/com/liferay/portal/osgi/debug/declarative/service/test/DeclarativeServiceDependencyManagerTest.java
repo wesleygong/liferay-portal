@@ -155,15 +155,21 @@ public class DeclarativeServiceDependencyManagerTest {
 
 			String message = (String)loggingEvent.getMessage();
 
+			message = message.replaceAll("\\s", "");
+			message = message.replaceAll("\\n", "");
+			message = message.replaceAll("_", "");
+
 			StringBundler sb = new StringBundler(4);
 
 			sb.append("name: ");
 			sb.append(DeclarativeServiceTestComponent.class.getName());
 			sb.append(", unsatisfied references: ");
-			sb.append(
-				"\n\t\t{name: declarativeServiceTestReference, target: null}");
+			sb.append("{name: declarativeServiceTestReference, target: null}");
 
-			Assert.assertTrue(message.contains(sb.toString()));
+			String s = sb.toString();
+
+			Assert.assertTrue(
+				message, message.contains(s.replaceAll("\\s", "")));
 
 			Assert.assertEquals(Level.WARN, loggingEvent.getLevel());
 

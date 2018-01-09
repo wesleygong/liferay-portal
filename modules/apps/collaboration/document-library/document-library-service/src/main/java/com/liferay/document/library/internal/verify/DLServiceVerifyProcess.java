@@ -425,7 +425,8 @@ public class DLServiceVerifyProcess extends VerifyProcess {
 		}
 
 		if (dlFileVersions.isEmpty()) {
-			DLStoreUtil.addFile(companyId, dataRepositoryId, name, new byte[0]);
+			DLStoreUtil.addFile(
+				companyId, dataRepositoryId, name, false, new byte[0]);
 
 			return;
 		}
@@ -619,7 +620,7 @@ public class DLServiceVerifyProcess extends VerifyProcess {
 	}
 
 	@Reference(
-		target = "(&(release.bundle.symbolic.name=com.liferay.document.library.service)(release.schema.version=1.0.1))",
+		target = "(&(release.bundle.symbolic.name=com.liferay.document.library.service)(release.schema.version=1.0.2))",
 		unbind = "-"
 	)
 	protected void setRelease(Release release) {

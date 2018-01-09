@@ -14,17 +14,20 @@
 
 package com.liferay.portal.workflow.web.internal.portlet.action;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletURL;
 import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.ResourceBundleLoader;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowDefinition;
@@ -36,6 +39,7 @@ import com.liferay.portal.workflow.web.internal.constants.WorkflowPortletKeys;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -72,7 +76,7 @@ public class UpdateWorkflowDefinitionMVCActionCommand
 		catch (WorkflowException we) {
 			hideDefaultErrorMessage(actionRequest);
 
-			SessionErrors.add(actionRequest, we.getClass());
+			SessionErrors.add(actionRequest, we.getClass(), we);
 
 			return false;
 		}
@@ -82,6 +86,18 @@ public class UpdateWorkflowDefinitionMVCActionCommand
 		catch (Exception e) {
 			throw new PortletException(e);
 		}
+	}
+
+	@Override
+	protected void addSuccessMessage(
+		ActionRequest actionRequest, ActionResponse actionResponse) {
+
+		ResourceBundle resourceBundle = resourceBundleLoader.loadResourceBundle(
+			portal.getLocale(actionRequest));
+
+		String successMessage = getSuccessMessage(resourceBundle);
+
+		SessionMessages.add(actionRequest, "requestProcessed", successMessage);
 	}
 
 	@Override
@@ -119,6 +135,11 @@ public class UpdateWorkflowDefinitionMVCActionCommand
 		setRedirectAttribute(actionRequest, workflowDefinition);
 
 		sendRedirect(actionRequest, actionResponse);
+	}
+
+	protected String getSuccessMessage(ResourceBundle resourceBundle) {
+		return LanguageUtil.get(
+			resourceBundle, "workflow-updated-successfully");
 	}
 
 	protected String getTitle(Map<Locale, String> titleMap) {
@@ -170,6 +191,16 @@ public class UpdateWorkflowDefinitionMVCActionCommand
 		actionRequest.setAttribute(WebKeys.REDIRECT, portletURL.toString());
 	}
 
+	@Reference(
+		target = "(bundle.symbolic.name=com.liferay.portal.workflow.web)",
+		unbind = "-"
+	)
+	protected void setResourceBundleLoader(
+		ResourceBundleLoader resourceBundleLoader) {
+
+		this.resourceBundleLoader = resourceBundleLoader;
+	}
+
 	protected void validateWorkflowDefinition(byte[] bytes)
 		throws WorkflowDefinitionFileException {
 
@@ -180,6 +211,11 @@ public class UpdateWorkflowDefinitionMVCActionCommand
 			throw new WorkflowDefinitionFileException(we);
 		}
 	}
+
+	@Reference
+	protected Portal portal;
+
+	protected ResourceBundleLoader resourceBundleLoader;
 
 	@Reference
 	protected WorkflowDefinitionManager workflowDefinitionManager;

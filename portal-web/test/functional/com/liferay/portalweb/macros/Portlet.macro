@@ -354,6 +354,12 @@
 			<then>
 				<execute function="AntCommand" locator1="build-test.xml" value1="start-app-server -Ddelete.liferay.home=false" />
 			</then>
+			<elseif>
+				<equals arg1="${keepCachedAppServerData}" arg2="true" />
+				<then>
+					<execute function="AntCommand" locator1="build-test.xml" value1="start-app-server -Dkeep.cached.app.server.data=true" />
+				</then>
+			</elseif>
 			<else>
 				<execute function="AntCommand" locator1="build-test.xml" value1="start-app-server" />
 			</else>
@@ -548,5 +554,9 @@
 		<var name="key_portletName" value="${portletName}" />
 
 		<execute function="AssertTextEquals" locator1="Portlet#TITLE" value1="${portletName}" />
+	</command>
+
+	<command name="viewUndeployMessage">
+		<execute function="AssertTextEquals#assertPartialText" locator1="Portlet#PORTLET_CONTENT" value1="This portlet has been undeployed." />
 	</command>
 </definition>

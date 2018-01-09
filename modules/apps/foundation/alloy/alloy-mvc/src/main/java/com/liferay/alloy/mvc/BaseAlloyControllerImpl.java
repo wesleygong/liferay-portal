@@ -17,6 +17,7 @@ package com.liferay.alloy.mvc;
 import com.liferay.alloy.mvc.internal.json.web.service.AlloyControllerInvokerManager;
 import com.liferay.alloy.mvc.internal.json.web.service.AlloyMockUtil;
 import com.liferay.counter.kernel.service.CounterLocalServiceUtil;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.bean.BeanPropertiesUtil;
 import com.liferay.portal.kernel.bean.ConstantsBeanFactoryUtil;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
@@ -80,7 +81,6 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.ServiceBeanMethodInvocationFactoryUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TextFormatter;
 import com.liferay.portal.kernel.util.Validator;
@@ -709,6 +709,10 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 		return getMessageListenerGroupName();
 	}
 
+	protected StorageType getSchedulerStorageType() {
+		return StorageType.MEMORY_CLUSTERED;
+	}
+
 	protected Trigger getSchedulerTrigger() {
 		Calendar calendar = CalendarFactoryUtil.getCalendar();
 
@@ -870,7 +874,7 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 						SchedulerEngineHelperUtil.unschedule(
 							getSchedulerJobName(),
 							getMessageListenerGroupName(),
-							StorageType.MEMORY_CLUSTERED);
+							getSchedulerStorageType());
 					}
 
 					MessageBusUtil.unregisterMessageListener(
@@ -901,7 +905,7 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 
 			if (enableScheduler) {
 				SchedulerEngineHelperUtil.schedule(
-					getSchedulerTrigger(), StorageType.MEMORY_CLUSTERED, null,
+					getSchedulerTrigger(), getSchedulerStorageType(), null,
 					destinationName, null, 0);
 			}
 		}

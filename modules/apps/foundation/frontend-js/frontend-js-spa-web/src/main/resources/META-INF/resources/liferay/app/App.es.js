@@ -97,7 +97,7 @@ class LiferayApp extends App {
 
 	onDataLayoutConfigReady_(event) {
 		if (Liferay.Layout) {
-			Liferay.Layout.init(Liferay.Data.layoutConfig)
+			Liferay.Layout.init(Liferay.Data.layoutConfig);
 		}
 	}
 
@@ -282,6 +282,14 @@ class LiferayApp extends App {
 				Liferay.SPA.userNotification.timeout
 			);
 		}
+	}
+
+	updateHistory_(title, path, state, opt_replaceHistory) {
+		if (state && state.redirectPath) {
+			state.path = state.redirectPath;
+		}
+
+		super.updateHistory_(title, path, state, opt_replaceHistory);
 	}
 }
 

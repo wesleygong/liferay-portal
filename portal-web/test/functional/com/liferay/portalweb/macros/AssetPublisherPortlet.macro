@@ -471,7 +471,13 @@
 				<then>
 					<execute function="AddSelection" locator1="APConfigurationDisplaysettings#SHOW_METADATA_AVAILABLE_FIELD_SELECT" value1="${metadataField}" />
 
-					<execute function="Click" locator1="Button#MOVE_AVAILABLE_TO_CURRENT" />
+					<execute function="AssertElementPresent" locator1="Configuration#MOVE_AVAILABLE_TO_CURRENT">
+						<var name="key_configuration" value="metadataContent" />
+					</execute>
+
+					<execute function="Click" locator1="Configuration#MOVE_AVAILABLE_TO_CURRENT">
+						<var name="key_configuration" value="metadataContent" />
+					</execute>
 
 					<execute function="AssertTextEquals" locator1="APConfigurationDisplaysettings#SHOW_METADATA_CURRENT_FIELD_SELECT" value1="${metadataField}" />
 				</then>
@@ -484,7 +490,13 @@
 				<then>
 					<execute function="AddSelection" locator1="APConfigurationDisplaysettings#SHOW_METADATA_CURRENT_FIELD_SELECT" value1="${metadataField}" />
 
-					<execute function="Click" locator1="Button#MOVE_CURRENT_TO_AVAILABLE" />
+					<execute function="AssertElementPresent" locator1="Configuration#MOVE_CURRENT_TO_AVAILABLE">
+						<var name="key_configuration" value="metadataContent" />
+					</execute>
+
+					<execute function="Click" locator1="Configuration#MOVE_CURRENT_TO_AVAILABLE">
+						<var name="key_configuration" value="metadataContent" />
+					</execute>
 
 					<execute function="AssertTextEquals" locator1="APConfigurationDisplaysettings#SHOW_METADATA_AVAILABLE_FIELD_SELECT" value1="${metadataField}" />
 				</then>
@@ -1350,6 +1362,8 @@
 		<execute function="AssertTextEquals" locator1="MenuItem#ANY_MENU_ITEM" value1="${selectedAsset}">
 			<var name="key_menuItem" value="${selectedAsset}" />
 		</execute>
+
+		<execute function="Click" locator1="//body" />
 
 		<execute macro="AssetPublisherPortlet#gotoConfigurationPG" />
 

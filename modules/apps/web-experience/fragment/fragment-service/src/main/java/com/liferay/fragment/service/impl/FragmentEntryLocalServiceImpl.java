@@ -16,14 +16,20 @@ package com.liferay.fragment.service.impl;
 
 import com.liferay.fragment.exception.DuplicateFragmentEntryException;
 import com.liferay.fragment.exception.FragmentEntryNameException;
+import com.liferay.fragment.exception.RequiredFragmentEntryException;
 import com.liferay.fragment.model.FragmentEntry;
+import com.liferay.fragment.processor.FragmentEntryProcessorRegistry;
 import com.liferay.fragment.service.base.FragmentEntryLocalServiceBaseImpl;
+import com.liferay.html.preview.model.HtmlPreviewEntry;
+import com.liferay.html.preview.service.HtmlPreviewEntryLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import java.util.Date;
 import java.util.List;
@@ -38,6 +44,42 @@ public class FragmentEntryLocalServiceImpl
 	@Override
 	public FragmentEntry addFragmentEntry(
 			long userId, long groupId, long fragmentCollectionId, String name,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		// Fragment entry
+
+		User user = userLocalService.getUser(userId);
+
+		validate(groupId, 0, name);
+
+		long fragmentEntryId = counterLocalService.increment();
+
+		FragmentEntry fragmentEntry = fragmentEntryPersistence.create(
+			fragmentEntryId);
+
+		fragmentEntry.setGroupId(groupId);
+		fragmentEntry.setCompanyId(user.getCompanyId());
+		fragmentEntry.setUserId(user.getUserId());
+		fragmentEntry.setUserName(user.getFullName());
+		fragmentEntry.setCreateDate(serviceContext.getCreateDate(new Date()));
+		fragmentEntry.setModifiedDate(
+			serviceContext.getModifiedDate(new Date()));
+		fragmentEntry.setFragmentCollectionId(fragmentCollectionId);
+		fragmentEntry.setName(name);
+
+		fragmentEntryPersistence.update(fragmentEntry);
+
+		// Resources
+
+		resourceLocalService.addModelResources(fragmentEntry, serviceContext);
+
+		return fragmentEntry;
+	}
+
+	@Override
+	public FragmentEntry addFragmentEntry(
+			long userId, long groupId, long fragmentCollectionId, String name,
 			String css, String html, String js, ServiceContext serviceContext)
 		throws PortalException {
 
@@ -45,7 +87,8 @@ public class FragmentEntryLocalServiceImpl
 
 		User user = userLocalService.getUser(userId);
 
-		validate(groupId, name);
+		validate(groupId, 0, name);
+		validateContent(html);
 
 		long fragmentEntryId = counterLocalService.increment();
 
@@ -65,6 +108,14 @@ public class FragmentEntryLocalServiceImpl
 		fragmentEntry.setHtml(html);
 		fragmentEntry.setJs(js);
 
+		// HTML preview
+
+		HtmlPreviewEntry htmlPreviewEntry = _updateHtmlPreviewEntry(
+			fragmentEntry, serviceContext);
+
+		fragmentEntry.setHtmlPreviewEntryId(
+			htmlPreviewEntry.getHtmlPreviewEntryId());
+
 		fragmentEntryPersistence.update(fragmentEntry);
 
 		// Resources
@@ -80,6 +131,14 @@ public class FragmentEntryLocalServiceImpl
 
 		// Fragment entry
 
+		long fragmentEntryInstanceLinkCount =
+			fragmentEntryInstanceLinkPersistence.countByG_F(
+				fragmentEntry.getGroupId(), fragmentEntry.getFragmentEntryId());
+
+		if (fragmentEntryInstanceLinkCount > 0) {
+			throw new RequiredFragmentEntryException();
+		}
+
 		fragmentEntryPersistence.remove(fragmentEntry);
 
 		// Resources
@@ -88,6 +147,13 @@ public class FragmentEntryLocalServiceImpl
 			fragmentEntry.getCompanyId(), FragmentEntry.class.getName(),
 			ResourceConstants.SCOPE_INDIVIDUAL,
 			fragmentEntry.getFragmentEntryId());
+
+		// HTML preview
+
+		if (fragmentEntry.getHtmlPreviewEntryId() > 0) {
+			_htmlPreviewEntryLocalService.deleteHtmlPreviewEntry(
+				fragmentEntry.getHtmlPreviewEntryId());
+		}
 
 		return fragmentEntry;
 	}
@@ -152,23 +218,29 @@ public class FragmentEntryLocalServiceImpl
 		FragmentEntry fragmentEntry = fragmentEntryPersistence.findByPrimaryKey(
 			fragmentEntryId);
 
-		return updateFragmentEntry(
-			fragmentEntryId, name, fragmentEntry.getCss(),
-			fragmentEntry.getHtml(), fragmentEntry.getJs());
+		if (Objects.equals(fragmentEntry.getName(), name)) {
+			return fragmentEntry;
+		}
+
+		validate(fragmentEntry.getGroupId(), fragmentEntryId, name);
+
+		fragmentEntry.setName(name);
+
+		return fragmentEntryPersistence.update(fragmentEntry);
 	}
 
 	@Override
 	public FragmentEntry updateFragmentEntry(
 			long fragmentEntryId, String name, String css, String html,
-			String js)
+			String js, ServiceContext serviceContext)
 		throws PortalException {
 
 		FragmentEntry fragmentEntry = fragmentEntryPersistence.findByPrimaryKey(
 			fragmentEntryId);
 
-		if (!Objects.equals(fragmentEntry.getName(), name)) {
-			validate(fragmentEntry.getGroupId(), name);
-		}
+		validate(fragmentEntry.getGroupId(), fragmentEntryId, name);
+
+		validateContent(html);
 
 		fragmentEntry.setModifiedDate(new Date());
 		fragmentEntry.setName(name);
@@ -176,12 +248,16 @@ public class FragmentEntryLocalServiceImpl
 		fragmentEntry.setHtml(html);
 		fragmentEntry.setJs(js);
 
+		_updateHtmlPreviewEntry(fragmentEntry, serviceContext);
+
 		fragmentEntryPersistence.update(fragmentEntry);
 
 		return fragmentEntry;
 	}
 
-	protected void validate(long groupId, String name) throws PortalException {
+	protected void validate(long groupId, long fragmentEntryId, String name)
+		throws PortalException {
+
 		if (Validator.isNull(name)) {
 			throw new FragmentEntryNameException(
 				"Name must not be null for group " + groupId);
@@ -190,9 +266,43 @@ public class FragmentEntryLocalServiceImpl
 		FragmentEntry fragmentEntry = fragmentEntryPersistence.fetchByG_N(
 			groupId, name);
 
-		if (fragmentEntry != null) {
+		if ((fragmentEntry != null) &&
+			(fragmentEntry.getFragmentEntryId() != fragmentEntryId)) {
+
 			throw new DuplicateFragmentEntryException(name);
 		}
 	}
+
+	protected void validateContent(String html) throws PortalException {
+		_fragmentEntryProcessorRegistry.validateFragmentEntryHTML(html);
+	}
+
+	private HtmlPreviewEntry _updateHtmlPreviewEntry(
+			FragmentEntry fragmentEntry, ServiceContext serviceContext)
+		throws PortalException {
+
+		HtmlPreviewEntry htmlPreviewEntry =
+			_htmlPreviewEntryLocalService.fetchHtmlPreviewEntry(
+				fragmentEntry.getHtmlPreviewEntryId());
+
+		if (htmlPreviewEntry != null) {
+			return _htmlPreviewEntryLocalService.updateHtmlPreviewEntry(
+				htmlPreviewEntry.getHtmlPreviewEntryId(),
+				fragmentEntry.getContent(), ContentTypes.IMAGE_PNG,
+				serviceContext);
+		}
+
+		return _htmlPreviewEntryLocalService.addHtmlPreviewEntry(
+			fragmentEntry.getUserId(), fragmentEntry.getGroupId(),
+			classNameLocalService.getClassNameId(FragmentEntry.class),
+			fragmentEntry.getFragmentEntryId(), fragmentEntry.getContent(),
+			ContentTypes.IMAGE_PNG, serviceContext);
+	}
+
+	@ServiceReference(type = FragmentEntryProcessorRegistry.class)
+	private FragmentEntryProcessorRegistry _fragmentEntryProcessorRegistry;
+
+	@ServiceReference(type = HtmlPreviewEntryLocalService.class)
+	private HtmlPreviewEntryLocalService _htmlPreviewEntryLocalService;
 
 }

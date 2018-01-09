@@ -22,6 +22,7 @@ import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalService;
 import com.liferay.exportimport.content.processor.ExportImportContentProcessor;
 import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
+import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.exportimport.kernel.lar.PortletDataException;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandler;
@@ -37,6 +38,7 @@ import com.liferay.journal.model.JournalFolder;
 import com.liferay.journal.model.JournalFolderConstants;
 import com.liferay.journal.service.JournalArticleLocalService;
 import com.liferay.journal.service.JournalArticleResourceLocalService;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -61,7 +63,6 @@ import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StreamUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.TempFileEntryUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -843,10 +844,10 @@ public class JournalArticleStagedModelDataHandler
 				portletDataContext.getBooleanParameter(
 					"journal", "version-history");
 
-			if (!exportVersionHistory &&
-				isExpireAllArticleVersions(importedArticle.getCompanyId())) {
+			if (!ExportImportThreadLocal.isStagingInProcess() ||
+				!exportVersionHistory) {
 
-				setArticlesExpirationDate(importedArticle);
+				updateArticleVersions(importedArticle);
 			}
 
 			portletDataContext.importClassedModel(article, importedArticle);
@@ -996,29 +997,6 @@ public class JournalArticleStagedModelDataHandler
 		return false;
 	}
 
-	protected void setArticlesExpirationDate(JournalArticle article) {
-		if (!article.isApproved() || (article.getExpirationDate() == null)) {
-			return;
-		}
-
-		List<JournalArticle> articles = _journalArticleLocalService.getArticles(
-			article.getGroupId(), article.getArticleId());
-
-		Date expirationDate = article.getExpirationDate();
-
-		for (JournalArticle curArticle : articles) {
-			if (Objects.equals(
-					curArticle.getExpirationDate(), expirationDate)) {
-
-				continue;
-			}
-
-			curArticle.setExpirationDate(article.getExpirationDate());
-
-			_journalArticleLocalService.updateJournalArticle(curArticle);
-		}
-	}
-
 	@Reference(unbind = "-")
 	protected void setConfigurationProvider(
 		ConfigurationProvider configurationProvider) {
@@ -1082,6 +1060,42 @@ public class JournalArticleStagedModelDataHandler
 	@Reference(unbind = "-")
 	protected void setUserLocalService(UserLocalService userLocalService) {
 		_userLocalService = userLocalService;
+	}
+
+	protected void updateArticleVersions(JournalArticle article)
+		throws PortalException {
+
+		boolean expireAllArticleVersions = isExpireAllArticleVersions(
+			article.getCompanyId());
+
+		List<JournalArticle> articles = _journalArticleLocalService.getArticles(
+			article.getGroupId(), article.getArticleId());
+
+		for (JournalArticle curArticle : articles) {
+			boolean update = false;
+
+			if (article.isApproved() && (article.getExpirationDate() != null) &&
+				expireAllArticleVersions &&
+				!Objects.equals(
+					curArticle.getExpirationDate(),
+					article.getExpirationDate())) {
+
+				curArticle.setExpirationDate(article.getExpirationDate());
+
+				update = true;
+			}
+
+			if (curArticle.getFolderId() != article.getFolderId()) {
+				curArticle.setFolderId(article.getFolderId());
+				curArticle.setTreePath(article.getTreePath());
+
+				update = true;
+			}
+
+			if (update) {
+				_journalArticleLocalService.updateJournalArticle(curArticle);
+			}
+		}
 	}
 
 	/**

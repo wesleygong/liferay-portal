@@ -15,9 +15,8 @@
 package com.liferay.knowledge.base.internal.upgrade;
 
 import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
-import com.liferay.portal.kernel.upgrade.UpgradeException;
+import com.liferay.portal.kernel.settings.SettingsFactory;
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
-import com.liferay.portal.upgrade.release.BaseUpgradeServiceModuleRelease;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -30,33 +29,6 @@ public class KnowledgeBaseServiceUpgrade implements UpgradeStepRegistrator {
 
 	@Override
 	public void register(Registry registry) {
-		try {
-			BaseUpgradeServiceModuleRelease upgradeServiceModuleRelease =
-				new BaseUpgradeServiceModuleRelease() {
-
-					@Override
-					protected String getNamespace() {
-						return "KB";
-					}
-
-					@Override
-					protected String getNewBundleSymbolicName() {
-						return "com.liferay.knowledge.base.service";
-					}
-
-					@Override
-					protected String getOldBundleSymbolicName() {
-						return "knowledge-base-portlet";
-					}
-
-				};
-
-			upgradeServiceModuleRelease.upgrade();
-		}
-		catch (UpgradeException ue) {
-			throw new RuntimeException(ue);
-		}
-
 		registry.register(
 			"com.liferay.knowledge.base.service", "0.0.1", "1.0.0",
 			new com.liferay.knowledge.base.internal.upgrade.v1_0_0.
@@ -142,11 +114,23 @@ public class KnowledgeBaseServiceUpgrade implements UpgradeStepRegistrator {
 				UpgradeKBComment(),
 			new com.liferay.knowledge.base.internal.upgrade.v2_0_0.
 				UpgradeRepository());
+
+		registry.register(
+			"com.liferay.knowledge.base.service", "2.0.0", "2.0.1",
+			new com.liferay.knowledge.base.internal.upgrade.v2_0_1.
+				UpgradePortletSettings(_settingsFactory));
 	}
 
 	@Reference(target = ModuleServiceLifecycle.PORTAL_INITIALIZED, unbind = "-")
 	protected void setModuleServiceLifecycle(
 		ModuleServiceLifecycle moduleServiceLifecycle) {
 	}
+
+	@Reference(unbind = "-")
+	protected void setSettingsFactory(SettingsFactory settingsFactory) {
+		_settingsFactory = settingsFactory;
+	}
+
+	private SettingsFactory _settingsFactory;
 
 }

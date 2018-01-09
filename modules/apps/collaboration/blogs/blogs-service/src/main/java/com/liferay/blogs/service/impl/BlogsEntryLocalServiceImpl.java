@@ -27,7 +27,6 @@ import com.liferay.blogs.exception.EntryUrlTitleException;
 import com.liferay.blogs.exception.NoSuchEntryException;
 import com.liferay.blogs.model.BlogsEntry;
 import com.liferay.blogs.service.base.BlogsEntryLocalServiceBaseImpl;
-import com.liferay.blogs.service.permission.BlogsPermission;
 import com.liferay.blogs.settings.BlogsGroupServiceSettings;
 import com.liferay.blogs.social.BlogsActivityKeys;
 import com.liferay.blogs.util.BlogsEntryAttachmentFileEntryUtil;
@@ -107,6 +106,7 @@ import com.liferay.trash.exception.RestoreEntryException;
 import com.liferay.trash.exception.TrashEntryException;
 import com.liferay.trash.model.TrashEntry;
 import com.liferay.trash.service.TrashEntryLocalService;
+import com.liferay.upload.UniqueFileNameProvider;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -140,6 +140,25 @@ import net.htmlparser.jericho.StartTag;
  * @author Zsolt Berentey
  */
 public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
+
+	@Override
+	public FileEntry addAttachmentFileEntry(
+			BlogsEntry blogsEntry, long userId, String fileName,
+			String mimeType, InputStream is)
+		throws PortalException {
+
+		Folder folder = addAttachmentsFolder(userId, blogsEntry.getGroupId());
+
+		String uniqueFileName = uniqueFileNameProvider.provide(
+			fileName,
+			curFileName -> _attachmentExists(
+				blogsEntry.getGroupId(), folder.getFolderId(), curFileName));
+
+		return PortletFileRepositoryUtil.addPortletFileEntry(
+			blogsEntry.getGroupId(), userId, BlogsEntry.class.getName(),
+			blogsEntry.getEntryId(), BlogsConstants.SERVICE_NAME,
+			folder.getFolderId(), is, uniqueFileName, mimeType, true);
+	}
 
 	@Override
 	public Folder addAttachmentsFolder(long userId, long groupId)
@@ -1897,7 +1916,7 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 
 		SubscriptionSender subscriptionSender =
 			new GroupSubscriptionCheckSubscriptionSender(
-				BlogsPermission.RESOURCE_NAME);
+				BlogsConstants.RESOURCE_NAME);
 
 		subscriptionSender.setClassPK(entry.getEntryId());
 		subscriptionSender.setClassName(entry.getModelClassName());
@@ -2308,8 +2327,32 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 	@ServiceReference(type = TrashEntryLocalService.class)
 	protected TrashEntryLocalService trashEntryLocalService;
 
+	@ServiceReference(type = UniqueFileNameProvider.class)
+	protected UniqueFileNameProvider uniqueFileNameProvider;
+
 	@ServiceReference(type = UnsubscribeHelper.class)
 	protected UnsubscribeHelper unsubscribeHelper;
+
+	private boolean _attachmentExists(
+		long groupId, long folderId, String fileName) {
+
+		try {
+			if (PortletFileRepositoryUtil.getPortletFileEntry(
+					groupId, folderId, fileName) != null) {
+
+				return true;
+			}
+
+			return false;
+		}
+		catch (PortalException pe) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(pe, pe);
+			}
+
+			return false;
+		}
+	}
 
 	private String _getGroupDescriptiveName(Group group, Locale locale) {
 		try {

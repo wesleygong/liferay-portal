@@ -368,7 +368,7 @@ public class DefaultTextExportImportContentProcessor
 			endPos = MapUtil.getInteger(dlReferenceParameters, "endPos");
 
 			try {
-				if (exportReferencedContent) {
+				if (exportReferencedContent && !fileEntry.isInTrash()) {
 					StagedModelDataHandlerUtil.exportReferenceStagedModel(
 						portletDataContext, stagedModel, fileEntry,
 						PortletDataContext.REFERENCE_TYPE_DEPENDENCY);
@@ -377,16 +377,46 @@ public class DefaultTextExportImportContentProcessor
 					Element entityElement =
 						portletDataContext.getExportDataElement(stagedModel);
 
+					String referenceType =
+						PortletDataContext.REFERENCE_TYPE_DEPENDENCY;
+
+					if (fileEntry.isInTrash()) {
+						referenceType =
+							PortletDataContext.
+								REFERENCE_TYPE_DEPENDENCY_DISPOSABLE;
+					}
+
 					portletDataContext.addReferenceElement(
-						stagedModel, entityElement, fileEntry,
-						PortletDataContext.REFERENCE_TYPE_DEPENDENCY, true);
+						stagedModel, entityElement, fileEntry, referenceType,
+						true);
 				}
 
 				String path = ExportImportPathUtil.getModelPath(fileEntry);
 
-				sb.replace(beginPos, endPos, "[$dl-reference=" + path + "$]");
+				StringBundler exportedReferenceSB = new StringBundler(6);
 
-				deleteTimestampParameters(sb, beginPos);
+				exportedReferenceSB.append("[$dl-reference=");
+				exportedReferenceSB.append(path);
+				exportedReferenceSB.append("$]");
+
+				if (fileEntry.isInTrash()) {
+					String originalReference = sb.substring(beginPos, endPos);
+
+					exportedReferenceSB.append("[#dl-reference=");
+					exportedReferenceSB.append(originalReference);
+					exportedReferenceSB.append("#]");
+				}
+
+				sb.replace(beginPos, endPos, exportedReferenceSB.toString());
+
+				int deleteTimestampParametersOffset = beginPos;
+
+				if (fileEntry.isInTrash()) {
+					deleteTimestampParametersOffset = sb.indexOf(
+						"[#dl-reference=", beginPos);
+				}
+
+				deleteTimestampParameters(sb, deleteTimestampParametersOffset);
 			}
 			catch (Exception e) {
 				if (_log.isDebugEnabled()) {
@@ -954,6 +984,10 @@ public class DefaultTextExportImportContentProcessor
 			long fileEntryId = MapUtil.getLong(
 				dlFileEntryIds, classPK, classPK);
 
+			int beginPos = content.indexOf("[$dl-reference=" + path);
+
+			int endPos = content.indexOf("$]", beginPos) + 2;
+
 			FileEntry importedFileEntry = null;
 
 			try {
@@ -968,6 +1002,21 @@ public class DefaultTextExportImportContentProcessor
 					_log.warn(pe.getMessage());
 				}
 
+				if (content.startsWith("[#dl-reference=", endPos)) {
+					int prefixPos = endPos + "[#dl-reference=".length();
+
+					int postfixPos = content.indexOf("#]", prefixPos);
+
+					String originalReference = content.substring(
+						prefixPos, postfixPos);
+
+					String exportedReference = content.substring(
+						beginPos, postfixPos + 2);
+
+					content = StringUtil.replace(
+						content, exportedReference, originalReference);
+				}
+
 				continue;
 			}
 
@@ -979,8 +1028,15 @@ public class DefaultTextExportImportContentProcessor
 				content = StringUtil.replace(content, "$]?", "$]&");
 			}
 
-			content = StringUtil.replace(
-				content, "[$dl-reference=" + path + "$]", url);
+			String exportedReference = "[$dl-reference=" + path + "$]";
+
+			if (content.startsWith("[#dl-reference=", endPos)) {
+				endPos = content.indexOf("#]", beginPos) + 2;
+
+				exportedReference = content.substring(beginPos, endPos);
+			}
+
+			content = StringUtil.replace(content, exportedReference, url);
 		}
 
 		return content;
@@ -1046,11 +1102,11 @@ public class DefaultTextExportImportContentProcessor
 			}
 		}
 
-		StringBundler siteAdminURL = new StringBundler(3);
+		StringBundler sb = new StringBundler(3);
 
-		siteAdminURL.append(VirtualLayoutConstants.CANONICAL_URL_SEPARATOR);
-		siteAdminURL.append(GroupConstants.CONTROL_PANEL_FRIENDLY_URL);
-		siteAdminURL.append(PropsValues.CONTROL_PANEL_LAYOUT_FRIENDLY_URL);
+		sb.append(VirtualLayoutConstants.CANONICAL_URL_SEPARATOR);
+		sb.append(GroupConstants.CONTROL_PANEL_FRIENDLY_URL);
+		sb.append(PropsValues.CONTROL_PANEL_LAYOUT_FRIENDLY_URL);
 
 		content = StringUtil.replace(
 			content, _DATA_HANDLER_COMPANY_SECURE_URL, companySecurePortalURL);
@@ -1131,7 +1187,7 @@ public class DefaultTextExportImportContentProcessor
 			content, _DATA_HANDLER_PUBLIC_SERVLET_MAPPING,
 			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING);
 		content = StringUtil.replace(
-			content, _DATA_HANDLER_SITE_ADMIN_URL, siteAdminURL.toString());
+			content, _DATA_HANDLER_SITE_ADMIN_URL, sb.toString());
 
 		return content;
 	}
@@ -1507,17 +1563,18 @@ public class DefaultTextExportImportContentProcessor
 				groupId, privateLayout, layoutId);
 
 			if (layout == null) {
-				StringBundler exceptionMessage = new StringBundler(5);
+				StringBundler sb = new StringBundler(8);
 
-				exceptionMessage.append(
-					"Unable to validate referenced page because it cannot be");
-				exceptionMessage.append(
-					"found with the following parameters: ");
-				exceptionMessage.append("groupId " + groupId);
-				exceptionMessage.append(", layoutId " + layoutId);
-				exceptionMessage.append(", privateLayout " + privateLayout);
+				sb.append("Unable to validate referenced page because it ");
+				sb.append("cannot be found with the following parameters: ");
+				sb.append("groupId ");
+				sb.append(groupId);
+				sb.append(", layoutId ");
+				sb.append(layoutId);
+				sb.append(", privateLayout ");
+				sb.append(privateLayout);
 
-				throw new NoSuchLayoutException(exceptionMessage.toString());
+				throw new NoSuchLayoutException(sb.toString());
 			}
 		}
 	}

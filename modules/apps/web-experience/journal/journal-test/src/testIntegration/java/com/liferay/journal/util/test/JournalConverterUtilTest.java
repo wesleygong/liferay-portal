@@ -354,7 +354,7 @@ public class JournalConverterUtilTest {
 
 		expectedFields.put(linkToLayoutField);
 
-		StringBundler sb = new StringBundler();
+		StringBundler sb = new StringBundler(8);
 
 		sb.append("link_to_layout_INSTANCE_MiO7vIJu,");
 		sb.append("link_to_layout_INSTANCE_9FLzJNUX,");

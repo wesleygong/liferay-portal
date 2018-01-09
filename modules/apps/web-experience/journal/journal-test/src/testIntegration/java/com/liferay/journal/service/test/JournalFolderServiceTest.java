@@ -117,7 +117,7 @@ public class JournalFolderServiceTest {
 				JournalFolderConstants.
 					RESTRICTION_TYPE_DDM_STRUCTURES_AND_WORKFLOW);
 
-		Assert.assertFalse(ddmStructures.isEmpty());
+		Assert.assertFalse(ddmStructures.toString(), ddmStructures.isEmpty());
 
 		String xml = DDMStructureTestUtil.getSampleStructuredContent(
 			"Test Article");
@@ -163,7 +163,7 @@ public class JournalFolderServiceTest {
 			JournalFolderConstants.
 				RESTRICTION_TYPE_DDM_STRUCTURES_AND_WORKFLOW);
 
-		Assert.assertTrue(ddmStructures.isEmpty());
+		Assert.assertTrue(ddmStructures.toString(), ddmStructures.isEmpty());
 	}
 
 	@Test

@@ -14,10 +14,10 @@
 
 package com.liferay.text.localizer.address;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.model.Address;
 import com.liferay.portal.kernel.util.Html;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.text.localizer.address.util.AddressUtil;
 
@@ -37,7 +37,7 @@ public class USAddressTextLocalizer implements AddressTextLocalizer {
 
 	@Override
 	public String format(Address address) {
-		StringBundler sb = new StringBundler(14);
+		StringBundler sb = new StringBundler(13);
 
 		Address escapedAddress = address.toEscapedModel();
 

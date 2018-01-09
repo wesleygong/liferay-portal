@@ -95,6 +95,7 @@ renderResponse.setTitle(siteNavigationMenu.getName());
 		<div class="container-fluid-1280">
 			<div class="row">
 				<div class="col-md-9 pt-3 site-navigation-menu-container">
+					<div class="hide" data-site-navigation-menu-item-id="0"></div>
 
 					<%
 					for (SiteNavigationMenuItem siteNavigationMenuItem : siteNavigationMenuItems) {
@@ -180,7 +181,7 @@ renderResponse.setTitle(siteNavigationMenu.getName());
 			Liferay.on('destroyPortlet', handlePortletDestroy);
 		</aui:script>
 
-		<aui:script use="aui-base">
+		<aui:script use="aui-base,aui-parse-content">
 			var sidebar = A.one('#<portlet:namespace />sidebar');
 			var sidebarBody = A.one('#<portlet:namespace />sidebarBody');
 			var sidebarTitle = A.one('#<portlet:namespace />sidebarTitle');
@@ -194,7 +195,7 @@ renderResponse.setTitle(siteNavigationMenu.getName());
 						'<portlet:namespace />',
 						{
 							redirect: '<%= currentURL %>',
-							siteNavigationMenuItemId: currentTarget.attr('data-siteNavigationMenuItemId')
+							siteNavigationMenuItemId: currentTarget.attr('data-site-navigation-menu-item-id')
 						}
 					);
 

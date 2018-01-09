@@ -54,7 +54,10 @@ import javax.mail.internet.InternetAddress;
 
 /**
  * @author Thiago Moreira
+ * @deprecated As of 7.0.0, replaced by {@link
+ *             com.liferay.message.boards.internal.messaging.MailingListMessageListener}
  */
+@Deprecated
 public class MailingListMessageListener extends BaseMessageListener {
 
 	@Override

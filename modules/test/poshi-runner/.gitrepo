@@ -1,0 +1,11 @@
+;
+; Do not manually edit this file.
+;
+[subrepo]
+	autopull = true
+	cmdver = liferay
+	commit = 731da05752528fb3b97b366f1e85ae9ac3fc6c99
+	mergebuttonmergecommits = false
+	mode = pull
+	parent = d3a733b0a4eff64e2f4972d89ea308245fe94629
+	remote = git@github.com:liferay/com-liferay-poshi-runner.git

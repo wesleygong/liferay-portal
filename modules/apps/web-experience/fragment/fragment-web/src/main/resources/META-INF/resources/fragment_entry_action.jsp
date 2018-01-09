@@ -36,6 +36,28 @@ FragmentEntry fragmentEntry = (FragmentEntry)row.getObject();
 		/>
 	</c:if>
 
+	<c:if test="<%= FragmentEntryPermission.contains(permissionChecker, fragmentEntry, ActionKeys.UPDATE) %>">
+		<portlet:actionURL name="updateFragmentEntry" var="updateFragmentEntryURL">
+			<portlet:param name="fragmentCollectionId" value="<%= String.valueOf(fragmentEntry.getFragmentCollectionId()) %>" />
+			<portlet:param name="fragmentEntryId" value="<%= String.valueOf(fragmentEntry.getFragmentEntryId()) %>" />
+		</portlet:actionURL>
+
+		<%
+		Map<String, Object> updateFragmentEntryData = new HashMap<String, Object>();
+
+		updateFragmentEntryData.put("form-submit-url", updateFragmentEntryURL.toString());
+		updateFragmentEntryData.put("id-field-value", fragmentEntry.getFragmentEntryId());
+		updateFragmentEntryData.put("main-field-value", fragmentEntry.getName());
+		%>
+
+		<liferay-ui:icon
+			cssClass='<%= renderResponse.getNamespace() + "update-fragment-action-option" %>'
+			data="<%= updateFragmentEntryData %>"
+			message="rename"
+			url="javascript:;"
+		/>
+	</c:if>
+
 	<c:if test="<%= FragmentEntryPermission.contains(permissionChecker, fragmentEntry, ActionKeys.PERMISSIONS) %>">
 		<liferay-security:permissionsURL
 			modelResource="<%= FragmentEntry.class.getName() %>"
@@ -50,28 +72,6 @@ FragmentEntry fragmentEntry = (FragmentEntry)row.getObject();
 			method="get"
 			url="<%= fragmentEntryPermissionsURL %>"
 			useDialog="<%= true %>"
-		/>
-	</c:if>
-
-	<c:if test="<%= FragmentEntryPermission.contains(permissionChecker, fragmentEntry, ActionKeys.UPDATE) %>">
-		<portlet:actionURL name="updateFragmentEntry" var="updateFragmentEntryURL">
-			<portlet:param name="fragmentCollectionId" value="<%= String.valueOf(fragmentEntry.getFragmentCollectionId()) %>" />
-			<portlet:param name="fragmentEntryId" value="<%= String.valueOf(fragmentEntry.getFragmentEntryId()) %>" />
-		</portlet:actionURL>
-
-		<%
-		Map<String, Object> updateFragmentEntryData = new HashMap<String, Object>();
-
-		updateFragmentEntryData.put("fragment-entry-id", fragmentEntry.getFragmentEntryId());
-		updateFragmentEntryData.put("fragment-entry-name", fragmentEntry.getName());
-		updateFragmentEntryData.put("update-url", updateFragmentEntryURL);
-		%>
-
-		<liferay-ui:icon
-			cssClass='<%= renderResponse.getNamespace() + "update-fragment-action-option" %>'
-			data="<%= updateFragmentEntryData %>"
-			message="rename"
-			url="javascript:;"
 		/>
 	</c:if>
 

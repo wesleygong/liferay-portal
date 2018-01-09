@@ -557,6 +557,7 @@ information.
 		<attribute default="${basedir}" name="dir" />
 		<attribute default="true" name="failonerror" />
 		<attribute default="true" name="forcedcacheenabled" />
+		<attribute default="${env.ANT_OPTS}" name="gradleopts" />
 		<attribute default="" name="outputproperty" />
 		<attribute name="task" />
 		<element implicit="true" name="args" optional="true" />
@@ -605,7 +606,7 @@ information.
 						<arg value="-Dliferay.home=${liferay.home}" />
 						<arg value="tasks" />
 						<arg value="--all" />
-						<env key="GRADLE_OPTS" value="${env.ANT_OPTS}" />
+						<env key="GRADLE_OPTS" value="@{gradleopts}" />
 						<redirector errorproperty="@{outputproperty}.error" outputproperty="tasks.output" unless:blank="tasks.output" />
 					</exec>
 
@@ -642,7 +643,7 @@ information.
 								<arg value="-Dforced.cache.enabled=@{forcedcacheenabled}" />
 								<arg value="-Dliferay.home=${liferay.home}" />
 								<arg line="@{task}" />
-								<env key="GRADLE_OPTS" value="${env.ANT_OPTS}" />
+								<env key="GRADLE_OPTS" value="@{gradleopts}" />
 								<redirector errorproperty="@{outputproperty}.error" outputproperty="@{outputproperty}" unless:blank="@{outputproperty}" />
 							</exec>
 						</try>
@@ -706,11 +707,9 @@ information.
 	<macrodef name="jacoco-report">
 		<attribute name="exec.file" />
 		<element name="class.files" />
+		<element name="source.files" />
 
 		<sequential>
-			<delete dir="${jacoco.report.folder}" />
-			<mkdir dir="${jacoco.report.folder}" />
-
 			<jacoco:report>
 				<executiondata>
 					<file file="@{exec.file}" />
@@ -722,10 +721,7 @@ information.
 					</classfiles>
 
 					<sourcefiles if:true="${jacoco.report.include.source.file}">
-						<dirset dir="${project.dir}">
-							<include name="**/src" />
-							<include name="**/src/main/java" />
-						</dirset>
+						<source.files />
 					</sourcefiles>
 				</structure>
 
@@ -913,6 +909,7 @@ information.
 	<macrodef name="publish-portal-artifact">
 		<attribute default="jar" name="packaging" />
 		<attribute default="false" name="snapshot" />
+		<attribute name="targets" />
 
 		<element implicit="true" name="attach-files" optional="true" />
 
@@ -1002,6 +999,12 @@ information.
 					<echo>${artifact.name} is not stale and does not need to be published.</echo>
 				</then>
 				<else>
+					<for list="@{targets}" param="target">
+						<sequential>
+							<ant dir="${project.dir}/${artifact.name}" inheritAll="false" target="@{target}" />
+						</sequential>
+					</for>
+
 					<artifact:deploy file="${artifact.name}.@{packaging}">
 						<attach-files />
 						<pom file="pom.xml" />
@@ -1042,7 +1045,7 @@ information.
 								datatype="int"
 								operand1="${artifact.version.micro}"
 								operand2="1"
-								operation="add"
+								operation="+"
 								result="artifact.version.micro"
 							/>
 
@@ -1052,6 +1055,23 @@ information.
 								token="Bundle-Version: ${artifact.version}"
 								value="Bundle-Version: ${artifact.version.major.minor}.${artifact.version.micro}"
 							/>
+
+							<replaceregexp
+								file="bnd.bnd"
+								match="\Q/.bnd/ant-baseline-cache/com.liferay.${processed.artifact.name}-\E\d+\.\d+\.\d+\.jar"
+								replace="/.bnd/ant-baseline-cache/com.liferay.${processed.artifact.name}-${artifact.version.major.minor}.0.jar"
+							/>
+
+							<exec executable="git" failonerror="true">
+								<arg value="add" />
+								<arg value="bnd.bnd" />
+							</exec>
+
+							<exec executable="git" failonerror="true">
+								<arg value="commit" />
+								<arg value="-m" />
+								<arg value="artifact:ignore ${artifact.name} ${artifact.version} prep next" />
+							</exec>
 						</then>
 					</if>
 
@@ -1069,6 +1089,23 @@ information.
 
 							<echo file="${project.dir}/modules/.releng/${artifact.name}.properties">artifact.git.id=${artifact.git.id}
 artifact.url=${remote.repository.url}/com/liferay/portal/com.liferay.${processed.artifact.name}/${artifact.version}/com.liferay.${processed.artifact.name}-${artifact.version}.@{packaging}</echo>
+
+							<exec dir="${project.dir}/modules/.releng" executable="git" failonerror="true">
+								<arg value="add" />
+								<arg value="${artifact.name}.properties" />
+							</exec>
+
+							<exec executable="git" failonerror="true">
+								<arg value="commit" />
+								<arg value="-m" />
+								<arg value="artifact:ignore ${artifact.name} ${artifact.version} releng" />
+							</exec>
+
+							<gradle-execute dir="${project.dir}/modules" task="lockDependencyVersion">
+								<arg value="--build-file=releng.gradle" />
+								<arg value="-PdependencyName=com.liferay.${processed.artifact.name}" />
+								<arg value="-PdependencyVersion=${artifact.version.major.minor}.0" />
+							</gradle-execute>
 						</then>
 					</if>
 
@@ -1495,15 +1532,14 @@ rerun your task.
 					<propertyref name="sass.generate.source.map" />
 					<propertyref name="sass.precision" />
 					<propertyref name="sdk.dir" />
-					<propertyref name="source.formatter.include.subrepositories" />
-					<propertyref name="source.formatter.max.line.length" />
-					<propertyref name="source.formatter.processor.thread.count" />
 					<propertyref name="timeout.app.server.wait" />
 					<propertyref name="upgrade.table.dir" />
+					<propertyref prefix="gradle.publish." />
 					<propertyref prefix="ivy.pom." />
 					<propertyref prefix="microsoft.translator." />
 					<propertyref prefix="nodejs.npm." />
 					<propertyref prefix="sonatype." />
+					<propertyref prefix="source.formatter." />
 					<propertyref regex=".+\.ignore\.local$" />
 					<propertyref regex="^\s*app\.server\.(?:glassfish|jboss|jetty|jonas|resin|tcat|tcserver|tomcat|weblogic|websphere|wildfly).*" />
 				</propertyset>
@@ -1661,8 +1697,29 @@ rerun your task.
 	</target>
 
 	<target name="generate-code-coverage-report">
-		<var name="exec.file" unset="true" />
+		<delete dir="${jacoco.report.folder}" />
+		<mkdir dir="${jacoco.report.folder}" />
 
+		<if>
+			<isset property="class.names" />
+			<then>
+				<taskdef classname="com.liferay.util.ant.GetFileSetTask" classpath="${project.dir}/util-java/util-java.jar" name="get-file-set" />
+
+				<get-file-set classNames="${class.names}" rootDir="${project.dir}" />
+			</then>
+			<else>
+				<fileset dir="${project.dir}" id="get.file.set.class.set">
+					<include name="**/classes/com/liferay/**/*.class" />
+				</fileset>
+
+				<dirset dir="${project.dir}" id="get.file.set.src.set">
+					<include name="**/src" />
+					<include name="**/src/main/java" />
+				</dirset>
+			</else>
+		</if>
+
+		<var name="exec.file" unset="true" />
 		<if>
 			<available file="${jacoco.dump.file}" type="file" />
 			<then>
@@ -1692,6 +1749,9 @@ rerun your task.
 					<class.files>
 						<file file="${jacoco.merged.jar}" />
 					</class.files>
+					<source.files>
+						<dirset refid="get.file.set.src.set" />
+					</source.files>
 				</jacoco-report>
 			</then>
 			<else>
@@ -1699,10 +1759,11 @@ rerun your task.
 					exec.file="${exec.file}"
 				>
 					<class.files>
-						<fileset dir="${project.dir}">
-							<include name="**/classes/com/liferay/**/*.class" />
-						</fileset>
+						<fileset refid="get.file.set.class.set" />
 					</class.files>
+					<source.files>
+						<dirset refid="get.file.set.src.set" />
+					</source.files>
 				</jacoco-report>
 			</else>
 		</if>

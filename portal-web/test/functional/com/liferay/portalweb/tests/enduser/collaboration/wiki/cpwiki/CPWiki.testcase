@@ -394,7 +394,7 @@
 	</command>
 
 	<command name="DeleteWikiNode" priority="5">
-		<property name="portal.acceptance" value="true" />
+		<property name="portal.acceptance" value="quarantine" />
 
 		<execute macro="Navigator#openURL" />
 
@@ -514,6 +514,10 @@
 		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Wiki" />
 			<var name="siteName" value="Site Name" />
+		</execute>
+
+		<execute macro="Portlet#addPG">
+			<var name="portletName" value="Wiki" />
 		</execute>
 
 		<execute macro="WikiNavigator#gotoPG">

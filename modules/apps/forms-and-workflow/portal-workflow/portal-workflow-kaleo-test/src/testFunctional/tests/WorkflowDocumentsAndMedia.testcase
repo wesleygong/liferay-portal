@@ -188,8 +188,12 @@
 		<execute macro="Navigator#openURL" />
 
 		<for list="1,2,3,4" param="i" >
-			<execute macro="Page#gotoMyAccount">
-				<var name="portletName" value="My Workflow Tasks" />
+			<execute macro="Navigator#openURL" />
+
+			<execute macro="ProductMenu#gotoPortlet">
+				<var name="category" value="My Account" />
+				<var name="panel" value="User" />
+				<var name="portlet" value="My Workflow Tasks" />
 			</execute>
 
 			<execute macro="Workflow#assignToMeTaskByActions">
@@ -200,8 +204,12 @@
 
 			<execute macro="Navigator#openURL" />
 
-			<execute macro="Page#gotoMyAccount">
-				<var name="portletName" value="My Workflow Tasks" />
+			<execute macro="Navigator#openURL" />
+
+			<execute macro="ProductMenu#gotoPortlet">
+				<var name="category" value="My Account" />
+				<var name="panel" value="User" />
+				<var name="portlet" value="My Workflow Tasks" />
 			</execute>
 
 			<execute macro="Workflow#approveTaskByActions">
@@ -213,8 +221,12 @@
 		</for>
 
 		<for list="1,2,3,4" param="i" >
-			<execute macro="Page#gotoMyAccount">
-				<var name="portletName" value="My Workflow Tasks" />
+			<execute macro="Navigator#openURL" />
+
+			<execute macro="ProductMenu#gotoPortlet">
+				<var name="category" value="My Account" />
+				<var name="panel" value="User" />
+				<var name="portlet" value="My Workflow Tasks" />
 			</execute>
 
 			<execute macro="Workflow#assignToMeTaskByActions">
@@ -225,8 +237,12 @@
 
 			<execute macro="Navigator#openURL" />
 
-			<execute macro="Page#gotoMyAccount">
-				<var name="portletName" value="My Workflow Tasks" />
+			<execute macro="Navigator#openURL" />
+
+			<execute macro="ProductMenu#gotoPortlet">
+				<var name="category" value="My Account" />
+				<var name="panel" value="User" />
+				<var name="portlet" value="My Workflow Tasks" />
 			</execute>
 
 			<execute macro="Workflow#approveTaskByActions">
@@ -238,8 +254,12 @@
 		</for>
 
 		<for list="1,2,3,4" param="i" >
-			<execute macro="Page#gotoMyAccount">
-				<var name="portletName" value="My Workflow Tasks" />
+			<execute macro="Navigator#openURL" />
+
+			<execute macro="ProductMenu#gotoPortlet">
+				<var name="category" value="My Account" />
+				<var name="panel" value="User" />
+				<var name="portlet" value="My Workflow Tasks" />
 			</execute>
 
 			<execute macro="Workflow#assignToMeTaskByActions">
@@ -250,8 +270,12 @@
 
 			<execute macro="Navigator#openURL" />
 
-			<execute macro="Page#gotoMyAccount">
-				<var name="portletName" value="My Workflow Tasks" />
+			<execute macro="Navigator#openURL" />
+
+			<execute macro="ProductMenu#gotoPortlet">
+				<var name="category" value="My Account" />
+				<var name="panel" value="User" />
+				<var name="portlet" value="My Workflow Tasks" />
 			</execute>
 
 			<execute macro="Workflow#approveTaskByActions">
@@ -416,8 +440,12 @@
 
 		<execute macro="Alert#viewSuccessMessage" />
 
-		<execute macro="Page#gotoMyAccount">
-			<var name="portletName" value="My Workflow Tasks" />
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="My Account" />
+			<var name="panel" value="User" />
+			<var name="portlet" value="My Workflow Tasks" />
 		</execute>
 
 		<execute macro="Workflow#assignToMeTaskByActions">
@@ -445,8 +473,9 @@
 			<var name="dmFolderName" value="DM Folder Name" />
 		</execute>
 
-		<execute macro="DMNavigator#gotoEditDocument">
-			<var name="dmDocumentTitle" value="DM Document Title" />
+		<execute macro="LexiconEntry#gotoEntryMenuItem">
+			<var name="menuItem" value="Edit" />
+			<var name="rowEntry" value="DM Document Title" />
 		</execute>
 
 		<execute macro="DMDocument#viewCategories">
@@ -457,8 +486,9 @@
 
 		<execute macro="Alert#viewSuccessMessage" />
 
-		<execute macro="DMNavigator#gotoEditDocument">
-			<var name="dmDocumentTitle" value="DM Document Title" />
+		<execute macro="LexiconEntry#gotoEntryMenuItem">
+			<var name="menuItem" value="Edit" />
+			<var name="rowEntry" value="DM Document Title" />
 		</execute>
 
 		<execute macro="DMDocument#viewCategories">
@@ -467,16 +497,21 @@
 
 		<execute macro="Button#clickSubmitForPublication" />
 
-		<execute macro="DMNavigator#gotoEditDocument">
-			<var name="dmDocumentTitle" value="DM Document Title" />
+		<execute macro="LexiconEntry#gotoEntryMenuItem">
+			<var name="menuItem" value="Edit" />
+			<var name="rowEntry" value="DM Document Title" />
 		</execute>
 
 		<execute macro="DMDocument#viewCategories">
 			<var name="categoryNameList" value="legal,Other" />
 		</execute>
 
-		<execute macro="Page#gotoMyAccount">
-			<var name="portletName" value="My Workflow Tasks" />
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="My Account" />
+			<var name="panel" value="User" />
+			<var name="portlet" value="My Workflow Tasks" />
 		</execute>
 
 		<execute macro="Workflow#assignToMeTaskByActions">

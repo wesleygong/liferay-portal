@@ -307,8 +307,9 @@
 			<var name="pageName" value="Page Name" />
 		</execute>
 
-		<execute macro="Navigator#gotoPage">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Page Name" />
+			<var name="siteName" value="Site Name" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
@@ -1348,12 +1349,7 @@
 
 		<execute macro="SitePages#addPublicPage">
 			<var name="pageName" value="Blog Page Template" />
-		</execute>
-
-		<execute macro="SitePages#configurePage">
-			<var name="pageName" value="Blog Page Template" />
 			<var name="pageTemplateName" value="Blog" />
-			<var name="privacy" value="Public" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoPortlet">
@@ -1465,6 +1461,11 @@
 			<var name="roleTitle" value="Guest" />
 		</execute>
 
+		<execute macro="Navigator#gotoSitePage">
+			<var name="pageName" value="Blog Page Template" />
+			<var name="siteName" value="Site Name" />
+		</execute>
+
 		<execute macro="PermissionsInline#gotoPagePG">
 			<var name="pageName" value="Blog Page Template" />
 		</execute>
@@ -1475,6 +1476,11 @@
 				<var name="roleTitle" value="Site Member" />
 			</execute>
 		</for>
+
+		<execute macro="Navigator#gotoSitePage">
+			<var name="pageName" value="Blog Page Template" />
+			<var name="siteName" value="Site Name" />
+		</execute>
 
 		<execute macro="PermissionsInline#gotoPagePG">
 			<var name="pageName" value="Blog Page Template" />

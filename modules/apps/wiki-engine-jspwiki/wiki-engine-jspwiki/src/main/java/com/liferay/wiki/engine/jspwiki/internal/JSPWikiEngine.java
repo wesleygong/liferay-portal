@@ -31,8 +31,8 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.language.LanguageResources;
 import com.liferay.wiki.configuration.WikiGroupServiceConfiguration;
+import com.liferay.wiki.engine.BaseWikiEngine;
 import com.liferay.wiki.engine.WikiEngine;
-import com.liferay.wiki.engine.input.editor.common.BaseInputEditorWikiEngine;
 import com.liferay.wiki.exception.PageContentException;
 import com.liferay.wiki.service.WikiPageLocalService;
 
@@ -62,7 +62,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(
 	property = {"service.ranking:Integer=-1000"}, service = WikiEngine.class
 )
-public class JSPWikiEngine extends BaseInputEditorWikiEngine {
+public class JSPWikiEngine extends BaseWikiEngine {
 
 	public static String decodeJSPWikiName(String jspWikiName) {
 		return StringUtil.replace(
@@ -195,6 +195,11 @@ public class JSPWikiEngine extends BaseInputEditorWikiEngine {
 		return _decodeJSPWikiContent(engine.textToHTML(wikiContext, content));
 	}
 
+	@Override
+	protected ServletContext getEditPageServletContext() {
+		return _wikiEngineInputEditorServletContext;
+	}
+
 	protected LiferayJSPWikiEngine getEngine(long nodeId) throws WikiException {
 		LiferayJSPWikiEngine engine = _engines.get(nodeId);
 
@@ -296,7 +301,7 @@ public class JSPWikiEngine extends BaseInputEditorWikiEngine {
 	}
 
 	private static String _encodeJSPWikiContent(String content) {
-		StringBundler encodedContent = new StringBundler();
+		StringBundler sb = new StringBundler();
 
 		Matcher commentMatcher = _wikiCommentPattern.matcher(content);
 
@@ -310,9 +315,9 @@ public class JSPWikiEngine extends BaseInputEditorWikiEngine {
 
 			Matcher wikiLinkMatcher = _wikiLinkPattern.matcher(oldContent);
 
-			encodedContent.append(_encodeLink(oldContent, wikiLinkMatcher));
+			sb.append(_encodeLink(oldContent, wikiLinkMatcher));
 
-			encodedContent.append(
+			sb.append(
 				content.substring(
 					commentMatcher.start(), commentMatcher.end()));
 
@@ -324,10 +329,10 @@ public class JSPWikiEngine extends BaseInputEditorWikiEngine {
 
 			Matcher wikiLinkMatcher = _wikiLinkPattern.matcher(content);
 
-			encodedContent.append(_encodeLink(content, wikiLinkMatcher));
+			sb.append(_encodeLink(content, wikiLinkMatcher));
 		}
 
-		return encodedContent.toString();
+		return sb.toString();
 	}
 
 	private static String _encodeJSPWikiName(String name) {
@@ -387,6 +392,12 @@ public class JSPWikiEngine extends BaseInputEditorWikiEngine {
 	private Properties _properties = new Properties();
 	private ResourceBundleLoader _resourceBundleLoader;
 	private ServletContext _servletContext;
+
+	@Reference(
+		target = "(osgi.web.symbolicname=com.liferay.wiki.engine.input.editor.common)"
+	)
+	private ServletContext _wikiEngineInputEditorServletContext;
+
 	private WikiGroupServiceConfiguration _wikiGroupServiceConfiguration;
 	private WikiPageLocalService _wikiPageLocalService;
 

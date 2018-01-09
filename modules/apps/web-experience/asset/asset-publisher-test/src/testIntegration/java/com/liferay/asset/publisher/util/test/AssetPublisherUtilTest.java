@@ -18,13 +18,9 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.asset.publisher.util.AssetPublisherHelper;
 import com.liferay.asset.publisher.web.util.AssetQueryRule;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.test.rule.Sync;
-import com.liferay.portal.kernel.test.rule.SynchronousDestinationTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
+import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.registry.Registry;
-import com.liferay.registry.RegistryUtil;
-import com.liferay.registry.ServiceTracker;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,10 +28,7 @@ import java.util.List;
 
 import javax.portlet.PortletPreferences;
 
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,35 +40,12 @@ import org.springframework.mock.web.portlet.MockPortletPreferences;
  * @author Eudaldo Alonso
  */
 @RunWith(Arquillian.class)
-@Sync
 public class AssetPublisherUtilTest {
 
 	@ClassRule
 	@Rule
 	public static final AggregateTestRule aggregateTestRule =
-		new AggregateTestRule(
-			new LiferayIntegrationTestRule(),
-			SynchronousDestinationTestRule.INSTANCE);
-
-	@BeforeClass
-	public static void setUpClass() {
-		Registry registry = RegistryUtil.getRegistry();
-
-		_serviceTracker = registry.trackServices(
-			AssetPublisherHelper.class.getName());
-
-		_serviceTracker.open();
-	}
-
-	@AfterClass
-	public static void tearDownClass() {
-		_serviceTracker.close();
-	}
-
-	@Before
-	public void setUp() throws Exception {
-		_assetPublisherHelper = _serviceTracker.getService();
-	}
+		new LiferayIntegrationTestRule();
 
 	@Test
 	public void testGetAssetCategoryIdsContainsAllCategories()
@@ -495,9 +465,7 @@ public class AssetPublisherUtilTest {
 		return portletPreferences;
 	}
 
-	private static ServiceTracker<AssetPublisherHelper, AssetPublisherHelper>
-		_serviceTracker;
-
+	@Inject
 	private AssetPublisherHelper _assetPublisherHelper;
 
 }

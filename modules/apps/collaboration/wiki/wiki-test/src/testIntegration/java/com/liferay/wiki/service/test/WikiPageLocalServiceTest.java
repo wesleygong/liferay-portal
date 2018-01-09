@@ -40,8 +40,6 @@ import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.AssertUtils;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
-import com.liferay.portal.kernel.test.rule.Sync;
-import com.liferay.portal.kernel.test.rule.SynchronousDestinationTestRule;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
@@ -66,6 +64,7 @@ import com.liferay.wiki.util.test.WikiTestUtil;
 
 import java.io.Serializable;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,15 +81,12 @@ import org.junit.runner.RunWith;
  * @author Roberto Díaz
  */
 @RunWith(Arquillian.class)
-@Sync
 public class WikiPageLocalServiceTest {
 
 	@ClassRule
 	@Rule
 	public static final AggregateTestRule aggregateTestRule =
-		new AggregateTestRule(
-			new LiferayIntegrationTestRule(),
-			SynchronousDestinationTestRule.INSTANCE);
+		new LiferayIntegrationTestRule();
 
 	@Before
 	public void setUp() throws Exception {
@@ -624,7 +620,7 @@ public class WikiPageLocalServiceTest {
 			AssetCategoryLocalServiceUtil.getCategoryIds(
 				WikiPage.class.getName(), renamedPage.getResourcePrimKey());
 
-		Assert.assertArrayEquals(assetCategoryIds, finalAssetCategoryIds);
+		_assertArrayEquals(assetCategoryIds, finalAssetCategoryIds);
 	}
 
 	@Test
@@ -662,7 +658,7 @@ public class WikiPageLocalServiceTest {
 		String[] finalAssetTagNames = AssetTagLocalServiceUtil.getTagNames(
 			WikiPage.class.getName(), renamedPage.getResourcePrimKey());
 
-		Assert.assertArrayEquals(finalAssetTagNames, assetTagNames);
+		_assertArrayEquals(finalAssetTagNames, assetTagNames);
 	}
 
 	@Test
@@ -708,7 +704,7 @@ public class WikiPageLocalServiceTest {
 			AssetCategoryLocalServiceUtil.getCategoryIds(
 				WikiPage.class.getName(), renamedPage.getResourcePrimKey());
 
-		Assert.assertArrayEquals(assetCategoryIds, finalAssetCategoryIds);
+		_assertArrayEquals(assetCategoryIds, finalAssetCategoryIds);
 	}
 
 	@Test
@@ -748,7 +744,7 @@ public class WikiPageLocalServiceTest {
 		String[] finalAssetTagNames = AssetTagLocalServiceUtil.getTagNames(
 			WikiPage.class.getName(), renamedPage.getResourcePrimKey());
 
-		Assert.assertArrayEquals(finalAssetTagNames, assetTagNames);
+		_assertArrayEquals(finalAssetTagNames, assetTagNames);
 	}
 
 	@Test
@@ -896,7 +892,7 @@ public class WikiPageLocalServiceTest {
 		long[] assetCategoryIds = AssetCategoryLocalServiceUtil.getCategoryIds(
 			WikiPage.class.getName(), page.getResourcePrimKey());
 
-		Assert.assertArrayEquals(
+		_assertArrayEquals(
 			serviceContext.getAssetCategoryIds(), assetCategoryIds);
 
 		AssetEntry assetEntry = AssetEntryLocalServiceUtil.getEntry(
@@ -908,14 +904,13 @@ public class WikiPageLocalServiceTest {
 		long[] assetLinkEntryIds = ListUtil.toLongArray(
 			assetLinks, AssetLink.ENTRY_ID2_ACCESSOR);
 
-		Assert.assertArrayEquals(
+		_assertArrayEquals(
 			serviceContext.getAssetLinkEntryIds(), assetLinkEntryIds);
 
 		String[] assetTagNames = AssetTagLocalServiceUtil.getTagNames(
 			WikiPage.class.getName(), page.getResourcePrimKey());
 
-		Assert.assertArrayEquals(
-			serviceContext.getAssetTagNames(), assetTagNames);
+		_assertArrayEquals(serviceContext.getAssetTagNames(), assetTagNames);
 
 		if (hasExpandoValues) {
 			ExpandoBridge expandoBridge = page.getExpandoBridge();
@@ -1043,6 +1038,22 @@ public class WikiPageLocalServiceTest {
 
 		checkPopulatedServiceContext(
 			serviceContext, revertedPage, hasExpandoValues);
+	}
+
+	private void _assertArrayEquals(long[] expectedArray, long[] actualArray) {
+		Arrays.sort(expectedArray);
+		Arrays.sort(actualArray);
+
+		Assert.assertArrayEquals(expectedArray, actualArray);
+	}
+
+	private void _assertArrayEquals(
+		String[] expectedArray, String[] actualArray) {
+
+		Arrays.sort(expectedArray);
+		Arrays.sort(actualArray);
+
+		Assert.assertArrayEquals(expectedArray, actualArray);
 	}
 
 	@DeleteAfterTestRun

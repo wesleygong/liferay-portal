@@ -16,6 +16,7 @@ package com.liferay.calendar.search.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.calendar.model.Calendar;
+import com.liferay.calendar.model.CalendarBooking;
 import com.liferay.calendar.model.CalendarBookingConstants;
 import com.liferay.calendar.model.CalendarResource;
 import com.liferay.calendar.search.CalendarBookingIndexer;
@@ -25,6 +26,7 @@ import com.liferay.calendar.util.CalendarResourceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Hits;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.SearchContext;
@@ -33,8 +35,6 @@ import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.settings.LocalizedValuesMap;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
-import com.liferay.portal.kernel.test.rule.Sync;
-import com.liferay.portal.kernel.test.rule.SynchronousDestinationTestRule;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.SearchContextTestUtil;
@@ -44,6 +44,7 @@ import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Time;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerTestRule;
 
@@ -62,7 +63,6 @@ import org.junit.runner.RunWith;
  * @author Adam Brandizzi
  */
 @RunWith(Arquillian.class)
-@Sync
 public class CalendarBookingIndexerTest {
 
 	@ClassRule
@@ -70,8 +70,7 @@ public class CalendarBookingIndexerTest {
 	public static final AggregateTestRule aggregateTestRule =
 		new AggregateTestRule(
 			new LiferayIntegrationTestRule(),
-			PermissionCheckerTestRule.INSTANCE,
-			SynchronousDestinationTestRule.INSTANCE);
+			PermissionCheckerTestRule.INSTANCE);
 
 	@Before
 	public void setUp() throws Exception {
@@ -177,6 +176,30 @@ public class CalendarBookingIndexerTest {
 	}
 
 	@Test
+	public void testSearchInTrash() throws Exception {
+		setUpSearchContext(_group, _user);
+
+		String title = RandomTestUtil.randomString();
+
+		CalendarBooking calendarBooking = addCalendarBooking(
+			new LocalizedValuesMap() {
+				{
+					put(LocaleUtil.US, title);
+				}
+			});
+
+		CalendarBookingLocalServiceUtil.moveCalendarBookingToTrash(
+			TestPropsValues.getUserId(), calendarBooking);
+
+		assertSearchHitsLength(title, 0, LocaleUtil.US);
+
+		_searchContext.setAttribute(
+			Field.STATUS, new int[] {WorkflowConstants.STATUS_IN_TRASH});
+
+		assertSearchHitsLength(title, 1, LocaleUtil.US);
+	}
+
+	@Test
 	public void testSearchNotAdmin() throws Exception {
 		setUpSearchContext(_group, _user);
 
@@ -203,7 +226,7 @@ public class CalendarBookingIndexerTest {
 		return searchContext;
 	}
 
-	protected void addCalendarBooking(LocalizedValuesMap titleMap) {
+	protected CalendarBooking addCalendarBooking(LocalizedValuesMap titleMap) {
 		try {
 			ServiceContext serviceContext = new ServiceContext();
 
@@ -225,7 +248,7 @@ public class CalendarBookingIndexerTest {
 
 			HashMap<Locale, String> hashMap = new HashMap<>();
 
-			CalendarBookingLocalServiceUtil.addCalendarBooking(
+			return CalendarBookingLocalServiceUtil.addCalendarBooking(
 				_user.getUserId(), calendar.getCalendarId(), new long[0],
 				CalendarBookingConstants.PARENT_CALENDAR_BOOKING_ID_DEFAULT, 0,
 				titleMap.getValues(), hashMap, null, startTime, endTime, false,

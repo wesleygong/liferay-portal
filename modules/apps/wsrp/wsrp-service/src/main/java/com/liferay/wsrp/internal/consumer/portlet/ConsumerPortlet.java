@@ -305,7 +305,7 @@ public class ConsumerPortlet extends MVCPortlet {
 		String wsrpAuth = GetterUtil.getString(
 			resourceRequest.getParameter(WebKeys.WSRP_AUTH));
 
-		StringBundler sb = new StringBundler(3);
+		StringBundler sb = new StringBundler(4);
 
 		sb.append(resourceID);
 		sb.append(url);
@@ -884,7 +884,7 @@ public class ConsumerPortlet extends MVCPortlet {
 		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		StringBundler sb = new StringBundler();
+		StringBundler sb = new StringBundler(7);
 
 		sb.append(baseKey);
 		sb.append(StringPool.UNDERLINE);
@@ -982,8 +982,7 @@ public class ConsumerPortlet extends MVCPortlet {
 		String wsrpConsumerPortletUuid = portletName;
 
 		if (portletName.startsWith("WSRP_")) {
-			wsrpConsumerPortletUuid = portletName.substring(
-				5, portletName.length());
+			wsrpConsumerPortletUuid = portletName.substring(5);
 		}
 
 		wsrpConsumerPortletUuid = PortalUUIDUtil.fromJsSafeUuid(

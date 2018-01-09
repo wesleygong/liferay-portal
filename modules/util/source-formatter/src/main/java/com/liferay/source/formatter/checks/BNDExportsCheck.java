@@ -15,11 +15,16 @@
 package com.liferay.source.formatter.checks;
 
 import com.liferay.petra.string.CharPool;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.source.formatter.checks.util.BNDSourceUtil;
+import com.liferay.source.formatter.util.FileUtil;
+
+import java.io.File;
+import java.io.FileFilter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +49,8 @@ public class BNDExportsCheck extends BaseFileCheck {
 
 	@Override
 	protected String doProcess(
-		String fileName, String absolutePath, String content) {
+			String fileName, String absolutePath, String content)
+		throws Exception {
 
 		if (!fileName.endsWith("/bnd.bnd") ||
 			absolutePath.contains("/third-party/")) {
@@ -61,6 +67,8 @@ public class BNDExportsCheck extends BaseFileCheck {
 		if (absolutePath.contains("/modules/apps/")) {
 			_checkExportPackage(fileName, absolutePath, content);
 		}
+
+		_checkExportPackageinfo(fileName, content);
 
 		return content;
 	}
@@ -94,6 +102,82 @@ public class BNDExportsCheck extends BaseFileCheck {
 			"Exporting packages not allowed in module '" +
 				absolutePath.substring(y + 1, x) + "'",
 			"bnd_exports.markdown");
+	}
+
+	private void _checkExportPackageinfo(String fileName, String content)
+		throws Exception {
+
+		Matcher matcher = _exportsPattern.matcher(content);
+
+		if (!matcher.find()) {
+			return;
+		}
+
+		List<String> exportPackages = new ArrayList<>();
+
+		for (String line : StringUtil.splitLines(matcher.group(3))) {
+			line = StringUtil.trim(line);
+
+			if (Validator.isNull(line) || line.equals("\\")) {
+				continue;
+			}
+
+			line = StringUtil.removeSubstring(line, ",\\");
+
+			if (line.indexOf(StringPool.SEMICOLON) != -1) {
+				line = line.substring(0, line.indexOf(StringPool.SEMICOLON));
+			}
+
+			exportPackages.add(line.replace(CharPool.PERIOD, CharPool.SLASH));
+		}
+
+		int i = fileName.lastIndexOf("/");
+
+		for (String exportPackage : exportPackages) {
+			String resourcesPathname = StringBundler.concat(
+				fileName.substring(0, i), "/src/main/resources/",
+				exportPackage);
+
+			File resourcesDir = new File(resourcesPathname);
+
+			File[] resourcesFiles = resourcesDir.listFiles(
+				new FileFilter() {
+
+					@Override
+					public boolean accept(File pathname) {
+						return pathname.isFile();
+					}
+
+				});
+
+			String srcPathname = StringBundler.concat(
+				fileName.substring(0, i), "/src/main/java/", exportPackage);
+
+			File srcDir = new File(srcPathname);
+
+			File[] srcFiles = srcDir.listFiles(
+				new FileFilter() {
+
+					@Override
+					public boolean accept(File pathname) {
+						return pathname.isFile();
+					}
+
+				});
+
+			String packageinfoPathname = StringBundler.concat(
+				fileName.substring(0, i), "/src/main/resources/", exportPackage,
+				"/packageinfo");
+
+			File packageinfoFile = new File(packageinfoPathname);
+
+			if ((ArrayUtil.isNotEmpty(resourcesFiles) ||
+				 ArrayUtil.isNotEmpty(srcFiles)) &&
+				!packageinfoFile.exists()) {
+
+				FileUtil.write(packageinfoFile, "version 1.0.0");
+			}
+		}
 	}
 
 	private void _checkExports(

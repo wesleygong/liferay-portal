@@ -19,6 +19,7 @@ import aQute.bnd.annotation.ProviderType;
 import com.liferay.fragment.model.FragmentEntry;
 import com.liferay.fragment.service.FragmentEntryLocalService;
 import com.liferay.fragment.service.persistence.FragmentCollectionPersistence;
+import com.liferay.fragment.service.persistence.FragmentEntryInstanceLinkPersistence;
 import com.liferay.fragment.service.persistence.FragmentEntryPersistence;
 
 import com.liferay.portal.kernel.bean.BeanReference;
@@ -40,6 +41,7 @@ import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.service.BaseLocalServiceImpl;
 import com.liferay.portal.kernel.service.PersistedModelLocalServiceRegistry;
+import com.liferay.portal.kernel.service.persistence.ClassNamePersistence;
 import com.liferay.portal.kernel.service.persistence.UserPersistence;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.PortalUtil;
@@ -412,6 +414,44 @@ public abstract class FragmentEntryLocalServiceBaseImpl
 	}
 
 	/**
+	 * Returns the class name local service.
+	 *
+	 * @return the class name local service
+	 */
+	public com.liferay.portal.kernel.service.ClassNameLocalService getClassNameLocalService() {
+		return classNameLocalService;
+	}
+
+	/**
+	 * Sets the class name local service.
+	 *
+	 * @param classNameLocalService the class name local service
+	 */
+	public void setClassNameLocalService(
+		com.liferay.portal.kernel.service.ClassNameLocalService classNameLocalService) {
+		this.classNameLocalService = classNameLocalService;
+	}
+
+	/**
+	 * Returns the class name persistence.
+	 *
+	 * @return the class name persistence
+	 */
+	public ClassNamePersistence getClassNamePersistence() {
+		return classNamePersistence;
+	}
+
+	/**
+	 * Sets the class name persistence.
+	 *
+	 * @param classNamePersistence the class name persistence
+	 */
+	public void setClassNamePersistence(
+		ClassNamePersistence classNamePersistence) {
+		this.classNamePersistence = classNamePersistence;
+	}
+
+	/**
 	 * Returns the resource local service.
 	 *
 	 * @return the resource local service
@@ -465,6 +505,44 @@ public abstract class FragmentEntryLocalServiceBaseImpl
 	 */
 	public void setUserPersistence(UserPersistence userPersistence) {
 		this.userPersistence = userPersistence;
+	}
+
+	/**
+	 * Returns the fragment entry instance link local service.
+	 *
+	 * @return the fragment entry instance link local service
+	 */
+	public com.liferay.fragment.service.FragmentEntryInstanceLinkLocalService getFragmentEntryInstanceLinkLocalService() {
+		return fragmentEntryInstanceLinkLocalService;
+	}
+
+	/**
+	 * Sets the fragment entry instance link local service.
+	 *
+	 * @param fragmentEntryInstanceLinkLocalService the fragment entry instance link local service
+	 */
+	public void setFragmentEntryInstanceLinkLocalService(
+		com.liferay.fragment.service.FragmentEntryInstanceLinkLocalService fragmentEntryInstanceLinkLocalService) {
+		this.fragmentEntryInstanceLinkLocalService = fragmentEntryInstanceLinkLocalService;
+	}
+
+	/**
+	 * Returns the fragment entry instance link persistence.
+	 *
+	 * @return the fragment entry instance link persistence
+	 */
+	public FragmentEntryInstanceLinkPersistence getFragmentEntryInstanceLinkPersistence() {
+		return fragmentEntryInstanceLinkPersistence;
+	}
+
+	/**
+	 * Sets the fragment entry instance link persistence.
+	 *
+	 * @param fragmentEntryInstanceLinkPersistence the fragment entry instance link persistence
+	 */
+	public void setFragmentEntryInstanceLinkPersistence(
+		FragmentEntryInstanceLinkPersistence fragmentEntryInstanceLinkPersistence) {
+		this.fragmentEntryInstanceLinkPersistence = fragmentEntryInstanceLinkPersistence;
 	}
 
 	public void afterPropertiesSet() {
@@ -529,12 +607,20 @@ public abstract class FragmentEntryLocalServiceBaseImpl
 	protected com.liferay.fragment.service.FragmentCollectionLocalService fragmentCollectionLocalService;
 	@BeanReference(type = FragmentCollectionPersistence.class)
 	protected FragmentCollectionPersistence fragmentCollectionPersistence;
+	@ServiceReference(type = com.liferay.portal.kernel.service.ClassNameLocalService.class)
+	protected com.liferay.portal.kernel.service.ClassNameLocalService classNameLocalService;
+	@ServiceReference(type = ClassNamePersistence.class)
+	protected ClassNamePersistence classNamePersistence;
 	@ServiceReference(type = com.liferay.portal.kernel.service.ResourceLocalService.class)
 	protected com.liferay.portal.kernel.service.ResourceLocalService resourceLocalService;
 	@ServiceReference(type = com.liferay.portal.kernel.service.UserLocalService.class)
 	protected com.liferay.portal.kernel.service.UserLocalService userLocalService;
 	@ServiceReference(type = UserPersistence.class)
 	protected UserPersistence userPersistence;
+	@BeanReference(type = com.liferay.fragment.service.FragmentEntryInstanceLinkLocalService.class)
+	protected com.liferay.fragment.service.FragmentEntryInstanceLinkLocalService fragmentEntryInstanceLinkLocalService;
+	@BeanReference(type = FragmentEntryInstanceLinkPersistence.class)
+	protected FragmentEntryInstanceLinkPersistence fragmentEntryInstanceLinkPersistence;
 	@ServiceReference(type = PersistedModelLocalServiceRegistry.class)
 	protected PersistedModelLocalServiceRegistry persistedModelLocalServiceRegistry;
 }

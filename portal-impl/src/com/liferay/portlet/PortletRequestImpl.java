@@ -59,6 +59,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -171,16 +172,16 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 
 	@Override
 	public Enumeration<String> getAttributeNames() {
-		List<String> names = new ArrayList<>();
+		Set<String> names = new HashSet<>();
 
 		Enumeration<String> enu = _request.getAttributeNames();
 
-		while (enu.hasMoreElements()) {
-			String name = enu.nextElement();
+		_copyAttributeNames(names, enu);
 
-			if (!name.equals(JavaConstants.JAVAX_SERVLET_INCLUDE_PATH_INFO)) {
-				names.add(name);
-			}
+		if (_portletRequestDispatcherRequest != null) {
+			enu = _portletRequestDispatcherRequest.getAttributeNames();
+
+			_copyAttributeNames(names, enu);
 		}
 
 		return Collections.enumeration(names);
@@ -321,6 +322,10 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 	@Override
 	public String getPortletName() {
 		return _portletName;
+	}
+
+	public HttpServletRequest getPortletRequestDispatcherRequest() {
+		return _portletRequestDispatcherRequest;
 	}
 
 	@Override
@@ -623,6 +628,10 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 
 	@Override
 	public boolean isRequestedSessionIdValid() {
+		if (_session.isInvalidated() || _invalidSession) {
+			return false;
+		}
+
 		return _request.isRequestedSessionIdValid();
 	}
 
@@ -975,6 +984,18 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		}
 
 		return name;
+	}
+
+	private void _copyAttributeNames(
+		Set<String> names, Enumeration<String> enumeration) {
+
+		while (enumeration.hasMoreElements()) {
+			String name = enumeration.nextElement();
+
+			if (!name.equals(JavaConstants.JAVAX_SERVLET_INCLUDE_PATH_INFO)) {
+				names.add(name);
+			}
+		}
 	}
 
 	private void _mergePublicRenderParameters(

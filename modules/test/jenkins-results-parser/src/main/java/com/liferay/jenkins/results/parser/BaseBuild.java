@@ -38,9 +38,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -664,7 +661,7 @@ public abstract class BaseBuild implements Build {
 
 	@Override
 	public Long getLatestStartTimestamp() {
-		Long latestStartTimestamp = getStartTimestamp();
+		Long latestStartTimestamp = getStartTime();
 
 		if (latestStartTimestamp == null) {
 			return null;
@@ -766,7 +763,11 @@ public abstract class BaseBuild implements Build {
 	}
 
 	@Override
-	public Long getStartTimestamp() {
+	public Long getStartTime() {
+		if (startTime != null) {
+			return startTime;
+		}
+
 		JSONObject buildJSONObject = getBuildJSONObject("timestamp");
 
 		if (buildJSONObject == null) {
@@ -775,11 +776,11 @@ public abstract class BaseBuild implements Build {
 
 		long timestamp = buildJSONObject.getLong("timestamp");
 
-		if (timestamp == 0) {
-			return null;
+		if (timestamp != 0) {
+			startTime = timestamp;
 		}
 
-		return timestamp;
+		return startTime;
 	}
 
 	@Override
@@ -1031,8 +1032,8 @@ public abstract class BaseBuild implements Build {
 						message, "jenkins", "Build Reinvoked",
 						reinvokeRule.notificationRecipients);
 				}
-				catch (
-					InterruptedException | IOException | TimeoutException e) {
+				catch (InterruptedException | IOException |
+					   TimeoutException e) {
 
 					throw new RuntimeException(
 						"Unable to send reinvoke notification", e);
@@ -1216,9 +1217,7 @@ public abstract class BaseBuild implements Build {
 							getDownstreamBuildCount("completed")) &&
 						(result != null)) {
 
-						if (_isDifferent(_result, result)) {
-							setResult(result);
-						}
+						setResult(result);
 					}
 
 					findDownstreamBuilds();
@@ -1277,21 +1276,6 @@ public abstract class BaseBuild implements Build {
 			return displayName1.compareTo(displayName2);
 		}
 
-	}
-
-	protected static ThreadPoolExecutor getNewThreadPoolExecutor(
-		int maximumPoolSize) {
-
-		ThreadPoolExecutor threadPoolExecutor =
-			(ThreadPoolExecutor)Executors.newFixedThreadPool(maximumPoolSize);
-
-		threadPoolExecutor.setKeepAliveTime(5, TimeUnit.SECONDS);
-
-		threadPoolExecutor.allowCoreThreadTimeOut(true);
-		threadPoolExecutor.setCorePoolSize(maximumPoolSize);
-		threadPoolExecutor.setMaximumPoolSize(maximumPoolSize);
-
-		return threadPoolExecutor;
 	}
 
 	protected static boolean isHighPriorityBuildFailureElement(
@@ -1714,11 +1698,28 @@ public abstract class BaseBuild implements Build {
 			Dom4JUtil.getNewElement(
 				cellElementTagName, null,
 				Dom4JUtil.getNewAnchorElement(
-					getBuildURL() + "testReport", "Test Report")),
-			Dom4JUtil.getNewElement(
-				cellElementTagName, null,
-				JenkinsResultsParserUtil.toDateString(
-					new Date(getStartTimestamp()))),
+					getBuildURL() + "testReport", "Test Report")));
+
+		getStartTime();
+
+		if (startTime == null) {
+			Dom4JUtil.addToElement(
+				buildInfoElement,
+				Dom4JUtil.getNewElement(
+					cellElementTagName, null, "",
+					getJenkinsReportTimeZoneName()));
+		}
+		else {
+			Dom4JUtil.addToElement(
+				buildInfoElement,
+				Dom4JUtil.getNewElement(
+					cellElementTagName, null,
+					toJenkinsReportDateString(
+						new Date(startTime), getJenkinsReportTimeZoneName())));
+		}
+
+		Dom4JUtil.addToElement(
+			buildInfoElement,
 			Dom4JUtil.getNewElement(
 				cellElementTagName, null,
 				JenkinsResultsParserUtil.toDurationString(getDuration())));
@@ -1775,6 +1776,10 @@ public abstract class BaseBuild implements Build {
 		}
 
 		return tableRowElements;
+	}
+
+	protected String getJenkinsReportTimeZoneName() {
+		return _jenkinsReportTimeZoneName;
 	}
 
 	protected Set<String> getJobParameterNames() {
@@ -2211,18 +2216,16 @@ public abstract class BaseBuild implements Build {
 	}
 
 	protected void setResult(String result) {
-		if (_isDifferent(result, _result)) {
-			_result = result;
+		_result = result;
 
-			if ((_result == null) ||
-				(getDownstreamBuildCount("completed") <
-					getDownstreamBuildCount(null))) {
+		if ((_result == null) ||
+			(getDownstreamBuildCount("completed") <
+				getDownstreamBuildCount(null))) {
 
-				setStatus("running");
-			}
-			else {
-				setStatus("completed");
-			}
+			setStatus("running");
+		}
+		else {
+			setStatus("completed");
 		}
 	}
 
@@ -2236,6 +2239,21 @@ public abstract class BaseBuild implements Build {
 				System.out.println(getBuildMessage());
 			}
 		}
+	}
+
+	protected String toJenkinsReportDateString(Date date, String timeZoneName) {
+		Properties buildProperties = null;
+
+		try {
+			buildProperties = JenkinsResultsParserUtil.getBuildProperties();
+		}
+		catch (IOException ioe) {
+			throw new RuntimeException("Unable to get build properties", ioe);
+		}
+
+		return JenkinsResultsParserUtil.toDateString(
+			date, buildProperties.getProperty("jenkins.report.date.format"),
+			timeZoneName);
 	}
 
 	protected void writeArchiveFile(String content, String path)
@@ -2289,6 +2307,7 @@ public abstract class BaseBuild implements Build {
 	protected String repositoryName;
 	protected List<SlaveOfflineRule> slaveOfflineRules =
 		SlaveOfflineRule.getSlaveOfflineRules();
+	protected Long startTime;
 	protected long statusModifiedTime;
 	protected Element upstreamJobFailureMessageElement;
 
@@ -2305,7 +2324,7 @@ public abstract class BaseBuild implements Build {
 			}
 
 			_duration = topLevelBuild.getDuration();
-			_startTimestamp = topLevelBuild.getStartTimestamp();
+			_startTime = topLevelBuild.getStartTime();
 			_timeline = new TimelineDataPoint[size];
 
 			for (int i = 0; i < size; i++) {
@@ -2317,9 +2336,14 @@ public abstract class BaseBuild implements Build {
 		}
 
 		protected void addTimelineData(BaseBuild build) {
-			int endIndex = _getIndex(
-				build.getStartTimestamp() + build.getDuration());
-			int startIndex = _getIndex(build.getStartTimestamp());
+			Long buildStartTime = build.getStartTime();
+
+			if (buildStartTime == null) {
+				return;
+			}
+
+			int endIndex = _getIndex(buildStartTime + build.getDuration());
+			int startIndex = _getIndex(buildStartTime);
 
 			_timeline[startIndex]._invocationsCount++;
 
@@ -2360,8 +2384,7 @@ public abstract class BaseBuild implements Build {
 
 		private int _getIndex(long timestamp) {
 			int index =
-				(int)((timestamp - _startTimestamp) *
-					_timeline.length / _duration);
+				(int)((timestamp - _startTime) * _timeline.length / _duration);
 
 			if (index >= _timeline.length) {
 				return _timeline.length - 1;
@@ -2375,7 +2398,7 @@ public abstract class BaseBuild implements Build {
 		}
 
 		private final long _duration;
-		private final long _startTimestamp;
+		private final long _startTime;
 		private final TimelineDataPoint[] _timeline;
 
 		private static class TimelineDataPoint {
@@ -2415,6 +2438,22 @@ public abstract class BaseBuild implements Build {
 
 	private static final String[] _HIGH_PRIORITY_CONTENT_FLAGS =
 		{"compileJSP", "SourceFormatter.format", "Unable to compile JSPs"};
+
+	private static final String _jenkinsReportTimeZoneName;
+
+	static {
+		Properties properties = null;
+
+		try {
+			properties = JenkinsResultsParserUtil.getBuildProperties();
+		}
+		catch (IOException ioe) {
+			throw new RuntimeException("Unable to get build properties", ioe);
+		}
+
+		_jenkinsReportTimeZoneName = properties.getProperty(
+			"jenkins.report.time.zone");
+	};
 
 	private int _buildNumber = -1;
 	private String _consoleText;

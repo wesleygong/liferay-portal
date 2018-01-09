@@ -1,10 +1,10 @@
+import CardsTreeView from 'frontend-taglib/cards_treeview/CardsTreeview.es';
 import Component from 'metal-component';
-import core from 'metal';
 import PortletBase from 'frontend-js-web/liferay/PortletBase.es';
 import Soy from 'metal-soy';
+import core from 'metal';
 import { Config } from 'metal-state';
 
-import CardsTreeView from './CardsTreeView.es';
 import templates from './SelectFolder.soy';
 
 /**

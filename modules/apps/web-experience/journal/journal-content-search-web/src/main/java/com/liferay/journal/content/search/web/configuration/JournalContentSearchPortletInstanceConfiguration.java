@@ -32,13 +32,13 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
 )
 public interface JournalContentSearchPortletInstanceConfiguration {
 
-	@Meta.AD(deflt = "true", required = false)
+	@Meta.AD(deflt = "true", name = "enable-highlighting", required = false)
 	public boolean enableHighlighting();
 
-	@Meta.AD(deflt = "true", required = false)
+	@Meta.AD(deflt = "true", name = "show-listed", required = false)
 	public boolean showListed();
 
-	@Meta.AD(required = false)
+	@Meta.AD(name = "target-portlet-id", required = false)
 	public String targetPortletId();
 
 }

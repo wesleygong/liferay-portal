@@ -94,22 +94,44 @@ renderResponse.setTitle(layoutPageTemplateDisplayContext.getLayoutPageTemplateCo
 
 			<%
 			row.setCssClass("entry-card lfr-asset-item " + row.getCssClass());
+
+			String imagePreviewURL = layoutPageTemplateEntry.getImagePreviewURL(themeDisplay);
 			%>
 
 			<liferay-ui:search-container-column-text>
-				<liferay-frontend:icon-vertical-card
-					actionJsp="/layout_page_template_entry_action.jsp"
-					actionJspServletContext="<%= application %>"
-					cssClass="entry-display-style"
-					icon="page"
-					resultRow="<%= row %>"
-					rowChecker="<%= searchContainer.getRowChecker() %>"
-					title="<%= layoutPageTemplateEntry.getName() %>"
-				>
-					<liferay-frontend:vertical-card-header>
-						<liferay-ui:message arguments="<%= LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - layoutPageTemplateEntry.getCreateDate().getTime(), true) %>" key="x-ago" translateArguments="<%= false %>" />
-					</liferay-frontend:vertical-card-header>
-				</liferay-frontend:icon-vertical-card>
+				<c:choose>
+					<c:when test="<%= Validator.isNotNull(imagePreviewURL) %>">
+						<liferay-frontend:vertical-card
+							actionJsp="/layout_page_template_entry_action.jsp"
+							actionJspServletContext="<%= application %>"
+							cssClass="entry-display-style"
+							imageCSSClass="aspect-ratio-bg-contain"
+							imageUrl="<%= imagePreviewURL %>"
+							resultRow="<%= row %>"
+							rowChecker="<%= searchContainer.getRowChecker() %>"
+							title="<%= layoutPageTemplateEntry.getName() %>"
+						>
+							<liferay-frontend:vertical-card-header>
+								<liferay-ui:message arguments="<%= LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - layoutPageTemplateEntry.getCreateDate().getTime(), true) %>" key="x-ago" translateArguments="<%= false %>" />
+							</liferay-frontend:vertical-card-header>
+						</liferay-frontend:vertical-card>
+					</c:when>
+					<c:otherwise>
+						<liferay-frontend:icon-vertical-card
+							actionJsp="/layout_page_template_entry_action.jsp"
+							actionJspServletContext="<%= application %>"
+							cssClass="entry-display-style"
+							icon="page"
+							resultRow="<%= row %>"
+							rowChecker="<%= searchContainer.getRowChecker() %>"
+							title="<%= layoutPageTemplateEntry.getName() %>"
+						>
+							<liferay-frontend:vertical-card-header>
+								<liferay-ui:message arguments="<%= LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - layoutPageTemplateEntry.getCreateDate().getTime(), true) %>" key="x-ago" translateArguments="<%= false %>" />
+							</liferay-frontend:vertical-card-header>
+						</liferay-frontend:icon-vertical-card>
+					</c:otherwise>
+				</c:choose>
 			</liferay-ui:search-container-column-text>
 		</liferay-ui:search-container-row>
 
@@ -133,35 +155,52 @@ renderResponse.setTitle(layoutPageTemplateDisplayContext.getLayoutPageTemplateCo
 	<portlet:param name="layoutPageTemplateCollectionId" value="<%= String.valueOf(layoutPageTemplateDisplayContext.getLayoutPageTemplateCollectionId()) %>" />
 </portlet:actionURL>
 
-<aui:script require="layout-admin-web/js/LayoutPageTemplateNameEditor.es">
-	var layoutPageTemplateNameEditor;
-
+<aui:script require="metal-dom/src/all/dom as dom">
 	function handleAddLayoutPageTemplateEntryMenuItemClick(event) {
 		event.preventDefault();
 
-		layoutPageTemplateNameEditor = new layoutAdminWebJsLayoutPageTemplateNameEditorEs.default(
+		Liferay.Util.openSimpleInputModal(
 			{
-				actionURL: '<%= addLayoutPageTemplateEntryURL %>',
-				editorTitle: '<liferay-ui:message key="add-page-template" />',
-				events: {
-					hide: function() {
-						layoutPageTemplateNameEditor.dispose();
-
-						layoutPageTemplateNameEditor = null;
-					}
-				},
+				dialogTitle: '<liferay-ui:message key="add-page-template" />',
+				formSubmitURL: '<%= addLayoutPageTemplateEntryURL %>',
+				mainFieldLabel: '<liferay-ui:message key="name" />',
+				mainFieldName: 'name',
+				mainFieldPlaceholder: '<liferay-ui:message key="name" />',
 				namespace: '<portlet:namespace />',
 				spritemap: '<%= themeDisplay.getPathThemeImages() %>/lexicon/icons.svg'
 			}
 		);
 	}
 
+	var updateLayoutPageTemplateEntryMenuItemClickHandler = dom.delegate(
+		document.body,
+		'click',
+		'.<portlet:namespace />update-layout-page-template-action-option > a',
+		function(event) {
+			var data = event.delegateTarget.dataset;
+
+			event.preventDefault();
+
+			Liferay.Util.openSimpleInputModal(
+				{
+					dialogTitle: '<liferay-ui:message key="rename-layout-page-template" />',
+					formSubmitURL: data.formSubmitUrl,
+					idFieldName: 'layoutPageTemplateEntryId',
+					idFieldValue: data.idFieldValue,
+					mainFieldLabel: '<liferay-ui:message key="name" />',
+					mainFieldName: 'name',
+					mainFieldPlaceholder: '<liferay-ui:message key="name" />',
+					mainFieldValue: data.mainFieldValue,
+					namespace: '<portlet:namespace />',
+					spritemap: '<%= themeDisplay.getPathThemeImages() %>/lexicon/icons.svg'
+				}
+			);
+		}
+	);
+
 	function handleDestroyPortlet() {
 		addLayoutPageTemplateEntryMenuItem.removeEventListener('click', handleAddLayoutPageTemplateEntryMenuItemClick);
-
-		if (layoutPageTemplateNameEditor) {
-			layoutPageTemplateNameEditor.dispose();
-		}
+		updateLayoutPageTemplateEntryMenuItemClickHandler.removeListener();
 
 		Liferay.detach('destroyPortlet', handleDestroyPortlet);
 	}
@@ -170,7 +209,10 @@ renderResponse.setTitle(layoutPageTemplateDisplayContext.getLayoutPageTemplateCo
 
 	addLayoutPageTemplateEntryMenuItem.addEventListener('click', handleAddLayoutPageTemplateEntryMenuItemClick);
 
-	$('#<portlet:namespace />deleteSelectedLayoutPageTemplateEntries').on(
+	Liferay.on('destroyPortlet', handleDestroyPortlet);
+
+	dom.on(
+		'#<portlet:namespace />deleteSelectedLayoutPageTemplateEntries',
 		'click',
 		function() {
 			if (confirm('<liferay-ui:message key="are-you-sure-you-want-to-delete-this" />')) {
@@ -178,6 +220,4 @@ renderResponse.setTitle(layoutPageTemplateDisplayContext.getLayoutPageTemplateCo
 			}
 		}
 	);
-
-	Liferay.on('destroyPortlet', handleDestroyPortlet);
 </aui:script>
