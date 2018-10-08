@@ -29,7 +29,10 @@ import java.util.Set;
 
 /**
  * @author Shuyang Zhou
+ * @deprecated As of Judson (7.1.x), replaced by {@link
+ *             com.liferay.petra.reflect.ObjectGraphUtil}
  */
+@Deprecated
 public class ObjectGraphUtil {
 
 	public static void walkObjectGraph(Object object, Visitor visitor) {
